@@ -1,0 +1,87 @@
+.special-puja-section {
+  padding: 80px 0;
+  background: #fff;
+}
+
+.sp-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.sp-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.sp-header h2 {
+  margin: 0 0 16px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #111;
+}
+
+.sp-title-purple {
+  color: #6b21a8;
+}
+
+.sp-subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: #6b7280;
+  line-height: 1.5;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.sp-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+/* Banner backgrounds for Special Puja cards (used with .pl-card-banner from PujaList) */
+.sp-cards .pl-card-banner.sp-banner-1 {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.sp-cards .pl-card-banner.sp-banner-2 {
+  background: linear-gradient(135deg, #2d1b1b 0%, #4a2c2a 50%, #3d2318 100%);
+}
+
+.sp-cards .pl-card-banner.sp-banner-3 {
+  background: linear-gradient(135deg, #1a1a2e 0%, #2d1f3d 50%, #1e293b 100%);
+}
+
+.sp-footer {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.sp-view-all {
+  color: #ea580c;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.sp-view-all:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 992px) {
+  .sp-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
+  .sp-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .sp-header h2 {
+    font-size: 1.75rem;
+  }
+}

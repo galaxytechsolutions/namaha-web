@@ -1,0 +1,231 @@
+.chadhava-page {
+  padding-top: 80px;
+  background: #fff;
+}
+
+.ch-hero {
+  background: linear-gradient(180deg, #feeada 0%, #ffffff 70%);
+  padding: 3rem 1.5rem 3.5rem;
+}
+
+.ch-hero-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+
+.ch-hero-content {
+  flex: 1.1;
+}
+
+.ch-hero-title {
+  font-size: clamp(1.9rem, 3.3vw, 2.4rem);
+  line-height: 1.25;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 1.5rem;
+}
+
+.ch-hero-points {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+}
+
+.ch-hero-points li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.98rem;
+  color: #374151;
+}
+
+.ch-hero-points li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #f97316;
+  font-size: 1.1rem;
+}
+
+.ch-hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.ch-btn {
+  border-radius: 999px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.ch-btn-primary {
+  background: #16a34a;
+  color: #fff;
+  border-color: #16a34a;
+}
+
+.ch-btn-outline {
+  background: #ffffff;
+  color: #111827;
+  border-color: #e5e7eb;
+}
+
+.ch-hero-illustration {
+  flex: 0.9;
+  max-width: 420px;
+  height: 260px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.9), transparent 60%),
+    radial-gradient(circle at 20% 80%, rgba(248, 113, 113, 0.35), transparent 65%),
+    linear-gradient(120deg, #f97316, #facc15);
+  position: relative;
+  overflow: hidden;
+}
+
+.ch-hero-illustration::after {
+  content: '';
+  position: absolute;
+  inset: 18px 24px;
+  border-radius: 28px;
+  background:
+    linear-gradient(135deg, #ffedd5, #fed7aa),
+    url('https://dummyimage.com/600x400/f97316/fff') center/cover no-repeat;
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+}
+
+/* Offerings */
+.ch-offerings {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 0;
+}
+
+.ch-offerings-header {
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.ch-offerings-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #111827;
+  margin: 0 0 0.75rem;
+}
+
+.ch-offerings-subtitle {
+  font-size: 0.98rem;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ch-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.ch-card {
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.ch-card-banner {
+  height: 160px;
+  background: radial-gradient(circle at 10% 0, #fef3c7, transparent 55%),
+    radial-gradient(circle at 90% 100%, #a855f7, transparent 60%),
+    linear-gradient(120deg, #1d4ed8, #7c3aed);
+}
+
+.ch-card-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1; /* fill remaining height so button can sit at bottom */
+}
+
+.ch-card-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.ch-card-date {
+  font-size: 0.88rem;
+  color: #6b7280;
+  margin: 0 0 0.25rem;
+}
+
+.ch-card-text {
+  font-size: 0.92rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+.ch-card-cta {
+  align-self: stretch;
+  margin-top: auto;
+  background: #16a34a;
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+}
+
+.ch-card-cta:hover {
+  background: #15803d;
+}
+
+@media (max-width: 900px) {
+  .ch-hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ch-hero-illustration {
+    align-self: center;
+    width: 100%;
+    max-width: 380px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ch-hero {
+    padding: 2.5rem 1.25rem 3rem;
+  }
+
+  .ch-hero-title {
+    font-size: 1.7rem;
+  }
+
+  .ch-hero-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+

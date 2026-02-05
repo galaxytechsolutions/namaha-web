@@ -1,0 +1,263 @@
+.chadhava-section {
+    background: #fff;
+    padding: 4rem 1.5rem 4rem;
+  }
+  
+  .chadhava-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  /* --- Journey block --- */
+  .chadhava-journey-block {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  
+  .chadhava-main-title {
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.75rem;
+    line-height: 1.25;
+  }
+  
+  .chadhava-subtitle {
+    font-size: 1.1rem;
+    color: #555;
+    margin: 0 0 2rem;
+  }
+  
+  .chadhava-cards-row {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .chadhava-offer-card {
+    flex: 1;
+    min-width: 180px;
+    max-width: 280px;
+    padding: 1.75rem 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .chadhava-card-orange {
+    background: #fff0e6;
+    color: #1a1a1a;
+  }
+  
+  .chadhava-card-orange .chadhava-offer-number {
+    color: #c2410c;
+  }
+  
+  .chadhava-card-purple {
+    background: #f3e8ff;
+    color: #1a1a1a;
+  }
+  
+  .chadhava-card-purple .chadhava-offer-number {
+    color: #6b21a8;
+  }
+  
+  .chadhava-card-pink {
+    background: #fce7f3;
+    color: #1a1a1a;
+  }
+  
+  .chadhava-card-pink .chadhava-offer-number {
+    color: #be185d;
+  }
+  
+  .chadhava-offer-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+  }
+  
+  .chadhava-offer-label {
+    font-size: 0.95rem;
+    color: #444;
+  }
+  
+  /* --- How it works --- */
+  .chadhava-how-block {
+    margin-top: 3rem;
+  }
+  
+  .chadhava-how-title {
+    font-size: clamp(1.35rem, 3.5vw, 2rem);
+    font-weight: 700;
+    color: #1a1a1a;
+    text-align: center;
+    margin: 0 0 2.5rem;
+    line-height: 1.3;
+  }
+  
+  .chadhava-how-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+  }
+  
+  @media (max-width: 900px) {
+    .chadhava-how-grid {
+      grid-template-columns: 1fr;
+    }
+  
+    .chadhava-phone-col {
+      order: -1;
+      display: flex;
+      justify-content: center;
+    }
+  }
+  
+  /* Steps column */
+  .chadhava-steps-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+  }
+  
+  .chadhava-step {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+  
+  .chadhava-step-num {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    background: #ea580c;
+    color: #fff;
+    font-size: 1.25rem;
+    font-weight: 700;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .chadhava-step-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 0.35rem;
+  }
+  
+  .chadhava-step-desc {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+  }
+  
+  /* Phone mockup */
+  .chadhava-phone-mockup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .chadhava-phone-screen {
+    width: 280px;
+    background: #fff;
+    border: 12px solid #ea580c;
+    border-radius: 28px;
+    padding: 1rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+    position: relative;
+    transform: rotate(3deg);
+  }
+  
+  .chadhava-screen-content {
+    background: linear-gradient(180deg, #fef3c7 0%, #fff 35%);
+    border-radius: 12px;
+    padding: 1rem;
+    min-height: 380px;
+    position: relative;
+  }
+  
+  .chadhava-screen-deity {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 0.75rem;
+    background: linear-gradient(135deg, #fcd34d 0%, #f59e0b 100%);
+    border-radius: 50%;
+  }
+  
+  .chadhava-screen-event {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #92400e;
+    margin: 0 0 0.25rem;
+    text-align: center;
+  }
+  
+  .chadhava-screen-headline {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0 0 0.5rem;
+    text-align: center;
+    line-height: 1.35;
+  }
+  
+  .chadhava-screen-body {
+    font-size: 0.75rem;
+    color: #555;
+    margin: 0 0 1rem;
+    line-height: 1.45;
+  }
+  
+  .chadhava-screen-cta {
+    width: 100%;
+    padding: 0.65rem 1rem;
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+  }
+  
+  .chadhava-finger-icon {
+    position: absolute;
+    bottom: 3.5rem;
+    right: 0.5rem;
+    font-size: 1.5rem;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+  }
+  
+  .chadhava-phone-dots {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    justify-content: center;
+  }
+  
+  .chadhava-phone-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    background: #e5e7eb;
+    cursor: pointer;
+    padding: 0;
+  }
+  
+  .chadhava-phone-dot.active {
+    background: #ea580c;
+    transform: scale(1.2);
+  }

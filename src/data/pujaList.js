@@ -1,0 +1,58 @@
+export const PUJA_LIST = [
+  {
+    id: 1,
+    specialTag: 'Friday Special',
+    tagColor: 'red',
+    topChoice: false,
+    promoText: 'Receive Blessings of Long-Term Prosperity Through the Trishakti Anushthan-Maha Havan',
+    category: 'KUBERA-BHAIRAV-LAKSHMI WEALTH GUARDIAN SPECIAL',
+    title: '11,000 Kuber Mantra Jaap, Batuk Bhairav Kavach and Shri Sukta Havan',
+    purpose: 'For Financial Stability, Wealth Protection, and Long-Lasting Prosperity',
+    location: 'Etteluthuperumal Temple, Tirunelveli, Tamil Nadu',
+    date: '6 February, Friday, Phalguna Krishna Panchami',
+    imageClass: 'pl-card-1',
+    rating: '4.9',
+    ratingCount: '7K+',
+    devoteesCount: '3,00,000+',
+    carouselImages: ['pl-card-1', 'pl-card-1', 'pl-card-1'],
+  },
+  {
+    id: 2,
+    specialTag: 'Thursday Special',
+    tagColor: 'purple',
+    topChoice: false,
+    promoText: 'With 18000 Rahu Mantras and 16000 Brihaspati Mantras Seek Dosha Nivaran Blessings',
+    category: 'RAHU-GURU WEALTH AND PROSPERITY SPECIAL',
+    title: 'Brihaspati-Rahu Yuti Dosha Nivaran 18,000 Rahu Moola Mantra Jaap, 16,000 Brihaspati Moola Mantra Jaap and Havan',
+    purpose: 'For Prosperity and Material Well-Being',
+    location: 'Shri Navgrah Shani Temple, Ujjain, Madhya Pradesh',
+    date: '5 February, Thursday, Phalguna Krishna Chaturthi',
+    imageClass: 'pl-card-2',
+    rating: '4.8',
+    ratingCount: '5K+',
+    devoteesCount: '2,50,000+',
+    carouselImages: ['pl-card-2', 'pl-card-2', 'pl-card-2'],
+  },
+  {
+    id: 3,
+    specialTag: 'Kalashtami Special',
+    tagColor: 'orange',
+    topChoice: true,
+    promoText: 'Transform the sins of the past 7 lifetimes into virtue 4 Prahar Kaal Bhairav Abhishek-Khappar Seva',
+    category: 'KAAL BHAIRAV MAHA PUJAN',
+    title: '4 Prahar Kaal Bhairav Abhishek Puja, Shringar Seva, Khappar Seva and Bhog seva',
+    purpose: 'To Remove 7 Past Lifetimes Sins and Negativity',
+    location: 'Shri Kaal Bhairav Temple, Kashi, Uttar Pradesh',
+    date: '9 February, Monday, Phalguna Krishna Ashtami',
+    imageClass: 'pl-card-3',
+    rating: '4.9',
+    ratingCount: '8K+',
+    devoteesCount: '3,50,000+',
+    carouselImages: ['pl-card-3', 'pl-card-3', 'pl-card-3'],
+  },
+];
+
+export function getPujaById(id) {
+  const numId = parseInt(id, 10);
+  return PUJA_LIST.find((p) => p.id === numId) || null;
+}
