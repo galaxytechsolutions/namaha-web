@@ -1,14 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate,  NavLink} from 'react-router-dom';
+import axiosInstance from '../../lib/instance';
 import './Layout.css';
 
 function Layout({ children }) {
     const [isScrolled, setIsScrolled] = useState(false);
     const location = useLocation();
+    const navigate = useNavigate();
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [user, setUser] = useState(null);
     const closeMenu = () => setMenuOpen(false);
-    // const closeProfile = () => setProfileOpen(false);
+
+    // ⭐ 🔥 FIXED: Check auth on EVERY route change + mount
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        console.log('🔍 Layout auth check:', token ? 'LOGGED IN ✅' : 'GUEST');
+        
+        if (token) {
+            setUser({ 
+                name: 'Devotee', 
+                mobile: '9177526153' // From your login response
+            });
+        } else {
+            setUser(null);
+        }
+    }, [location.pathname]); // 🔥 KEY FIX: Re-checks on every navigation!
 
     // Scroll to top when navigating to Home or Puja
     useEffect(() => {
@@ -34,13 +51,26 @@ function Layout({ children }) {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [profileOpen]);
 
+    // ⭐ LOGOUT FUNCTION
+    const handleLogout = () => {
+        console.log('🚪 Logging out...');
+        localStorage.removeItem('token');
+        setUser(null);
+        setProfileOpen(false);
+        navigate('/login');
+    };
+
+    // ⭐ 🔥 SIMPLIFIED: Direct token check
+    const isLoggedIn = !!localStorage.getItem('token');
+    console.log('🔐 isLoggedIn:', isLoggedIn, 'user:', user); // Debug
+
     return (
         <div className="app-wrap">
             <header className={`header ${isScrolled ? 'scrolled' : ''} ${menuOpen ? 'open' : ''}`}>
                 <nav className="nav-container">
                     <Link to="/" className="logo">
                         <span className="logo-icon">🪔</span>
-                        <span>Seva</span>
+                        <span>SHRI AAUM</span>
                     </Link>
                     <ul className="nav-links">
                         <li>
@@ -53,120 +83,135 @@ function Layout({ children }) {
                             </Link>
                         </li>
                         <li>
-                            <Link
+                            <NavLink
                                 to="/puja"
                                 className={location.pathname === '/puja' ? 'active' : ''}
+                                
                                 onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
                             >
                                 Puja
-                            </Link>
+                            </NavLink>
                         </li>
                         <li>
-                            <Link
+                            <NavLink
                                 to="/chadhava"
                                 className={location.pathname === '/chadhava' ? 'active' : ''}
                                 onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
                             >
                                 Chadhava
-                            </Link>
+                            </NavLink>
                         </li>
-                        <li><a href="#temples" onClick={closeMenu}>Temples</a></li>
                         <li><a href="#library" onClick={closeMenu}>Library</a></li>
-                        <li><a href="#astro" onClick={closeMenu}>Astro</a></li>
-                        <li><a href="#tools" onClick={closeMenu}>Tools</a></li>
                     </ul>
                     <div className="nav-right">
                         <select className="language-selector">
                             <option>English</option>
                             <option>Hindi</option>
                         </select>
-                        
-                        {/* Profile Dropdown */}
-                        <div className="profile-container">
-                            <button 
-                                type="button"
-                                className="profile-trigger"
-                                onClick={() => setProfileOpen(!profileOpen)}
-                            >
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                    <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none"/>
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round"/>
-                                </svg>
-                            </button>
-                            
-                            {profileOpen && (
-                                <div className="profile-dropdown">
-                                    <div className="profile-header">
-                                        <div className="profile-info">
-                                            <div className="profile-avatar">
-                                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                                    <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-                                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                                                </svg>
+
+                        {/* ⭐ 🔥 PERFECT CONDITIONAL LOGIN/PROFILE */}
+                        {isLoggedIn ? (
+                            // ✅ LOGGED IN: Show Profile Dropdown
+                            <div className="profile-container">
+                                <button
+                                    type="button"
+                                    className="profile-trigger"
+                                    onClick={() => setProfileOpen(!profileOpen)}
+                                    aria-label="User profile"
+                                >
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none" />
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
+                                    </svg>
+                                </button>
+
+                                {profileOpen && (
+                                    <div className="profile-dropdown">
+                                        <div className="profile-header">
+                                            <div className="profile-info">
+                                                <div className="profile-avatar">
+                                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                                        <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <div className="profile-name">{user?.name || 'Devotee'}</div>
+                                                    <div className="profile-email">{user?.mobile || '+91 77526 153'}</div>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <div className="profile-name">John Doe</div>
-                                                <div className="profile-email">john@example.com</div>
+                                        </div>
+
+                                        <div className="profile-menu">
+                                            <Link to="/Profile" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">👤</div>
+                                                <span>My Profile</span>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                            <Link to="/my-puja" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">🕉</div>
+                                                <span>My Puja Bookings</span>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                            <Link to="/my-chadhava" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">🙏</div>
+                                                <span>My Chadhava Bookings</span>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                            <Link to="/book-puja" className="profile-item new-badge" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">📅</div>
+                                                <span>Book a Puja</span>
+                                                <div className="profile-badge">New</div>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                            <Link to="/book-chadhava" className="profile-item new-badge" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">🔔</div>
+                                                <span>Book a Chadhava</span>
+                                                <div className="profile-badge">New</div>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                           
+                                        </div>
+
+                                        {/* ⭐ 🔥 LOGOUT BUTTON */}
+                                        <div className="profile-menu">
+                                            <button 
+                                                className="profile-item logout-item"
+                                                onClick={handleLogout}
+                                            >
+                                                <div className="profile-icon">🚪</div>
+                                                <span>Logout</span>
+                                                <div className="profile-chevron">›</div>
+                                            </button>
+                                        </div>
+
+                                        <div className="profile-support">
+                                            <div className="support-title">Help & Support for Puja Booking</div>
+                                            <div className="support-contact">
+                                                <div className="support-phone">
+                                                    <span className="phone-icon">📞</span>
+                                                    <span>769-67-678 | 10AM-7:30PM</span>
+                                                </div>
+                                                <div className="support-links">
+                                                    <a href="mailto:test@test.com" className="support-link">Email us</a>
+                                                    <a href="https://wa.me/0000000000" className="support-link whatsapp">Whatsapp us</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                    
-                                    <div className="profile-menu">
-                                        <Link to="/profile" className="profile-item">
-                                            <div className="profile-icon">👤</div>
-                                            <span>My Profile</span>
-                                            <div className="profile-chevron">›</div>
-                                        </Link>
-                                        
-                                        <Link to="/my-puja" className="profile-item">
-                                            <div className="profile-icon">🕉</div>
-                                            <span>My Puja Bookings</span>
-                                            <div className="profile-chevron">›</div>
-                                        </Link>
-                                        
-                                        <Link to="/my-chadhava" className="profile-item">
-                                            <div className="profile-icon">🙏</div>
-                                            <span>My Chadhava Bookings</span>
-                                            <div className="profile-chevron">›</div>
-                                        </Link>
-                                        
-                                        <Link to="/book-puja" className="profile-item new-badge">
-                                            <div className="profile-icon">📅</div>
-                                            <span>Book a Puja</span>
-                                            <div className="profile-badge">New</div>
-                                            <div className="profile-chevron">›</div>
-                                        </Link>
-                                        
-                                        <Link to="/book-chadhava" className="profile-item new-badge">
-                                            <div className="profile-icon">🔔</div>
-                                            <span>Book a Chadhava</span>
-                                            <div className="profile-badge">New</div>
-                                            <div className="profile-chevron">›</div>
-                                        </Link>
-                                        
-                                        <Link to="/astro-tools" className="profile-item">
-                                            <div className="profile-icon">⭐</div>
-                                            <span>Astro Tools</span>
-                                            <div className="profile-chevron">›</div>
-                                        </Link>
-                                    </div>
-                                    
-                                    <div className="profile-support">
-                                        <div className="support-title">Help & Support for Puja Booking</div>
-                                        <div className="support-contact">
-                                            <div className="support-phone">
-                                                <span className="phone-icon">📞</span>
-                                                <span>769-67-678 | 10AM-7:30PM</span>
-                                            </div>
-                                            <div className="support-links">
-                                                <a href="mailto:test@test.com" className="support-link">Email us</a>
-                                                <a href="https://wa.me/0000000000" className="support-link whatsapp">Whatsapp us</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
+                                )}
+                            </div>
+                        ) : (
+                            // ❌ NOT LOGGED IN: Show Login Button
+                            <Link to="/login" className="login-btn-header">
+                                Login
+                            </Link>
+                        )}
 
                         <button
                             type="button"

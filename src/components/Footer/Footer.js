@@ -27,10 +27,10 @@ function Footer() {
                     <div className="footer-col footer-brand">
                         <div className="footer-logo-wrap">
                             <div className="footer-logo" />
-                            <span className="footer-brand-name">Seva</span>
+                            <span className="footer-brand-name">SHRI AAUM</span>
                         </div>
                         <p className="footer-desc">
-                            Seva has brought religious services to the masses in India by connecting devotees, pandits and temples. Partnering with over 100 renowned temples, we provide exclusive pujas and offerings performed by expert pandits and share videos of the completed puja rituals.
+                            SHRI AAUM has brought religious services to the masses in India by connecting devotees, pandits and temples. Partnering with over 100 renowned temples, we provide exclusive pujas and offerings performed by expert pandits and share videos of the completed puja rituals.
                         </p>
                     </div>
                     <div className="footer-col">

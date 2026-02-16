@@ -34,10 +34,10 @@ function StatsEventUi() {
         {/* Top: Journey + Why + Stats */}
         <div className="chadhava-journey-block">
           <h2 className="chadhava-main-title">
-            Start your Sacred Journey with Sri Mandir Chadhava Service
+            Start your Sacred Journey with SHRI AAUM Chadhava Service
           </h2>
           <p className="chadhava-subtitle">
-            Why make offerings through Sri Mandir Chadhava Seva?
+            Why make offerings through Sri Mandir Chadhava SHRI AAUM?
           </p>
           <div className="chadhava-cards-row">
             {OFFERING_CARDS.map((card) => (
@@ -52,7 +52,7 @@ function StatsEventUi() {
         {/* Bottom: How it works + Steps + Phone mockup */}
         <div className="chadhava-how-block">
           <h2 className="chadhava-how-title">
-            How does Sri Mandir Online Chadhava Works?
+            How does SHRI AAUM Online Chadhava Works?
           </h2>
           <div className="chadhava-how-grid">
             <div className="chadhava-steps-col">

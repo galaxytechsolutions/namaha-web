@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import './PujaList.css';
 import StatsEventUi from '../StatsEventUi/StatsEventUi';
 import Footer from '../Footer/Footer';
-import { PUJA_LIST } from '../../data/pujaList';
+import { fetchPujaList, PUJA_LIST } from '../../data/pujaList';
 
 const PUJA_HERO_SLIDES = [
   {
@@ -22,7 +22,13 @@ const PUJA_HERO_SLIDES = [
 
 function PujaList() {
   const [heroSlide, setHeroSlide] = useState(0);
+  const [pujaList, setPujaList] = useState(PUJA_LIST);
+  const [loading, setLoading] = useState(true);
 
+  // ✅ selected pujas (cart)
+  const [selectedPujas, setSelectedPujas] = useState([]);
+
+  /* ================= HERO AUTO SLIDE ================= */
   useEffect(() => {
     const t = setInterval(() => {
       setHeroSlide((s) => (s + 1) % PUJA_HERO_SLIDES.length);
@@ -30,10 +36,62 @@ function PujaList() {
     return () => clearInterval(t);
   }, []);
 
+  /* ================= FETCH PUJAS ================= */
+  useEffect(() => {
+    fetchPujaList()
+      .then((data) => {
+        setPujaList(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setLoading(false);
+      });
+  }, []);
+
+  /* ================= SELECT / UNSELECT ================= */
+  const toggleSelectPuja = (puja) => {
+    setSelectedPujas((prev) => {
+      const exists = prev.find((p) => p.id === puja.id);
+
+      if (exists) {
+        return prev.filter((p) => p.id !== puja.id);
+      } else {
+        return [...prev, puja];
+      }
+    });
+  };
+
+  const isSelected = (id) =>
+    selectedPujas.some((p) => p.id === id);
+
+  /* ================= LOADING ================= */
+  if (loading) {
+    return (
+      <main className="puja-list-page">
+        <div style={{ textAlign: 'center', padding: '100px' }}>
+          🔄 Loading Divine Pujas from backend...
+        </div>
+      </main>
+    );
+  }
+
   return (
     <main className="puja-list-page">
-      <h1 className="pl-main-heading">Perform Puja as per Vedic rituals at Famous Hindu Temples in India</h1>
 
+      {/* ================= CART COUNT ================= */}
+      {selectedPujas.length > 0 && (
+        <div className="cart-floating">
+          🛒 Cart ({selectedPujas.length})
+        </div>
+      )}
+
+
+      <h1 className="pl-main-heading">
+        Perform Puja as per Vedic rituals at Famous Hindu Temples in India
+      </h1>
+
+      {/* ================= HERO ================= */}
       <section className="pl-hero">
         <div className="pl-hero-inner">
           {PUJA_HERO_SLIDES.map((slide, i) => (
@@ -41,53 +99,72 @@ function PujaList() {
               <div className="pl-hero-content">
                 <span className="pl-hero-badge">{slide.badge}</span>
                 <p className="pl-hero-slogan">{slide.slogan}</p>
-                <button type="button" className="pl-hero-cta">BOOK PUJA</button>
+                {/* <button className="pl-hero-cta">BOOK PUJA</button> */}
               </div>
               <div className={`pl-hero-image ${slide.imageClass}`} />
             </div>
           ))}
         </div>
-        <div className="pl-hero-dots">
-          {PUJA_HERO_SLIDES.map((_, i) => (
-            <button key={i} type="button" className={i === heroSlide ? 'active' : ''} onClick={() => setHeroSlide(i)} aria-label={`Slide ${i + 1}`} />
-          ))}
-        </div>
       </section>
 
+      {/* ================= PUJA LIST ================= */}
       <section className="pl-upcoming">
-        <h2 className="pl-upcoming-title">Upcoming Pujas</h2>
-        <p className="pl-upcoming-desc">Book puja online with your name and gotra, receive the puja video along with the Aashirwad Box, and gain blessings from the Divine.</p>
-        <div className="pl-filters">
-          <span className="pl-filter-icon">☰</span>
-          <span className="pl-filter-label">Filter</span>
-          <select className="pl-filter-select"><option>Deity</option></select>
-          <select className="pl-filter-select"><option>Tithis</option></select>
-          <select className="pl-filter-select"><option>Dosha</option></select>
-          <select className="pl-filter-select"><option>Benefits</option></select>
-          <select className="pl-filter-select"><option>Location</option></select>
-        </div>
+        <h2 className="pl-upcoming-title">
+          Upcoming Pujas ({pujaList.length})
+        </h2>
+
         <div className="pl-cards">
-          {PUJA_LIST.map((puja) => (
-            <div key={puja.id} className="pl-card">
-              <div className={`pl-card-banner ${puja.imageClass}`}>
+          {pujaList.map((puja) => (
+            <div
+              key={puja.id}
+              className={`pl-card ${isSelected(puja.id) ? 'selected-card' : ''}`}
+            >
+
+              {/* ===== CHECKBOX ===== */}
+              <input
+                type="checkbox"
+                className="puja-checkbox"
+                checked={isSelected(puja.id)}
+                onChange={() => toggleSelectPuja(puja)}
+              />
+
+              <div
+                className={`pl-card-banner ${puja.imageClass}`}
+                style={
+                  puja.bannerUrls?.[0]
+                    ? {
+                      backgroundImage: `url(${puja.bannerUrls[0].url})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center',
+                    }
+                    : {}
+                }
+              >
                 <div className="pl-card-overlay" />
-                <span className={`pl-card-tag ${puja.tagColor}`}>{puja.specialTag}</span>
-                {puja.topChoice && <span className="pl-card-top-choice">DEVOTEE'S TOP CHOICE</span>}
-                <p className="pl-card-promo">{puja.promoText}</p>
-                <button type="button" className="pl-card-book">BOOK PUJA</button>
+                <span className={`pl-card-tag ${puja.tagColor}`}>
+                  {puja.specialTag}
+                </span>
+                {/* <Link to={`/puja/${puja.id}`} className="pl-book-btn">
+                  BOOK PUJA
+                </Link> */}
               </div>
+
               <p className="pl-card-category">{puja.category}</p>
               <h3 className="pl-card-title">{puja.title}</h3>
               <p className="pl-card-purpose">{puja.purpose}</p>
               <p className="pl-card-meta">🏛 {puja.location}</p>
               <p className="pl-card-meta">📅 {puja.date}</p>
-              <Link to={`/puja/${puja.id}`} className="pl-card-participate">PARTICIPATE →</Link>
+
+              <Link to={`/puja/${puja.id}`} className="pl-card-participate">
+                PARTICIPATE →
+              </Link>
             </div>
           ))}
         </div>
       </section>
-      <StatsEventUi/>
-      <Footer/>
+
+      <StatsEventUi />
+      <Footer />
     </main>
   );
 }

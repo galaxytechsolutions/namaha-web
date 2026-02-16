@@ -12,11 +12,15 @@ import PujaList from './components/PujaList/PujaList';
 import PujaDetail from './components/PujaDetail/PujaDetail';
 import Chadhava from './components/Chadhava/Chadhava';
 import ChadhavaDetail from './components/Chadhava/ChadhavaDetail';
+import Profile from './components/Profile/Profile';
+import LoginPage from './components/LoginPage/LoginPage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+      <Route path="/login" element={<LoginPage />} />
+
         <Route path="/" element={
           <Layout>
             <Home />
@@ -27,6 +31,14 @@ function App() {
             <Features />
             <ArticlesSection />
             <Footer />
+          </Layout>
+        } />
+
+        
+
+        <Route path="/Profile" element={
+          <Layout>
+            <Profile />
           </Layout>
         } />
         <Route path="/puja" element={
@@ -49,6 +61,13 @@ function App() {
             <PujaDetail />
           </Layout>
         } />
+
+
+
+
+
+
+
       </Routes>
     </BrowserRouter>
   );

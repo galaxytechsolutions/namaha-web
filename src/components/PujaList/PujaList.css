@@ -172,6 +172,7 @@
 
 .pl-card {
     display: flex;
+    position: relative;
     flex-direction: column;
     background: #fff;
     border-radius: 12px;
@@ -219,16 +220,71 @@
 
 .pl-card-top-choice {
     position: absolute;
-    top: 12px;
-    right: 12px;
+    top: -6px;                    /* Sticks out top edge */
+    right: -35px;                   /* Consistent right spacing */
     background: #dc2626;
     color: #fff;
-    padding: 6px 10px;
-    font-size: 0.65rem;
+    padding: 4px 8px 2px 8px;     /* Asymmetric padding for rotation */
+    font-size: 0.7rem;
     font-weight: 700;
-    border-radius: 6px;
-    z-index: 2;
+    border-radius: 4px;
+    z-index: 10;                  /* Above everything */
+    transform: rotate(45deg);
+    transform-origin: 50% 0%;     /* Rotate from top edge */
+    min-width: 70px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.4);
+    overflow: hidden;
 }
+
+/* Perfect right-top alignment across ALL devices */
+@media (max-width: 480px) {
+    .pl-card-top-choice {
+        top: -5px;
+        right: -35px;
+        font-size: 0.65rem;
+        min-width: 65px;
+        height: 30px;
+        padding: 3px 7px 1px 7px;
+    }
+}
+
+@media (max-width: 375px) {
+    .pl-card-top-choice {
+        top: -4px;
+        right: -35px;
+        min-width: 62px;
+        height: 28px;
+        font-size: 0.62rem;
+    }
+}
+
+@media (max-width: 320px) {
+    .pl-card-top-choice {
+        top: -3px;
+        right: -35px;
+        min-width: 58px;
+        height: 26px;
+        font-size: 0.6rem;
+        padding: 2px 6px 0px 6px;
+    }
+}
+
+/* Tablet/Desktop fine-tuning */
+@media (min-width: 769px) {
+    .pl-card-top-choice {
+        top: -8px;
+        right: -35px;
+        min-width: 75px;
+        height: 34px;
+        font-size: 0.72rem;
+    }
+}
+
 
 .pl-card-promo {
     position: absolute;
@@ -265,6 +321,16 @@
     letter-spacing: 0.5px;
     margin: 0;
     padding: 12px 16px 0;
+}
+
+.pl-card-promo-body {
+  position: static;
+  margin: 8px 16px 12px;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  color: #374151;
+  font-weight: 400;
 }
 
 .pl-card-title {
@@ -321,4 +387,332 @@
     .pl-hero-slogan {
         font-size: 1.2rem;
     }
+
+    
+}
+/* ========================================
+   MOBILE RESPONSIVE UPDATES - START
+   ======================================== */
+
+/* Mobile First - Enhanced Typography */
+@media (max-width: 768px) {
+  .pl-main-heading {
+    padding: 1.5rem 1rem 1rem;
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    line-height: 1.4;
+  }
+
+  .pl-hero {
+    height: 260px;
+    margin: 0 1rem 2rem;
+    border-radius: 12px;
+  }
+
+  .pl-hero-content {
+    padding: 1.5rem !important;
+    flex: none;
+    width: 55%;
+  }
+
+  .pl-hero-slogan {
+    font-size: 1.1rem !important;
+    line-height: 1.4;
+    margin-bottom: 1rem;
+  }
+
+  .pl-hero-badge {
+    font-size: 0.8rem;
+    padding: 6px 12px;
+  }
+
+  .pl-hero-cta {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+  }
+
+  .pl-hero-image {
+    width: 45% !important;
+  }
+}
+
+/* Small Mobile (iPhone SE, etc.) */
+@media (max-width: 480px) {
+  .pl-main-heading {
+    padding: 1rem 1rem 1rem;
+  }
+
+  .pl-hero {
+    height: 240px;
+    margin: 0 0.5rem 1.5rem;
+  }
+
+  .pl-hero-content {
+    padding: 1.25rem !important;
+    width: 60%;
+  }
+
+  .pl-hero-slogan {
+    font-size: 1rem;
+  }
+
+  .pl-hero-cta {
+    padding: 9px 18px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Tablet Portrait */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .pl-hero {
+    height: 340px;
+  }
+  
+  .pl-hero-content {
+    padding: 2.5rem 3.5rem;
+  }
+}
+
+/* Filters - Mobile Stacked */
+@media (max-width: 768px) {
+  .pl-filters {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 0 1rem;
+  }
+
+  .pl-filter-icon {
+    display: none;
+  }
+
+  .pl-filter-label {
+    font-size: 1rem;
+    margin-bottom: 4px;
+  }
+
+  .pl-filter-select {
+    width: 100%;
+    max-width: 200px;
+  }
+}
+
+/* Cards - Mobile Single Column */
+@media (max-width: 768px) {
+  .pl-cards {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 0 1rem;
+    max-width: 100%;
+  }
+
+  .pl-card-banner {
+    height: 180px;
+  }
+
+  .pl-card-title {
+    font-size: 1.1rem;
+  }
+
+  .pl-card-participate {
+    margin: 12px 1.25rem 1.25rem;
+    padding: 7px;
+    font-size: 0.95rem;
+  }
+}
+
+/* Upcoming Section - Mobile */
+@media (max-width: 768px) {
+  .pl-upcoming-title {
+    font-size: 20px;
+    padding: 0 1rem;
+  }
+
+  .pl-upcoming-desc {
+    padding: 0 1rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* Dots - Mobile */
+@media (max-width: 768px) {
+  .pl-hero-dots {
+    bottom: 0.75rem;
+    gap: 6px;
+  }
+
+  .pl-hero-dots button {
+    width: 8px;
+    height: 8px;
+  }
+}
+
+/* Touch Targets - Mobile Best Practices */
+@media (max-width: 768px) {
+  .pl-hero-cta,
+  /* .pl-card-book, */
+  .pl-filter-select {
+    min-height: 44px; /* iOS Touch Target */
+  }
+
+  .pl-card-participate {
+    min-height: 28px;
+  }
+}
+
+/* Landscape Mobile Fix */
+@media (max-height: 500px) and (orientation: landscape) {
+  .pl-hero {
+    height: 220px;
+  }
+  
+  .pl-hero-content {
+    padding: 1rem !important;
+  }
+}
+
+/* High DPI Displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .pl-card {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* checkbox */
+
+  .puja-checkbox {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 10;          /* keep above image */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+  }
+  
+
+
+/* selected card highlight */
+.selected-card {
+  border: 3px solid #ea580c;
+  transform: scale(1.02);
+}
+
+/* floating cart */
+.cart-floating {
+  position: fixed;
+  top: 90px;
+  right: 30px;
+  background: #ea580c;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-weight: 600;
+  z-index: 999;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+.pl-card-banner {
+  position: relative;
+  height: 180px;
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+
+/* BOOK PUJA button */
+.pl-book-btn {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+
+  background: #16a34a;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 14px;
+
+  transition: 0.3s ease;
+}
+
+.pl-book-btn:hover {
+  background: #15803d;
+}
+
+
+.hero-section {
+  position: relative;
+  width: 100vw;          /* full screen width */
+  height: 500px;         /* control height here */
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+
+.hero-carousel-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.hero-slide-active {
+  opacity: 1;
+  z-index: 1;
+}
+
+
+
+.hero-bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 80px;
+  transform: translateY(-50%);
+  color: white;
+  z-index: 2;
+  max-width: 500px;
+}
+.cart-floating {
+  position: fixed;
+  top: 90px;
+  right: 30px;
+  background: #ea580c;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 30px;
+  font-weight: 600;
+  z-index: 999;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

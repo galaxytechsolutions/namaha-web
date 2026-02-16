@@ -1,0 +1,139 @@
+.login-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .login-container {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    padding: 40px;
+    max-width: 420px;
+    width: 100%;
+  }
+  
+  .login-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+    color: #1a1a1a;
+  }
+  
+  .login-header p {
+    color: #6b7280;
+    margin: 0 0 32px;
+  }
+  
+  .login-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #16a34a;
+    margin-bottom: 16px;
+  }
+  
+  .login-error {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  
+  .login-input-group {
+    margin-bottom: 24px;
+  }
+  
+  .login-input-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+  
+  .login-input-group input,
+  .login-input-group select {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.2s;
+    box-sizing: border-box;
+  }
+  
+  .login-input-group input:focus,
+  .login-input-group select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+  }
+  
+  .login-phone-input {
+    display: flex;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  
+  .login-phone-input span {
+    background: #f3f4f6;
+    padding: 14px 16px;
+    font-weight: 600;
+    color: #374151;
+  }
+  
+  .login-otp-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  .login-resend {
+    background: none;
+    border: none;
+    color: #16a34a;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  .login-btn {
+    width: 100%;
+    background: #16a34a;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .login-btn:hover:not(:disabled) {
+    background: #15803d;
+  }
+  
+  .login-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  .login-footer {
+    text-align: center;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .login-footer p {
+    font-size: 14px;
+    color: #6b7280;
+    margin: 0;
+  }
+  

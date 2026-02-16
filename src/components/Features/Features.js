@@ -34,8 +34,8 @@ function Features() {
       id: 5,
       icon: '卐',
       iconBg: '#b8860b',
-      title: 'Puja and Chadhava Seva',
-      description: "Book personalized Puja and Chadhava Seva in your and your family,s name at 1000+ renowned temples across India.",
+      title: 'Puja and Chadhava SHRI AAUM',
+      description: "Book personalized Puja and Chadhava SHRI AAUM in your and your family,s name at 1000+ renowned temples across India.",
     },
     {
       id: 6,
@@ -64,12 +64,7 @@ function Features() {
             </div>
           ))}
         </div>
-        {/* <div className="features-articles">
-          <h3 className="features-articles-heading">
-            Read interesting articles about upcoming fasts, festivals, and everything around Sanatan Dharma.
-          </h3>
-          <a href="#" className="features-read-all">Read All →</a>
-        </div> */}
+        
       </div>
     </section>
   );

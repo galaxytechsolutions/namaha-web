@@ -7,11 +7,11 @@ import Footer from '../Footer/Footer';
 const CHADHAVA_CARDS = [
   {
     id: 1,
-    title: 'Pashupatinath “Gana-Tirpti” Pashu Seva',
+    title: 'Pashupatinath “Gana-Tirpti” Pashu SHRI AAUM',
     date: '9 February to 15 February, 2026',
     description:
-      'From Kalashtami till Maha Shivratri, the purohit ji will perform Gana-Tirpti Seva on your name at the respective site on the specific tithi. The video of the seva will be shared on the Sri Mandir app in 24–48 hours of offering.',
-    cta: 'Perform Pashu Seva →',
+      'From Kalashtami till Maha Shivratri, the purohit ji will perform Gana-Tirpti SHRI AAUM on your name at the respective site on the specific tithi. The video of the SHRI AAUM will be shared on the Sri Mandir app in 24–48 hours of offering.',
+    cta: 'Perform Pashu SHRI AAUM →',
   },
   {
     id: 2,
@@ -40,7 +40,7 @@ function Chadhava() {
           <div className="ch-hero-content">
             <h1 className="ch-hero-title">
               Offer Chadhava as per Vedic rituals at sacred Hindu Pilgrimages and Temples in India
-              through Sri Mandir from anywhere in the world!
+              through SHRI AAUM from anywhere in the world!
             </h1>
             <ul className="ch-hero-points">
               <li>Divine Blessings through Chadhava.</li>
@@ -64,9 +64,9 @@ function Chadhava() {
       {/* Upcoming Chadhava offerings */}
       <section className="ch-offerings">
         <div className="ch-offerings-header">
-          <h2 className="ch-offerings-title">Upcoming Chadhava Offerings on Sri Mandir.</h2>
+          <h2 className="ch-offerings-title">Upcoming Chadhava Offerings on SHRI AAUM.</h2>
           <p className="ch-offerings-subtitle">
-            Experience the divine with Sri Mandir Chadhava Seva. Offer Chadhava at renowned
+            Experience the divine with Sri Mandir Chadhava SHRI AAUM. Offer Chadhava at renowned
             temples across India, receiving blessings and a video recording of the ceremony
             performed by our Purohit ji on your behalf.
           </p>

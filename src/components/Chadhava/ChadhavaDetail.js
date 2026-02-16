@@ -6,7 +6,7 @@ import Footer from '../Footer/Footer';
 const CHADHAVA_DETAILS = {
   1: {
     id: 1,
-    title: 'Maha Shivratri Pashupatinath "Gana-Tirpti" Pashu Seva Maha Sankalp',
+    title: 'Maha Shivratri Pashupatinath "Gana-Tirpti" Pashu SHRI AAUM Maha Sankalp',
     subtitle:
       "Win the Heart of Mahadev! According to scriptures, Shiva is 'Pashupatinath' (Lord of Animals). Before reaching the Shivling in the inner sanctum, one must first seek permission from Shiva's Ganas.",
     dateRange: '9 February to 15 February, 2026',
@@ -37,40 +37,40 @@ const OFFERINGS = [
   {
     id: 1,
     label: 'Special Combo Chadhava',
-    title: 'Contribution to Bhairav-Gan (Vahan) Shwaan Seva (Kalashatmi)',
+    title: 'Contribution to Bhairav-Gan (Vahan) Shwaan SHRI AAUM (Kalashatmi)',
     meta1:
-      'Milk (Bhatuk Bhairav) • Kalashtami Monday Shwaan Seva Shri Batuk Bhairav Temple • 9 February, Monday',
+      'Milk (Bhatuk Bhairav) • Kalashtami Monday Shwaan SHRI AAUM Shri Batuk Bhairav Temple • 9 February, Monday',
     meta2:
-      'Roti (Bhatuk Bhairav) • Kalashtami Monday Shwaan Seva Shri Batuk Bhairav Temple • 9 February, Monday',
+      'Roti (Bhatuk Bhairav) • Kalashtami Monday Shwaan SHRI AAUM Shri Batuk Bhairav Temple • 9 February, Monday',
     price: 91,
     priceDisplay: '₹91',
   },
   {
     id: 2,
     label: 'Special Combo Chadhava',
-    title: 'Contribution to Ekadashi Complete Gau Mata Seva',
+    title: 'Contribution to Ekadashi Complete Gau Mata SHRI AAUM',
     meta1:
-      '1-Cow-hara-chara-sukha-chara (Shri dham gaushala) • Ekadashi Thursday Gau Seva Shri Dham Gaushala • 13 February, Friday',
+      '1-Cow-hara-chara-sukha-chara (Shri dham gaushala) • Ekadashi Thursday Gau SHRI AAUM Shri Dham Gaushala • 13 February, Friday',
     meta2:
-      '1-Cow-Roti (Shri dham gaushala) • Ekadashi Thursday Gau Seva Shri Dham Gaushala • 13 February, Friday',
+      '1-Cow-Roti (Shri dham gaushala) • Ekadashi Thursday Gau SHRI AAUM Shri Dham Gaushala • 13 February, Friday',
     price: 161,
     priceDisplay: '₹161',
   },
   {
     id: 3,
     label: 'Special Combo Chadhava',
-    title: "Contribution to Ultimate 'Gan-Tript' Pashupatinath Mahaseva",
+    title: "Contribution to Ultimate 'Gan-Tript' Pashupatinath MahaSHRI AAUM",
     meta1:
-      'Pavroti-Milk (Bhatuk Bhairav) • Kalashtami Monday Shwaan Seva Shri Batuk Bhairav Temple • 9 February, Monday',
+      'Pavroti-Milk (Bhatuk Bhairav) • Kalashtami Monday Shwaan SHRI AAUM Shri Batuk Bhairav Temple • 9 February, Monday',
     meta2:
-      '1-Cow-Roti (Shri dham gaushala) • Ekadashi Thursday Gau Seva Shri Dham Gaushala • 13 February, Friday',
+      '1-Cow-Roti (Shri dham gaushala) • Ekadashi Thursday Gau SHRI AAUM Shri Dham Gaushala • 13 February, Friday',
     price: 343,
     priceDisplay: '₹343',
   },
 ];
 
 const FAQS = [
-  'What is Mahaseva?',
+  'What is MahaSHRI AAUM?',
   'Will I receive a certificate after booking the service?',
   'How can I check the status of my service?',
   'Can I choose multiple services?',
@@ -155,7 +155,7 @@ function ChadhavaDetail() {
                 <p className="chd-date">{detail.dateRange}</p>
                 <p className="chd-devotees">
                   Till now <strong>{detail.devoteesCount} Devotees</strong> have participated in
-                  Chadhava conducted by Sri Mandir Chadhava Seva.
+                  Chadhava conducted by Sri Mandir Chadhava SHRI AAUM.
                 </p>
               </div>
             </div>
