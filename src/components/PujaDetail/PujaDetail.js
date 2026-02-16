@@ -15,11 +15,11 @@ const SECTION_TABS = [
   { id: 'faqs', label: 'FAQs' },
 ];
 
-const BENEFITS = [
-  { title: 'For Mental Stability', text: 'In the dasha of Rahu, sometimes thinking and decision-making ability can be affected. By performing 18,000 Rahu Mool Mantra Jaap and related rituals, one can seek mental clarity and stability.' },
-  { title: 'For Protection from Negative Energy', text: 'Due to the harmful effect of Rahu, instability or negative energy can be felt in the environment. By performing mantra chanting and Havan, devotees seek protection and positivity.' },
-  { title: 'For Ease in Financial Struggle', text: 'During Rahu Mahadasha, financial or professional challenges can increase. Performing mantra chanting and Havan with devotion can help ease these struggles.' },
-];
+// const BENEFITS = [
+//   { title: 'For Mental Stability', text: 'In the dasha of Rahu, sometimes thinking and decision-making ability can be affected. By performing 18,000 Rahu Mool Mantra Jaap and related rituals, one can seek mental clarity and stability.' },
+//   { title: 'For Protection from Negative Energy', text: 'Due to the harmful effect of Rahu, instability or negative energy can be felt in the environment. By performing mantra chanting and Havan, devotees seek protection and positivity.' },
+//   { title: 'For Ease in Financial Struggle', text: 'During Rahu Mahadasha, financial or professional challenges can increase. Performing mantra chanting and Havan with devotion can help ease these struggles.' },
+// ];
 
 const PROCESS_STEPS = [
   { title: 'Select Puja', text: 'Choose from puja packages listed below.' },
