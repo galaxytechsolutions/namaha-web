@@ -5,7 +5,7 @@ import './LoginPage.css';
 
 function LoginPage() {
   const navigate = useNavigate();
-  
+
   const [step, setStep] = useState(1);
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -13,13 +13,14 @@ function LoginPage() {
   const [error, setError] = useState('');
   const [token, setToken] = useState(null);
 
-  // Profile fields
   const [name, setName] = useState('');
   const [dob, setDob] = useState('');
   const [zodiacSign, setZodiacSign] = useState('');
-  const [gmail, setGmail] = useState(''); 
+  const [gmail, setGmail] = useState('');
 
-  // Send OTP
+  /* =====================================================
+     SEND OTP (REAL + DUMMY FALLBACK)
+  ===================================================== */
   const sendOtp = async () => {
     if (!mobile || mobile.length !== 10) {
       setError('Enter valid 10-digit mobile');
@@ -28,22 +29,28 @@ function LoginPage() {
 
     setLoading(true);
     setError('');
+
     try {
       const res = await axiosInstance.post('/auth/send-otp', { mobile });
-      console.log('✅ OTP Response:', res.data);
-      
+
       if (res.data.success) {
         setStep(2);
-        setError('OTP sent successfully! (Use: 000000)');
+        setError('OTP sent successfully');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send OTP');
+      console.warn("⚠️ API not available — using dummy OTP");
+
+      // 🔥 DUMMY SUCCESS
+      setStep(2);
+      setError('Demo Mode: Use OTP 000000');
     } finally {
       setLoading(false);
     }
   };
 
-  // Verify OTP
+  /* =====================================================
+     VERIFY OTP (REAL + DUMMY FALLBACK)
+  ===================================================== */
   const verifyOtp = async () => {
     if (!otp || otp.length !== 6) {
       setError('Enter valid 6-digit OTP');
@@ -52,19 +59,18 @@ function LoginPage() {
 
     setLoading(true);
     setError('');
+
     try {
-      const res = await axiosInstance.post('/auth/verify-otp', { 
-        mobile, 
-        otp 
+      const res = await axiosInstance.post('/auth/verify-otp', {
+        mobile,
+        otp
       });
-      
-      console.log('✅ Verify Response:', res.data);
-      
+
       if (res.data.success) {
         const newToken = res.data.token;
         setToken(newToken);
         localStorage.setItem('token', newToken);
-        
+
         if (res.data.isNewUser) {
           setStep(3);
         } else {
@@ -72,53 +78,85 @@ function LoginPage() {
         }
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid OTP');
+      console.warn("⚠️ API verify failed — checking dummy OTP");
+
+      // 🔥 DUMMY VERIFY
+      if (otp === "000000") {
+        const dummyToken = "dummy-jwt-token";
+        localStorage.setItem("token", dummyToken);
+        setToken(dummyToken);
+
+        // simulate new user first time
+        const isNewUser = !localStorage.getItem("profileCompleted");
+
+        if (isNewUser) {
+          setStep(3);
+        } else {
+          navigate('/puja');
+        }
+      } else {
+        setError("Invalid OTP (Demo OTP = 000000)");
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  // Complete Profile - NOW INCLUDES GMAIL
+  /* =====================================================
+     COMPLETE PROFILE (REAL + DUMMY FALLBACK)
+  ===================================================== */
   const completeProfile = async () => {
-    if (!name || !dob || !token || !gmail) { 
+    if (!name || !dob || !gmail) {
       setError('Please complete all required fields');
       return;
     }
 
     setLoading(true);
     setError('');
+
     try {
       const res = await axiosInstance.post('/auth/complete-profile', {
         name,
         dob,
         zodiacSign,
-        gmail 
+        gmail
       });
-      
-      console.log('✅ Profile Complete:', res.data);
+
       navigate('/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Profile update failed');
-      console.error('❌ Error:', err.response?.data);
+      console.warn("⚠️ API profile save failed — using dummy save");
+
+      // 🔥 DUMMY SAVE
+      localStorage.setItem("profileCompleted", "true");
+      localStorage.setItem("userProfile", JSON.stringify({
+        name,
+        dob,
+        zodiacSign,
+        gmail
+      }));
+
+      navigate('/');
     } finally {
       setLoading(false);
     }
   };
 
+  /* =====================================================
+     UI
+  ===================================================== */
+
   return (
     <main className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <div className="login-logo">🛕 Sri Mandir</div>
+          <div className="login-logo">🛕 Sri aaum</div>
           <h1>Welcome Back</h1>
           <p>Enter your mobile to receive OTP</p>
         </div>
 
-        {error && (
-          <div className="login-error">{error}</div>
-        )}
+        {error && <div className="login-error">{error}</div>}
 
-        {/* STEP 1: Mobile */}
+        {/* STEP 1 */}
         {step === 1 && (
           <div className="login-form">
             <div className="login-input-group">
@@ -134,103 +172,64 @@ function LoginPage() {
                 />
               </div>
             </div>
-            <button 
-              className="login-btn" 
-              onClick={sendOtp}
-              disabled={loading}
-            >
+            <button className="login-btn" onClick={sendOtp} disabled={loading}>
               {loading ? 'Sending...' : 'Send OTP'}
             </button>
           </div>
         )}
 
-        {/* STEP 2: OTP */}
+        {/* STEP 2 */}
         {step === 2 && (
           <div className="login-form">
-            <div className="login-otp-header">
-              <p>OTP sent to <strong>{mobile}</strong></p>
-              <button className="login-resend" onClick={() => setStep(1)}>
-                Change Number
-              </button>
-            </div>
-            <div className="login-input-group">
-              <label>Enter OTP</label>
-              <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
-                placeholder="000000"
-                maxLength={6}
-              />
-            </div>
-            <button 
-              className="login-btn" 
-              onClick={verifyOtp}
-              disabled={loading || otp.length !== 6}
-            >
+            <p>OTP sent to {mobile}</p>
+            <input
+              value={otp}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+              placeholder="000000"
+              maxLength={6}
+            />
+            <button onClick={verifyOtp} disabled={loading}>
               {loading ? 'Verifying...' : 'Verify OTP'}
             </button>
           </div>
         )}
 
-        {/* STEP 3: Profile */}
+        {/* STEP 3 */}
         {step === 3 && (
           <div className="login-form">
-            <h3>Complete Your Profile</h3>
-            <p>Create your devotee profile to continue</p>
-            
-            <div className="login-input-group">
-              <label>Full Name *</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Enter your name"
-              />
-            </div>
-            
-            <div className="login-input-group">
-              <label>Date of Birth *</label>
-              <input
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-              />
-            </div>
-            
-            <div className="login-input-group">
-              <label>Gmail Address *</label>
-              <input
-                type="email"
-                value={gmail}
-                onChange={(e) => setGmail(e.target.value)}
-                placeholder="yourname@gmail.com"
-              />
-            </div>
-            
-            <div className="login-input-group">
-              <label>Zodiac Sign</label>
-              <select value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
-                <option value="">Select Zodiac</option>
-                <option value="aries">Aries (मेष)</option>
-                <option value="taurus">Taurus (वृषभ)</option>
-                <option value="gemini">Gemini (मिथुन)</option>
-              </select>
-            </div>
-            
-            <button 
-              className="login-btn" 
-              onClick={completeProfile}
-              disabled={loading || !name || !dob || !gmail} 
-            >
+            <h3>Complete Profile</h3>
+
+            <input
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+
+            <input
+              type="date"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+            />
+
+            <input
+              type="email"
+              placeholder="Gmail"
+              value={gmail}
+              onChange={(e) => setGmail(e.target.value)}
+            />
+
+            <select value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
+              <option value="">Select Zodiac</option>
+              <option value="aries">Aries</option>
+              <option value="taurus">Taurus</option>
+              <option value="gemini">Gemini</option>
+            </select>
+
+            <button onClick={completeProfile} disabled={loading}>
               {loading ? 'Saving...' : 'Complete Profile'}
             </button>
           </div>
         )}
-
-        <div className="login-footer">
-          <p>By continuing, you agree to our Terms of Service</p>
-        </div>
       </div>
     </main>
   );

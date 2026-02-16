@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate,  NavLink} from 'react-router-dom';
-import axiosInstance from '../../lib/instance';
 import './Layout.css';
 
 function Layout({ children }) {

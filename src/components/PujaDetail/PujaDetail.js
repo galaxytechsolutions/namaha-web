@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { fetchPujaList } from '../../data/pujaList';
 import './PujaDetail.css';
 import Footer from '../Footer/Footer';
-import axiosInstance from '../../lib/instance';
+// import axiosInstance from '../../lib/instance';
 
 const SECTION_TABS = [
   { id: 'about', label: 'About Puja' },
@@ -83,8 +83,8 @@ function PujaDetail() {
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [autoSelectedSlot, setAutoSelectedSlot] = useState(null);
   const [bookingDate, setBookingDate] = useState(null);
-  
-  
+
+
 
 
   const sectionRefs = useRef({});
@@ -94,136 +94,136 @@ function PujaDetail() {
   const slides = puja?.bannerUrls?.map(img => img.url) || [];
 
   // Auto-fetch first available slot - searches today, then next days if needed
-  const getFirstAvailableSlot = async () => {
-    if (!puja?.id) return null;
-    
-    // Try up to 7 days to find available slots
-    for (let daysAhead = 0; daysAhead < 7; daysAhead++) {
-      const date = new Date();
-      date.setDate(date.getDate() + daysAhead);
-      const dateStr = date.toLocaleDateString('en-GB');
-      
-      try {
-        console.log(`🔍 Trying date (${daysAhead} days ahead):`, dateStr);
-        
-        const response = await axiosInstance.post('/bookings/booking', {
-          panditId: "6942677920c6344505bfb1c6",
-          poojaId: puja.id,
-          date: dateStr,
-          slots: [],
-          mode: "online",
-          location: {
-            lat: 17.3850,
-            lng: 78.4867,
-            address: puja.location || "Sri Mandir"
-          }
-        });
-        
-        console.log(`📡 Response for ${dateStr}:`, response.data);
-        
-        if (response.data.success && response.data.availableSlots?.length > 0) {
-          const firstSlot = response.data.availableSlots[0];
-          
-          setAutoSelectedSlot(firstSlot);
-          setBookingDate(dateStr);
-          setPaymentError('');
-          
-          console.log(`✅ Found slot on ${dateStr}:`, firstSlot);
-          
-          return { slot: firstSlot, date: dateStr };
-        } else {
-          console.log(`⏳ No slots on ${dateStr}, trying next day...`);
-        }
-      } catch (error) {
-        console.error(`❌ Error checking ${dateStr}:`, error.response?.data?.message);
-      }
-    }
-    
-    // If no slots found in 7 days
-    console.warn('⚠️ No available slots in next 7 days');
-    setPaymentError('❌ No slots available in the next 7 days. Please try again later or contact support.');
-    return null;
-  };
+  // const getFirstAvailableSlot = async () => {
+  //   if (!puja?.id) return null;
 
-  const handleProceedPayment = async () => {
-    // Debug: Check token
-    const token = localStorage.getItem('token');
-    console.log('🔑 Token in localStorage:', token ? `Exists (${token.length} chars)` : 'NOT FOUND');
-    
-    if (!token) {
-      alert('Please login first');
-      navigate('/login');
-      return;
-    }
+  //   // Try up to 7 days to find available slots
+  //   for (let daysAhead = 0; daysAhead < 7; daysAhead++) {
+  //     const date = new Date();
+  //     date.setDate(date.getDate() + daysAhead);
+  //     const dateStr = date.toLocaleDateString('en-GB');
 
-    if (!autoSelectedSlot) {
-      alert('⚠️ No available slots found. Please try again later.');
-      return;
-    }
+  //     try {
+  //       console.log(`🔍 Trying date (${daysAhead} days ahead):`, dateStr);
 
-    setLoading(true);
-    setPaymentError('');
+  //       const response = await axiosInstance.post('/bookings/booking', {
+  //         panditId: "6942677920c6344505bfb1c6",
+  //         poojaId: puja.id,
+  //         date: dateStr,
+  //         slots: [],
+  //         mode: "online",
+  //         location: {
+  //           lat: 17.3850,
+  //           lng: 78.4867,
+  //           address: puja.location || "Sri Mandir"
+  //         }
+  //       });
 
-    try {
-      const bookingDateStr = bookingDate || new Date().toLocaleDateString('en-GB');
+  //       console.log(`📡 Response for ${dateStr}:`, response.data);
 
-      const payload = {
-        panditId: "6942677920c6344505bfb1c6",
-        poojaId: puja.id,
-        date: bookingDateStr,
-        slots: [autoSelectedSlot],
-        mode: "online",
-        location: {
-          lat: 17.3850,
-          lng: 78.4867,
-          address: puja.location || "Sri Mandir"
-        }
-      };
+  //       if (response.data.success && response.data.availableSlots?.length > 0) {
+  //         const firstSlot = response.data.availableSlots[0];
 
-      console.log('🚀 PAYMENT PAYLOAD:', payload);
-      console.log('🔑 Authorization header will use token:', token ? `${token.slice(0, 30)}...` : 'NONE');
+  //         setAutoSelectedSlot(firstSlot);
+  //         setBookingDate(dateStr);
+  //         setPaymentError('');
 
-      const response = await axiosInstance.post('/bookings/booking', payload);
-      const { data } = response;
+  //         console.log(`✅ Found slot on ${dateStr}:`, firstSlot);
 
-      console.log('✅ RAZORPAY ORDER CREATED:', data);
+  //         return { slot: firstSlot, date: dateStr };
+  //       } else {
+  //         console.log(`⏳ No slots on ${dateStr}, trying next day...`);
+  //       }
+  //     } catch (error) {
+  //       console.error(`❌ Error checking ${dateStr}:`, error.response?.data?.message);
+  //     }
+  //   }
 
-      if (data.success && data.razorpayOrderId) {
-        console.log('🎯 Calling loadRazorpay...');
-        loadRazorpay(data.razorpayOrderId, data.amount, selectedPackage);
-      } else {
-        setPaymentError(data.message || 'Booking failed');
-        console.error('❌ Booking error:', data);
-      }
+  //   // If no slots found in 7 days
+  //   console.warn('⚠️ No available slots in next 7 days');
+  //   setPaymentError('❌ No slots available in the next 7 days. Please try again later or contact support.');
+  //   return null;
+  // };
 
-    } catch (error) {
-      const status = error.response?.status;
-      const errorData = error.response?.data;
-      const message = errorData?.message || error.message;
-      
-      console.error(`❌ Payment error (${status}):`, {
-        status,
-        message,
-        fullResponse: errorData,
-        errorStack: error.stack
-      });
-      
-      if (status === 401) {
-        alert('⚠️ Authentication failed. Please login again.');
-        navigate('/login');
-        localStorage.removeItem('token');
-        return;
-      }
-      
-      // if (status === 500) {
-      //   alert(`❌ Server error: ${message}\n\nPlease check backend logs for details.`);
-      // }
-      
-      setPaymentError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleProceedPayment = async () => {
+  //   // Debug: Check token
+  //   const token = localStorage.getItem('token');
+  //   console.log('🔑 Token in localStorage:', token ? `Exists (${token.length} chars)` : 'NOT FOUND');
+
+  //   if (!token) {
+  //     alert('Please login first');
+  //     navigate('/login');
+  //     return;
+  //   }
+
+  //   if (!autoSelectedSlot) {
+  //     alert('⚠️ No available slots found. Please try again later.');
+  //     return;
+  //   }
+
+  //   setLoading(true);
+  //   setPaymentError('');
+
+  //   try {
+  //     const bookingDateStr = bookingDate || new Date().toLocaleDateString('en-GB');
+
+  //     const payload = {
+  //       panditId: "6942677920c6344505bfb1c6",
+  //       poojaId: puja.id,
+  //       date: bookingDateStr,
+  //       slots: [autoSelectedSlot],
+  //       mode: "online",
+  //       location: {
+  //         lat: 17.3850,
+  //         lng: 78.4867,
+  //         address: puja.location || "Sri Mandir"
+  //       }
+  //     };
+
+  //     console.log('🚀 PAYMENT PAYLOAD:', payload);
+  //     console.log('🔑 Authorization header will use token:', token ? `${token.slice(0, 30)}...` : 'NONE');
+
+  //     const response = await axiosInstance.post('/bookings/booking', payload);
+  //     const { data } = response;
+
+  //     console.log('✅ RAZORPAY ORDER CREATED:', data);
+
+  //     if (data.success && data.razorpayOrderId) {
+  //       console.log('🎯 Calling loadRazorpay...');
+  //       loadRazorpay(data.razorpayOrderId, data.amount, selectedPackage);
+  //     } else {
+  //       setPaymentError(data.message || 'Booking failed');
+  //       console.error('❌ Booking error:', data);
+  //     }
+
+  //   } catch (error) {
+  //     const status = error.response?.status;
+  //     const errorData = error.response?.data;
+  //     const message = errorData?.message || error.message;
+
+  //     console.error(`❌ Payment error (${status}):`, {
+  //       status,
+  //       message,
+  //       fullResponse: errorData,
+  //       errorStack: error.stack
+  //     });
+
+  //     if (status === 401) {
+  //       alert('⚠️ Authentication failed. Please login again.');
+  //       navigate('/login');
+  //       localStorage.removeItem('token');
+  //       return;
+  //     }
+
+  //     // if (status === 500) {
+  //     //   alert(`❌ Server error: ${message}\n\nPlease check backend logs for details.`);
+  //     // }
+
+  //     setPaymentError(message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
 
 
@@ -231,103 +231,95 @@ function PujaDetail() {
 
 
   // ⭐ RAZORPAY LOADER
-  const loadRazorpay = (orderId, amount, packageInfo) => {
-    console.log('💳 loadRazorpay called with:', { orderId, amount, packageName: packageInfo.name });
-    
-    const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_RpssxmMuyIDuJC',
-      amount: amount * 100, // paise
-      currency: 'INR',
-      name: 'Sri Mandir Puja SHRI AAUM',
-      description: `${puja.title} - ${packageInfo.name}`,
-      order_id: orderId,
-      image: window.location.origin + '/logo.png',
-      handler: async function (response) {
-        console.log('✅ Payment successful from Razorpay, response:', response);
-        await verifyPayment(response);
-      },
-      prefill: {
-        name: 'Devotee Name',
-        email: 'devotee@example.com',
-        contact: '9999999999'
-      },
-      theme: {
-        color: '#f96b26'
-      },
-      modal: {
-        ondismiss: function () {
-          console.log('❌ User dismissed payment modal');
-          alert('Payment cancelled');
-        }
-      }
-    };
+  // const loadRazorpay = (orderId, amount, packageInfo) => {
+  //   console.log('💳 loadRazorpay called with:', { orderId, amount, packageName: packageInfo.name });
 
-    console.log('🔧 Razorpay options:', options);
-    const rzp = new window.Razorpay(options);
-    console.log('🎯 Opening Razorpay modal...');
-    rzp.open();
-  };
+  //   const options = {
+  //     key: process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_RpssxmMuyIDuJC',
+  //     amount: amount * 100, // paise
+  //     currency: 'INR',
+  //     name: 'Sri Mandir Puja SHRI AAUM',
+  //     description: `${puja.title} - ${packageInfo.name}`,
+  //     order_id: orderId,
+  //     image: window.location.origin + '/logo.png',
+  //     handler: async function (response) {
+  //       console.log('✅ Payment successful from Razorpay, response:', response);
+  //       await verifyPayment(response);
+  //     },
+  //     prefill: {
+  //       name: 'Devotee Name',
+  //       email: 'devotee@example.com',
+  //       contact: '9999999999'
+  //     },
+  //     theme: {
+  //       color: '#f96b26'
+  //     },
+  //     modal: {
+  //       ondismiss: function () {
+  //         console.log('❌ User dismissed payment modal');
+  //         alert('Payment cancelled');
+  //       }
+  //     }
+  //   };
+
+  //   console.log('🔧 Razorpay options:', options);
+  //   const rzp = new window.Razorpay(options);
+  //   console.log('🎯 Opening Razorpay modal...');
+  //   rzp.open();
+  // };
 
   // ⭐ VERIFY PAYMENT (Webhook handles actual booking)
-  const verifyPayment = async (response) => {
-    console.log('🔐 verifyPayment called with response:', response);
-    try {
-      const verifyRes = await axiosInstance.post('/payment/verify', {
-        razorpayOrderId: response.razorpay_order_id,
-        razorpayPaymentId: response.razorpay_payment_id,
-        razorpaySignature: response.razorpay_signature
-      });
+  // const verifyPayment = async (response) => {
+  //   console.log('🔐 verifyPayment called with response:', response);
+  //   try {
+  //     const verifyRes = await axiosInstance.post('/payment/verify', {
+  //       razorpayOrderId: response.razorpay_order_id,
+  //       razorpayPaymentId: response.razorpay_payment_id,
+  //       razorpaySignature: response.razorpay_signature
+  //     });
 
-      const { data } = verifyRes;
-      console.log('✅ Payment verification response:', data);
+  //     const { data } = verifyRes;
+  //     console.log('✅ Payment verification response:', data);
 
-      if (data.success) {
-        alert('✅ Puja booked successfully! Check My Bookings.');
-        navigate('/my-bookings');
-      } else {
-        alert('Payment verified but booking failed. Contact support.');
-      }
-    } catch (error) {
-      console.error('❌ Verification error:', error.response?.data || error.message);
-      alert('Verification failed. Your payment is safe - contact support.');
-    }
-  };
+  //     if (data.success) {
+  //       alert('✅ Puja booked successfully! Check My Bookings.');
+  //       navigate('/my-bookings');
+  //     } else {
+  //       alert('Payment verified but booking failed. Contact support.');
+  //     }
+  //   } catch (error) {
+  //     console.error('❌ Verification error:', error.response?.data || error.message);
+  //     alert('Verification failed. Your payment is safe - contact support.');
+  //   }
+  // };
 
 
   // ⭐ FIXED: Load puja data using ID from URL params
+
+  const handleGoToBilling = () => {
+    navigate("/billing", {
+      state: {
+        puja,
+        selectedPackage
+      }
+    });
+  };
+
+
   useEffect(() => {
     const loadPuja = async () => {
-      if (!id) {
-        console.error('❌ No puja ID found in URL');
-        return;
-      }
-
-      console.log('🔍 Loading puja with ID:', id);
-
-      try {
-        const pujaList = await fetchPujaList();
-        const foundPuja = pujaList.find(puja => puja.id === id);
-
-        if (foundPuja) {
-          console.log('✅ Puja found:', foundPuja.title);
-          setPuja(foundPuja);
-          // Auto-select first package for this puja
-          setSelectedPackage(PACKAGES[0]);
-        } else {
-          console.error('❌ Puja not found with ID:', id);
-        }
-      } catch (error) {
-        console.error('❌ Error loading puja:', error);
-      }
+      const pujaList = await fetchPujaList();
+      const foundPuja = pujaList.find(p => p.id === id);
+      setPuja(foundPuja);
+      setSelectedPackage(PACKAGES[0]);
     };
-
     loadPuja();
-  }, [id]); // 🔥 Re-run when ID changes!
+  }, [id]);
 
   // Auto-fetch slot when puja loads
   useEffect(() => {
     if (puja?.id) {
-      getFirstAvailableSlot();
+      ;
     }
   }, [puja?.id]);
 
@@ -404,7 +396,7 @@ function PujaDetail() {
     return (
       <main className="puja-detail-page">
         <div className="pd-not-found">
-          <p>Loading puja details... (ID: {id})</p>
+          <p>Loading puja details...</p>
           <button type="button" onClick={() => navigate('/puja')}>
             Back to Puja list
           </button>
@@ -663,11 +655,11 @@ function PujaDetail() {
           </div>
           <div className="pd-sticky-cta-wrap">
             {paymentError && (
-              <div style={{ 
-                marginBottom: '10px', 
-                padding: '10px', 
-                backgroundColor: '#ffebee', 
-                color: '#d32f2f', 
+              <div style={{
+                marginBottom: '10px',
+                padding: '10px',
+                backgroundColor: '#ffebee',
+                color: '#d32f2f',
                 borderRadius: '4px',
                 fontSize: '12px',
                 textAlign: 'center'
@@ -682,7 +674,7 @@ function PujaDetail() {
             <button
               type="button"
               className="pd-sticky-btn"
-              onClick={handleProceedPayment}
+              onClick={handleGoToBilling}
               disabled={loading}
               title={autoSelectedSlot ? `Booking for slot: ${autoSelectedSlot.start} - ${autoSelectedSlot.end}` : 'Finding available slots...'}
             >

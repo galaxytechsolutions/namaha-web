@@ -70,11 +70,7 @@ function Home() {
 
   const goToSlide = (index) => setCurrentSlide(index);
 
-  const goPrev = () =>
-    setCurrentSlide(prev => (prev - 1 + heroSlides.length) % heroSlides.length);
-
-  const goNext = () =>
-    setCurrentSlide(prev => (prev + 1) % heroSlides.length);
+ 
 
   return (
     <div className="App">

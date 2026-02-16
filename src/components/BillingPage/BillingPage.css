@@ -1,0 +1,108 @@
+.billing-container {
+    display: flex;
+    min-height: 100vh;
+    background: #f6f7fb;
+  }
+  
+  /* LEFT IMAGE */
+  .billing-left {
+    flex: 1;
+    background: #000;
+  }
+  
+  .billing-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  /* RIGHT PANEL */
+  .billing-right {
+    flex: 1;
+    max-width: 600px;
+    padding: 50px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  /* Heading */
+  .billing-right h2 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Summary card */
+  .billing-summary {
+    background: #f5f5f5;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .billing-summary h3 {
+    margin-bottom: 8px;
+  }
+  
+  /* Form */
+  .billing-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  
+  .billing-form input,
+  .billing-form textarea {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+  }
+  
+  .billing-form textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+  
+  .billing-form input:focus,
+  .billing-form textarea:focus {
+    outline: none;
+    border-color: #f96b26;
+  }
+  
+  /* Pay button */
+  .billing-right button {
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background: #f96b26;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .billing-right button:hover {
+    background: #e45d1c;
+  }
+  
+  .billing-right button:disabled {
+    background: #ccc;
+  }
+  
+  /* MOBILE */
+  @media (max-width: 900px) {
+    .billing-container {
+      flex-direction: column;
+    }
+  
+    .billing-left {
+      height: 250px;
+    }
+  
+    .billing-right {
+      padding: 25px;
+    }
+  }
+  

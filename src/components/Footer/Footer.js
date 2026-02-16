@@ -71,8 +71,8 @@ function Footer() {
 
                 <div className="footer-bottom">
                     <div className="footer-store-badges">
-                        <a href="#" className="footer-badge footer-google-play">GET IT ON Google Play</a>
-                        <a href="#" className="footer-badge footer-app-store">Download on the App Store</a>
+                        <a  className="footer-badge footer-google-play">GET IT ON Google Play</a>
+                        <a  className="footer-badge footer-app-store">Download on the App Store</a>
                     </div>
                     <div className="footer-trust-logos">
                         <span className="footer-trust-item">Digital India</span>
@@ -80,9 +80,9 @@ function Footer() {
                         <span className="footer-trust-item">Razorpay</span>
                     </div>
                     <div className="footer-legal">
-                        <a href="#">Privacy Policy</a>
+                        <a >Privacy Policy</a>
                         <span className="footer-legal-sep">•</span>
-                        <a href="#">Terms and Conditions</a>
+                        <a >Terms and Conditions</a>
                         <p className="footer-copyright">© 2026 SriMandir, Inc. All rights reserved.</p>
                     </div>
                 </div>

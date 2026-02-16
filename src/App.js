@@ -14,6 +14,7 @@ import Chadhava from './components/Chadhava/Chadhava';
 import ChadhavaDetail from './components/Chadhava/ChadhavaDetail';
 import Profile from './components/Profile/Profile';
 import LoginPage from './components/LoginPage/LoginPage';
+import BillingPage from './components/BillingPage/BillingPage';
 
 function App() {
   return (
@@ -61,6 +62,15 @@ function App() {
             <PujaDetail />
           </Layout>
         } />
+
+        {
+          <Route path="/billing" element={
+            <Layout>
+              <BillingPage/>
+            </Layout>
+          } />
+          }
+        
 
 
 
