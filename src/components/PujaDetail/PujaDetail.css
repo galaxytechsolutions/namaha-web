@@ -3,12 +3,22 @@
   padding-top: 80px;
   background: #fff;
   min-height: 100vh;
+  width: 100%;
+}
+
+/* Ensure media and buttons never overflow horizontally */
+.puja-detail-page img
+ {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .pd-container {
-  max-width: 1200px;
+  width: 100%;
+  /* max-width: 900px; */
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 0 1rem 1.5rem; /* consistent 1rem side padding for all content */
+  box-sizing: border-box;
 }
 
 .pd-grid {
@@ -186,7 +196,7 @@
 .pd-details {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 7px;
 }
 
 .pd-category {
@@ -207,7 +217,7 @@
 }
 
 .pd-purpose {
-  font-size: 1rem;
+  font-size: 15px;
   color: #4b5563;
   margin: 0;
   line-height: 1.5;
@@ -318,6 +328,8 @@
   gap: 8px;
 }
 
+
+
 .pd-cta:hover {
   background: #15803d;
 }
@@ -326,6 +338,28 @@
 .pd-not-found {
   text-align: center;
   padding: 4rem 2rem;
+}
+
+/* Loading overlay for PujaDetail */
+.pd-loading-overlay {
+  position: fixed;
+  inset: 0;
+  background:white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+.pd-loading-spinner {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 6px solid rgba(255,255,255,0.15);
+  border-top-color: #f96b26;
+  animation: pd-spin 1s linear infinite;
+}
+@keyframes pd-spin {
+  to { transform: rotate(360deg); }
 }
 
 .pd-not-found button {
@@ -366,10 +400,9 @@
 
 .pd-section-nav-inner {
   display: flex;
-  flex-wrap: wrap;
   gap: 0;
   justify-content: center;
-  max-width: 1200px;
+  max-width: 1100px;
 }
 
 .pd-section-tab {
@@ -400,16 +433,16 @@
   scroll-margin-top: 140px;
 }
 
-/* Center section content on the page */
+/* Center section content on the page (inherits width from container) */
 .pd-section-content {
   width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  max-width: 100%;
+  margin: 0;
+  padding: 12px 30px;
 }
 
 .pd-section-title {
-  font-size: 1.5rem;
+  font-size: 18px;
   font-weight: 700;
   color: #1f2937;
   margin: 0 0 1rem;
@@ -430,7 +463,7 @@
 }
 
 .pd-about-heading {
-  font-size: 1.35rem;
+  font-size: 18px;
   font-weight: 700;
   color: #1f2937;
   margin: 0;
@@ -482,8 +515,8 @@
 }
 
 .pd-benefit-title {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 500;
   color: #1f2937;
   margin: 0 0 0.5rem;
 }
@@ -534,7 +567,7 @@
 
 .pd-process-step-title {
   font-size: 1.05rem;
-  font-weight: 700;
+  font-weight: 500;
   color: #1f2937;
   margin: 0 0 0.25rem;
 }
@@ -548,7 +581,7 @@
 
 /* ----- Temple ----- */
 .pd-temple-name {
-  font-size: 1.5rem;
+  font-size: 18px;
   font-weight: 700;
   color: #1f2937;
   margin: 0 0 1.5rem;
@@ -610,6 +643,9 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
+  /* Make all grid items (cards) equal height so inner content can align */
+  grid-auto-rows: 1fr;
+  align-items: stretch;
 }
 
 .pd-package-card {
@@ -624,6 +660,8 @@
   cursor: pointer;
   text-align: left;
   transition: border-color 0.2s;
+  /* ensure card fills the grid cell so inner elements can be pushed to bottom */
+  height: 100%;
 }
 
 .pd-package-card:hover {
@@ -644,9 +682,14 @@
   background: #ea580c;
   color: #fff;
   font-size: 0.85rem;
-  display: flex;
+  display: none !important; /* hidden by default — only show when card is selected */
   align-items: center;
   justify-content: center;
+}
+
+/* Only show the check bubble for the explicitly selected package card */
+.pd-package-card.selected .pd-package-check {
+  display: flex !important;
 }
 
 .pd-package-info {
@@ -695,64 +738,106 @@
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
-  align-items: stretch;
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid #e8d5c4;
   z-index: 100;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+  padding: 16px 20px; /* viewport padding */
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.pd-sticky-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 0.9rem 1.5rem;
-  background: #f3f4f6;
-  color: #374151;
-  font-weight: 600;
-  white-space: nowrap;
+.pd-error-banner {
+  max-width: 1200px; /* ✅ MATCH CONTAINER */
+  margin: 0 auto 12px;
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  border-left: 4px solid #ef4444;
+  text-align: center;
 }
 
-.pd-sticky-cta-wrap {
-  flex: 1;
+.pd-sticky-content {
+  max-width: 1200px;     /* ✅ SAME AS .pd-container */
+  width: 100%;           /* ✅ FULL WIDTH INSIDE MAX */
+  margin: 0 auto;        /* ✅ CENTER */
   display: flex;
   align-items: center;
+  gap: 24px;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.9rem 1.5rem;
-  background: linear-gradient(90deg, #0a8a58 0%, #0a7b51 100%);
-  color: #fff;
+  box-sizing: border-box; /* ✅ INCLUDE PADDING IN WIDTH */
+  padding: 0 20px;   
 }
+
+
+
 
 .pd-sticky-price-block {
   display: flex;
   flex-direction: column;
-  line-height: 1.1;
+  gap: 4px;
 }
 
 .pd-sticky-price {
-  font-size: 1.1rem;
+  font-size: 28px;
   font-weight: 800;
+  color: #f96b26;
+  line-height: 1.1;
 }
 
 .pd-sticky-name {
-  font-size: 0.95rem;
+  font-size: 15px;
+  color: #7d5a3f;
   font-weight: 600;
 }
 
 .pd-sticky-btn {
-  background: transparent;
+  flex-shrink: 0;              /* ✅ DON'T SHRINK */
+  padding: 18px 36px;          /* ✅ FIXED PADDING */
+  background: linear-gradient(135deg, #f96b26 0%, #ff8f50 100%);
+  color: white;
   border: none;
-  color: #fff;
-  font-size: 1rem;
+  border-radius: 14px;
   font-weight: 700;
+  font-size: 16px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(249, 107, 38, 0.3);
+  white-space: nowrap;         /* ✅ NO TEXT WRAP */
+  min-height: 56px;
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: center;
+  max-width: 280px;            /* ✅ MAX WIDTH LIMIT */
+  box-sizing: border-box;      /* ✅ INCLUDE PADDING */
+}
+
+.pd-sticky-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(249, 107, 38, 0.4);
+}
+
+.pd-sticky-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .pd-sticky-btn:hover {
+  opacity: 0.9;
+}
+
+/* Sold out modifier for sticky CTA */
+.pd-sticky-btn.sold-out {
+  background: #dc2626 !important;
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.25) !important;
+  cursor: not-allowed !important;
+}
+
+.pd-sticky-btn.sold-out:hover {
+  transform: none !important;
   opacity: 0.9;
 }
 
@@ -762,7 +847,7 @@
 }
 
 .pd-reviews-main-title {
-  font-size: 1.75rem;
+  font-size: 18px;
   font-weight: 700;
   color: #1f2937;
   margin: 0 0 0.5rem;
@@ -934,6 +1019,7 @@
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
+  width: 200px;
 }
 
 .pd-view-more:hover {
@@ -995,21 +1081,32 @@
 
 /* Mobile */
 @media (max-width: 768px) {
+  .pd-container {
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0.75rem 1rem 1.5rem; /* same 1rem side padding on mobile */
+  }
+
   .pd-grid {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    padding: 12px 0px;
   }
 
   .pd-carousel-frame {
     padding: 8px;
+    width: 300px;
+    max-width: 100%;
   }
 
   .pd-carousel-inner {
     min-height: 220px;
+    width: 300px;
+    max-width: 100%;
   }
 
   .pd-title {
-    font-size: 1.25rem;
+    font-size: 17px;
   }
 
   .pd-countdown-item {
@@ -1023,8 +1120,13 @@
 
   .pd-section-nav {
     overflow-x: auto;
-    flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
+  }
+
+  .pd-section-nav-inner {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-y: hidden;
   }
 
   .pd-section-tab {
@@ -1032,6 +1134,19 @@
     padding: 0.75rem 1rem;
     font-size: 0.9rem;
   }
+
+  /* Stack benefit cards on small screens to avoid horizontal overflow */
+  .pd-benefits-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Stack process steps vertically on small screens to prevent cropping */
+  .pd-process-list {
+    grid-template-columns: 1fr;
+  }
+
+  /* Make main CTA button full width of content on mobile */
+  
 
   .pd-temple-grid {
     grid-template-columns: 1fr;
@@ -1041,20 +1156,87 @@
     grid-template-columns: 1fr;
   }
 
-  .pd-sticky-footer {
-    flex-direction: column;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
-  }
+  
 
-  .pd-sticky-left,
-  .pd-sticky-cta-wrap {
+}
+
+@media (max-width: 1024px) {
+  .pd-sticky-content {
+    gap: 20px;
+    padding: 0 16px;
+  }
+  
+  .pd-sticky-price {
+    font-size: 26px;
+  }
+  
+  .pd-sticky-btn {
+    padding: 16px 32px;
+    max-width: 260px;
+  }
+}
+
+/* Mobile Tablet (481px - 768px) */
+@media (max-width: 768px) {
+  .pd-sticky-footer {
+    padding: 14px 16px;
+  }
+  
+  .pd-sticky-content {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 0 12px !important;
+    align-items: center !important;
+  }
+  
+  .pd-sticky-price-block {
+    order: 2;
+    text-align: center;
+  }
+  
+  .pd-sticky-btn {
+    order: 1;
+    width: 100% !important;    /* ✅ FULL WIDTH MOBILE */
+    max-width: none !important; /* ✅ REMOVE MAX WIDTH */
+    padding: 18px 24px !important;
+  }
+}
+
+
+/* Mobile Portrait (320px - 480px) */
+@media (max-width: 480px) {
+  .pd-sticky-footer {
+    padding: 12px 12px;
+  }
+  
+  .pd-sticky-content {
+    padding: 0 10px;
+  }
+  
+  .pd-sticky-price {
+    font-size: 22px;
+  }
+  .pd-cta{
+    width: 80%;
+  }
+  .pd-addons-card{
     width: 100%;
   }
+}
 
-  .pd-sticky-left {
-    justify-content: flex-start;
-    gap: 1rem;
-    font-size: 0.95rem;
+/* Extra Small Mobile (<320px) */
+@media (max-width: 319px) {
+  .pd-sticky-footer {
+    padding: 10px 8px;
+  }
+  
+  .pd-sticky-price {
+    font-size: 16px;
+  }
+  
+  .pd-sticky-btn {
+    padding: 12px 16px;
+    font-size: 14px;
   }
 }
 
@@ -1066,3 +1248,312 @@
   margin: 0;
   padding: 0;
 }
+
+/* Add-ons card */
+.pd-addons-card {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.pd-addons-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 500;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.pd-addons-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #2f6df6;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+.pd-addons-empty {
+  text-align: center;
+  color: #777;
+  padding: 14px 0;
+}
+
+/* Add-on item */
+.pd-addon-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid #eee;
+}
+
+.pd-addon-item:first-child {
+  border-top: none;
+}
+
+.pd-addon-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.pd-addon-info {
+  flex: 1;
+}
+
+/* ============================================ */
+/* ADDON NAME TOOLTIP - BEAUTIFUL DESIGN */
+/* ============================================ */
+
+.pd-addon-name {
+  font-weight: 500;
+  font-size: 15px;
+  color: #1f2937;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 180px;  /* ✅ Limit width for truncation */
+  position: relative; /* ✅ For tooltip positioning */
+}
+
+/* ✅ CUSTOM TOOLTIP (appears on hover) */
+.pd-addon-name::after {
+  content: attr(title);  /* ✅ Uses title text */
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  margin-bottom: 8px;
+  z-index: 100;
+  pointer-events: none;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ✅ ARROW POINTER */
+.pd-addon-name::before {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #1f2937;
+  opacity: 0;
+  visibility: hidden;
+  margin-bottom: 2px;
+  z-index: 100;
+}
+
+.pd-addon-name:hover {
+  color: #ea580c; /* ✅ Subtle color change on hover */
+}
+/* ✅ SHOW ON HOVER */
+.pd-addon-name:hover::after,
+.pd-addon-name:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ============================================ */
+/* MOBILE - Tooltip above + smaller */
+/* ============================================ */
+@media (max-width: 768px) {
+  .pd-addon-name {
+    max-width: 140px;
+  }
+  
+  .pd-addon-name::after {
+    font-size: 12px;
+    padding: 6px 10px;
+    white-space: normal;
+    max-width: 200px;
+    text-align: center;
+  }
+}
+
+
+.pd-addon-price {
+  font-size: 13px;
+  color: #666;
+}
+
+.pd-addon-btn {
+  background: #f96b26;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+
+/* Add-ons Section */
+.pd-addons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  /* padding: 16px 0; */
+}
+
+.pd-addon-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.pd-addon-item:hover {
+  border-color: #f59e0b;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transform: translateY(-1px);
+}
+
+.pd-addon-image {
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid #fcd34d;
+}
+
+.pd-addon-icon {
+  font-size: 20px;
+}
+
+.pd-addon-info {
+  flex: 1;
+  min-width: 0;
+  padding-left: 8px;
+}
+
+
+
+.pd-addon-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.pd-addon-price {
+  font-weight: 600;
+  font-size: 16px;
+  color: #059669;
+  white-space: nowrap;
+}
+
+
+
+.pd-minus:hover {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.pd-plus:hover {
+  background: #f0fdf4;
+  color: #059669;
+}
+
+.pd-qty-display {
+  min-width: 20px;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  color: #374151;
+  padding: 0 4px;
+}
+
+
+.pd-quantity-group {
+  display: flex !important;
+  align-items: center;
+  background: #fff;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 10px;
+  padding: 4px 6px !important;
+  min-width: 80px;
+  height: 36px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.pd-qty-btn {
+  width: 30px !important;
+  height: 30px !important;
+  border: none !important;
+  background: #f8fafc !important;
+  border-radius: 8px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #64748b !important;
+  transition: all 0.2s ease !important;
+  flex-shrink: 0 !important;
+  margin-top: 0px;
+}
+
+.pd-qty-btn:hover {
+  background: #f1f5f9 !important;
+  color: #334155 !important;
+  transform: scale(1.05);
+}
+
+.pd-minus:hover {
+  color: #dc2626 !important;
+  background: #fef2f2 !important;
+}
+
+.pd-plus:hover {
+  color: #059669 !important;
+  background: #f0fdf4 !important;
+}
+
+.pd-qty-display {
+  min-width: 24px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  color: #1e293b !important;
+  padding: 0 8px !important;
+  background: #f8fafc;
+  border-radius: 6px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.pd-addon-controls {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-shrink: 0 !important;
+}
+

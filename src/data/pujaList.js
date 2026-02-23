@@ -1,10 +1,11 @@
 import axiosInstance from "../lib/instance";
+import  { useState, useEffect } from "react";
 
 /* =====================================================
    MAP API RESPONSE → UI FORMAT
 ===================================================== */
 const mapApiPujaToPUJA_LIST = (apiPuja) => ({
-  id: apiPuja._id.slice(-4),
+  id: apiPuja._id,
   specialTag: apiPuja.category?.category || `${apiPuja.section} Special`,
   tagColor:
     apiPuja.section === "others"
@@ -12,34 +13,67 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
       : apiPuja.section === "wealth"
       ? "red"
       : "green",
-  topChoice: apiPuja.isActive,
+  topChoice: apiPuja.isTagRequired,
   promoText: `${apiPuja.name} Puja - ${
     apiPuja.description || "Divine Blessings"
   }`,
   category: apiPuja.category?.category?.toUpperCase() || "GENERAL PUJA",
   title: apiPuja.name,
-  purpose:
-    apiPuja.benefits?.[0] || "Seek Divine Blessings & Prosperity",
   location:
     apiPuja.customSection ||
     `${
-      apiPuja.section?.charAt(0).toUpperCase() +
-      apiPuja.section?.slice(1)
+      apiPuja.section?.charAt(0).toUpperCase() + apiPuja.section?.slice(1)
     } Temple, India`,
-  date: new Date(apiPuja.createdAt).toLocaleDateString("en-IN"),
+  eventDate: apiPuja.eventDate
+    ? new Date(apiPuja.eventDate).toLocaleDateString("en-IN")
+    : null,
+  date: apiPuja.eventDate
+    ? new Date(apiPuja.eventDate).toLocaleDateString("en-IN")
+    : new Date(apiPuja.createdAt).toLocaleDateString("en-IN"),
+  addOns:
+    apiPuja.addOns?.map((addon) => ({
+      name: addon.name,
+      price: `₹${addon.price}`,
+      id: addon._id,
+    })) || [],
+  packageDetails:
+    apiPuja.packageDetails?.map((pkg) => ({
+      persons: pkg.persons,
+      name: pkg.name,
+      price: `₹${pkg.price}`,
+      id: pkg._id,
+    })) || [],
   imageClass: `pl-card-${Math.floor(Math.random() * 3) + 1}`,
+  templeName: apiPuja.templeName,
+  templeDescription: apiPuja.templeDescription,
+  aboutPuja: apiPuja.aboutPuja,
   rating: "4.9",
   ratingCount: `${Math.floor(Math.random() * 6 + 2)}K+`,
   devoteesCount: `${Math.floor(Math.random() * 4 + 1)}0,000+`,
-  carouselImages:
-    apiPuja.bannerUrls?.map(() => "pl-card-1") || [
-      "pl-card-1",
-      "pl-card-1",
-      "pl-card-1",
-    ],
+  carouselImages: apiPuja.bannerUrls?.map(() => "pl-card-1") || [
+    "pl-card-1",
+    "pl-card-1",
+    "pl-card-1",
+  ],
   bannerUrls: apiPuja.bannerUrls,
   duration: apiPuja.duration,
   mode: apiPuja.mode,
+  benefits: apiPuja.benefits,
+  isActive: apiPuja.isActive,
+  section: apiPuja.section,
+  description: apiPuja.description,
+  soldTag: apiPuja.soldTag,
+  coupon: apiPuja.coupon
+    ? {
+        code: apiPuja.coupon.code,
+        discountType: apiPuja.coupon.discountType,
+        discountValue: apiPuja.coupon.discountValue,
+        expiryDate: apiPuja.coupon.expiryDate
+          ? new Date(apiPuja.coupon.expiryDate).toLocaleDateString("en-IN")
+          : null,
+        isActive: apiPuja.coupon.isActive,
+      }
+    : null,
 });
 
 /* =====================================================
@@ -51,8 +85,7 @@ export const PUJA_LIST = [
     specialTag: "MOST POPULAR",
     tagColor: "red",
     topChoice: true,
-    promoText:
-      "Maha Ganapathi Puja - Remove obstacles and gain success",
+    promoText: "Maha Ganapathi Puja - Remove obstacles and gain success",
     category: "GANESHA PUJA",
     title: "Maha Ganapathi Homam",
     purpose: "Removes obstacles and brings prosperity",
@@ -79,8 +112,7 @@ export const PUJA_LIST = [
     specialTag: "WEALTH SPECIAL",
     tagColor: "green",
     topChoice: false,
-    promoText:
-      "Lakshmi Kubera Puja - Attract wealth and abundance",
+    promoText: "Lakshmi Kubera Puja - Attract wealth and abundance",
     category: "LAKSHMI PUJA",
     title: "Lakshmi Kubera Homam",
     purpose: "Financial growth and prosperity",
@@ -115,10 +147,7 @@ export const fetchPujaList = async () => {
 
     if (Array.isArray(response.data)) {
       poojasArray = response.data;
-    } else if (
-      response.data?.poojas &&
-      Array.isArray(response.data.poojas)
-    ) {
+    } else if (response.data?.poojas && Array.isArray(response.data.poojas)) {
       poojasArray = response.data.poojas;
     } else {
       console.warn("⚠️ Invalid API format — using dummy data");
@@ -134,20 +163,47 @@ export const fetchPujaList = async () => {
 
     console.log("✅ Using API pujas:", mapped);
     return mapped;
-
   } catch (error) {
     console.error("❌ API failed — using dummy data");
     return PUJA_LIST;
   }
 };
 
-/* =====================================================
-   GET SINGLE PUJA BY ID
-===================================================== */
+// React hook: usePujaList provides pujas + loading + error for components
+export function usePujaList() {
+  const [pujas, setPujas] = useState(PUJA_LIST);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await fetchPujaList();
+        if (!mounted) return;
+        setPujas(data);
+        setLoading(false);
+      } catch (err) {
+        if (!mounted) return;
+        setError(err);
+        setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return { pujas, loading, error };
+}
 export const getPujaById = async (id) => {
   try {
     const allPujas = await fetchPujaList();
-    return allPujas.find((p) => p.id === id) || null;
+    return (
+      allPujas.find((p) => p.id === id) || // full match
+      allPujas.find((p) => p.id.slice(-4) === id) || // short ID fallback
+      null
+    );
   } catch (error) {
     console.error("getPujaById failed:", error);
     return null;

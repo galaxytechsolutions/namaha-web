@@ -187,8 +187,8 @@
   color: #fff;
   border: none;
   border-radius: 999px;
-  padding: 0.7rem 1.2rem;
-  font-size: 0.95rem;
+  padding: 5px;
+  font-size: 12px;
   font-weight: 600;
   cursor: pointer;
 
@@ -355,6 +355,7 @@
     grid-template-columns: 1fr;
     gap: 1.25rem;
     max-width: 100%;
+    padding: 0rem 1rem;
   }
 
   .ch-card {
@@ -387,9 +388,7 @@
 
   .ch-card-cta {
     margin-top: auto;
-    padding: 0.75rem 1.25rem;
     min-height: 44px;
-    font-size: 0.95rem;
   }
 }
 

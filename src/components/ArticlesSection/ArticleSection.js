@@ -37,7 +37,7 @@ function ArticlesSection() {
         <p className="articles-subheading">
           Read interesting articles about upcoming fasts, festivals, and everything around Sanatan Dharma.
         </p>
-        <a  className="articles-read-all-top">Read All →</a>
+        <p  className="articles-read-all-top">Read All →</p>
 
         <div className="articles-cards">
           {articles.map((item) => (
@@ -45,7 +45,7 @@ function ArticlesSection() {
               <div className={`articles-card-image ${item.imageClass}`} />
               <h3 className="articles-card-title">{item.title}</h3>
               <p className="articles-card-desc">{item.description}</p>
-              <a className="articles-card-link">Read All</a>
+              <p className="articles-card-link">Read All</p>
             </div>
           ))}
         </div>

@@ -15,6 +15,8 @@ import ChadhavaDetail from './components/Chadhava/ChadhavaDetail';
 import Profile from './components/Profile/Profile';
 import LoginPage from './components/LoginPage/LoginPage';
 import BillingPage from './components/BillingPage/BillingPage';
+import MyBookings from './components/MyBooking/MyBooking';
+import BookingDetailsModal from './components/BookingDetailsModal/BookingDetailsModal';
 
 function App() {
   return (
@@ -70,6 +72,23 @@ function App() {
             </Layout>
           } />
           }
+          {
+          <Route path="/mybookings" element={
+            <Layout>
+              <MyBookings/>
+            </Layout>
+          } />
+          }
+          {
+          <Route path="/booking/:id" element={
+            <Layout>
+              <BookingDetailsModal />
+            </Layout>
+          } />
+          }
+
+          
+
         
 
 

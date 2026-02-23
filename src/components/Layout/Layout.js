@@ -148,7 +148,7 @@ function Layout({ children }) {
                                                 <div className="profile-chevron">›</div>
                                             </Link>
 
-                                            <Link to="/my-puja" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                            <Link to="/mybookings" className="profile-item" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🕉</div>
                                                 <span>My Puja Bookings</span>
                                                 <div className="profile-chevron">›</div>

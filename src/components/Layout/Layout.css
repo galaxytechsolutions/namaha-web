@@ -8,6 +8,7 @@
     backdrop-filter: blur(10px);
     z-index: 1000;
     transition: all 0.3s ease;
+    padding: 10px;
   }
   
   .header.scrolled {
@@ -18,10 +19,10 @@
   .nav-container {
     max-width: 1400px;
     margin: 0 auto;
-    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0px 10px;
   }
   
   .logo {
@@ -137,6 +138,13 @@
 
   .profile-container {
     position: relative;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .profile-container {
+    margin-bottom: 0px;
+  }
 }
 
 .profile-trigger {
@@ -358,6 +366,7 @@
   font-size: 14px;
   text-decoration: none;
   transition: all 0.2s;
+  display: none;
 }
 
 .login-btn-header:hover {
@@ -406,6 +415,7 @@
   .logo {
     order: 1;
     font-size: 18px;
+    margin-top: 20px;
   }
 
   /* Language + profile LEFT of hamburger */

@@ -1,8 +1,4 @@
-/* ========================================
-   COMPLETE HERO SECTION + TRUST STRIP CSS
-   ======================================== */
 
-/* Hero Section - RESPONSIVE HEIGHTS */
 .hero-section1 {
   position: relative;
   height: 70vh;
@@ -10,7 +6,7 @@
   max-height: 500px;
   display: flex;
   align-items: stretch;
-  justify-content: center;
+  justify-content: center;  
   background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
   overflow: hidden;
 }
@@ -173,25 +169,31 @@
   z-index: 10;
 }
 
-
 .hero-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  /* pill-style indicators (non-circular) */
+  width: 26px;
+  height: 8px;
+  border-radius: 999px;
   background: rgba(255, 255, 255, 0.6);
   border: none;
   cursor: pointer;
   padding: 0;
-  transition: all 0.3s ease;
+  transition: all 220ms cubic-bezier(0.2, 0, 0, 1);
+  box-shadow: none;
+  transform-origin: center;
 }
 
 .hero-dot:hover {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.85);
+  transform: translateY(-1px);
 }
 
 .hero-dot-active {
-  background: #FFD700;
-  transform: scale(1.2);
+  background: #ffffff;
+  width: 32px;
+  height: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  transform: none;
 }
 
 /* ========================================
@@ -308,20 +310,87 @@
 
 @media (max-width: 480px) {
 
+  /* Mobile: make hero take less vertical space so main content is visible */
   .hero-section1 {
-    height: 65vh;          /* little taller for breathing space */
-    min-height: 420px;
+    height: 30vh;          /* reduced height on small phones */
+    min-height: 220px;
+    max-height: 320px;
   }
 
- 
+  /* Trust strip - more compact on small phones */
+  .trust-strip-wrap{
+    padding: 8px 0px;
+  }
 
+  .trust-strip-item{
+    font-size: 12px;
+  }
+
+  .trust-strip-icon{
+    width: 17px;
+    height: 17px;
+  }
+
+  /* Typography adjustments for mobile to look professional */
   .hero-content1 h1 {
-    font-size: 26px;
+    font-size: 16px;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    margin-bottom: 0.2rem;
   }
 
   .hero-subtitle {
-    font-size: 0.95rem;
-    line-height: 1.4;
+    font-size: 12px;
+    line-height: 1.35;
+    opacity: 0.95;
+    max-width: 92%;
+    font-style: normal;
+  }
+
+  .hero-text-stack {
+    gap: clamp(0.5rem, 2vw, 0.9rem);
+    max-width: 340px;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  /* Buttons: readable touch targets without being oversized */
+  .hero-btn {
+    font-size: 14px;
+    min-height: 40px;
+    padding: 8px 12px;
+    border-radius: 10px;
+  }
+
+  /* Keep pill-style indicators on small screens but slightly smaller */
+  .hero-dot {
+    width: 20px;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.65);
+  }
+
+  .hero-dot-active {
+    width: 26px;
+    height: 5px;
+    background: #ffffff;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    transform: none;
+  }
+
+  /* Reduce distance from bottom and left-align content on small screens */
+  .hero-content1 {
+    bottom: clamp(12px, 6vh, 40px);
+    padding: 0 1rem;
+    align-items: flex-start;
+    text-align: left;
+    left: 1rem;
+    right: 1rem;
+  }
+
+  /* Keep dots and controls visible within the smaller banner */
+  .hero-carousel-dots {
+    bottom: 12px;
   }
 }
 
