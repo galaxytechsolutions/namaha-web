@@ -1,9 +1,11 @@
 /* Puja Detail Page - two column layout: carousel left, details right */
 .puja-detail-page {
-  padding-top: 80px;
+  /* Extra top padding so content is never hidden under fixed header */
+  padding-top: 100px;
   background: #fff;
   min-height: 100vh;
   width: 100%;
+  box-sizing: border-box;
 }
 
 /* Ensure media and buttons never overflow horizontally */
@@ -596,9 +598,11 @@
 }
 
 .pd-temple-image {
+  width: 100%;
   aspect-ratio: 4/3;
   border-radius: 12px;
-  background: linear-gradient(135deg, #d1d5db 0%, #9ca3af 100%);
+  object-fit: cover;
+  display: block;
 }
 
 .pd-temple-text p {
@@ -771,8 +775,12 @@
   padding: 0 20px;   
 }
 
-
-
+.pd-sticky-left {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+}
 
 .pd-sticky-price-block {
   display: flex;
@@ -791,6 +799,24 @@
   font-size: 15px;
   color: #7d5a3f;
   font-weight: 600;
+}
+
+.pd-sticky-prasadam {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5c4a3d;
+  user-select: none;
+}
+
+.pd-sticky-prasadam input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #f96b26;
+  cursor: pointer;
 }
 
 .pd-sticky-btn {
@@ -1188,12 +1214,17 @@
     padding: 0 12px !important;
     align-items: center !important;
   }
-  
-  .pd-sticky-price-block {
+
+  .pd-sticky-left {
     order: 2;
+    align-items: center;
+  }
+
+  .pd-sticky-price-block {
+    order: 0;
     text-align: center;
   }
-  
+
   .pd-sticky-btn {
     order: 1;
     width: 100% !important;    /* ✅ FULL WIDTH MOBILE */

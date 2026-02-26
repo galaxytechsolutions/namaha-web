@@ -39,8 +39,10 @@ const HERO_CONTENT = [
 ];
 
 const TRUST_STRIP_ITEMS = [
-  { id: 1, icon: 'shield', text: '100% Secure' },
-  { id: 2, icon: 'badge', text: "India's best App" },
+  { id: 1, icon: 'shield', text: 'Pujas Performed by Qualified Veda Pandits' },
+  { id: 2, icon: 'shield', text: '100% Refund Policy on No Sankalpa' },
+  { id: 3, icon: 'shield', text: 'Puja Recordings within 48 hours' },
+  { id: 4, icon: 'shield', text: 'Prasad at your Doorstep' },
 ];
 
 function Home() {

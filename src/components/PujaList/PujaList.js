@@ -259,12 +259,12 @@ function PujaList() {
               }`}
             >
               {/* ===== CHECKBOX ===== */}
-              <input
+              {/* <input
                 type="checkbox"
                 className="puja-checkbox"
                 checked={isSelected(puja.id)}
                 onChange={() => toggleSelectPuja(puja)}
-              /> 
+              />  */}
 
               <div
                 className={`pl-card-banner ${puja.imageClass}`}

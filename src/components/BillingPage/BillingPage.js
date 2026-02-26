@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../lib/instance";
 import Footer from "../Footer/Footer";
@@ -8,11 +8,16 @@ function BillingPage() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Always start Billing page at top (avoid opening scrolled down)
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
+
   // ✅ Destructure ALL values passed from PujaDetail navigate state
   const {
     puja,
     selectedPackage,
-    panditId, // ✅ real panditId from DB (was missing before)
+    panditId,
     slot,
     bookingDate,
     image,
@@ -20,6 +25,10 @@ function BillingPage() {
     addonsTotal = 0,
     grandTotal,
     coupon,
+    mode: pujaMode,
+    pujaLocation,
+    panditLocation,
+    prasadam = false,
   } = location.state || {};
 
   const parseAmount = (value) => {
@@ -78,8 +87,34 @@ function BillingPage() {
     return Math.floor(discount);
   };
 
-  const discountAmount = calculateDiscount();
+  const [couponApplied, setCouponApplied] = useState(false);
+  const [couponError, setCouponError] = useState("");
+
+  const discountAmount = couponApplied ? calculateDiscount() : 0;
   const finalPayable = Math.max(subtotal - discountAmount, 0);
+
+  const handleApplyCoupon = () => {
+    setCouponError("");
+    if (!coupon) {
+      setCouponError("No coupon available.");
+      return;
+    }
+    if (!coupon.isActive) {
+      setCouponError("This coupon is not active.");
+      return;
+    }
+    const expiry = parseDDMMYYYY(coupon.expiryDate);
+    if (!expiry || expiry < new Date()) {
+      setCouponError("This coupon has expired.");
+      return;
+    }
+    setCouponApplied(true);
+  };
+
+  const handleRemoveCoupon = () => {
+    setCouponApplied(false);
+    setCouponError("");
+  };
 
   // ================= PARTICIPANT COUNT =================
   const getParticipantCount = () => {
@@ -147,23 +182,38 @@ function BillingPage() {
     try {
       setLoading(true);
 
+      const locationPayload = panditLocation
+        ? {
+            lat: panditLocation.lat,
+            lng: panditLocation.long ?? panditLocation.lng,
+            address: pujaLocation || panditLocation.address || puja?.location || "Sri Mandir",
+          }
+        : {
+            lat: 17.385,
+            lng: 78.4867,
+            address: pujaLocation || puja?.location || "Sri Mandir",
+          };
+
       const payload = {
         panditId,
-        poojaId: puja.id, // ✅ full ObjectId from pujaList fix
-        date: bookingDate, // ✅ DD/MM/YYYY format
-        slots: [slot], // ✅ { start, end } object in array
+        poojaId: puja.id,
+        date: bookingDate,
+        slots: [slot],
 
-        mode: "online",
+        mode: pujaMode || "online",
+
+        coupon,
+
+        couponCode: coupon?.code || null,
+        isCouponApplied: couponApplied,
 
         devoteeDetails: form,
         participants: participants,
-        appliedCoupon: coupon?.code || null,
+        appliedCoupon: couponApplied && coupon ? coupon.code : null,
 
-        location: {
-          lat: 17.385,
-          lng: 78.4867,
-          address: puja.location || "Sri Mandir",
-        },
+        location: locationPayload,
+
+        ...(prasadam && { prasadam: true }),
       };
 
       console.log("🚀 Booking payload:", payload);
@@ -274,13 +324,22 @@ function BillingPage() {
   }
 
   return (
+    <>
     <div className="billing-container">
-      {/* LEFT IMAGE */}
+      {/* LEFT IMAGE + MESSAGE */}
       <div className="billing-left">
-        <img
-          src={image || "https://via.placeholder.com/600x800"}
-          alt={puja.title}
-        />
+        <div className="billing-left-inner">
+          <img
+            src={image || "https://via.placeholder.com/600x800"}
+            alt={puja.title}
+          />
+          <div className="billing-left-message">
+            <p className="billing-left-message-title">You're almost there!</p>
+            <p className="billing-left-message-text">
+              Complete your details on the right and proceed to payment to confirm your sacred puja booking.
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* RIGHT CONTENT */}
@@ -317,11 +376,39 @@ function BillingPage() {
             </div>
           )}
 
-          {/* ✅ COUPON DISCOUNT */}
-          {discountAmount > 0 && (
-            <div className="discount-row">
-              <span>Coupon Discount ({coupon.code})</span>
-              <span className="discount-price">- ₹{discountAmount}</span>
+          {/* COUPON: show with Apply button; deduct only when applied */}
+          {coupon && (
+            <div className="billing-coupon-section">
+              {!couponApplied ? (
+                <>
+                  <div className="billing-coupon-row">
+                    <span className="billing-coupon-label">Coupon:</span>
+                    <span className="billing-coupon-code">{coupon.code}</span>
+                    <button
+                      type="button"
+                      className="billing-coupon-apply-btn"
+                      onClick={handleApplyCoupon}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                  {couponError && (
+                    <p className="billing-coupon-error">{couponError}</p>
+                  )}
+                </>
+              ) : (
+                <div className="discount-row billing-coupon-applied">
+                  <span>Coupon ({coupon.code}) applied</span>
+                  <span className="discount-price">- ₹{discountAmount}</span>
+                  <button
+                    type="button"
+                    className="billing-coupon-remove"
+                    onClick={handleRemoveCoupon}
+                  >
+                    Remove
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -413,9 +500,9 @@ function BillingPage() {
           {loading ? "Processing..." : `Pay ₹${finalPayable.toFixed(0)}`}
         </button>
       </div>
-      <Footer />
     </div>
-
+    <Footer />
+  </>
   );
 }
 

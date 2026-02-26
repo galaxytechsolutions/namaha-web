@@ -91,7 +91,7 @@ function Layout({ children }) {
                                 Puja
                             </NavLink>
                         </li>
-                        <li>
+                        {/* <li>
                             <NavLink
                                 to="/chadhava"
                                 className={location.pathname === '/chadhava' ? 'active' : ''}
@@ -99,8 +99,8 @@ function Layout({ children }) {
                             >
                                 Chadhava
                             </NavLink>
-                        </li>
-                        <li><a href="#library" onClick={closeMenu}>Library</a></li>
+                        </li> */}
+                        {/* <li><a href="#library" onClick={closeMenu}>Library</a></li> */}
                     </ul>
                     <div className="nav-right">
                         <select className="language-selector">
@@ -154,25 +154,25 @@ function Layout({ children }) {
                                                 <div className="profile-chevron">›</div>
                                             </Link>
 
-                                            <Link to="/my-chadhava" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                            {/* <Link to="/my-chadhava" className="profile-item" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🙏</div>
                                                 <span>My Chadhava Bookings</span>
                                                 <div className="profile-chevron">›</div>
-                                            </Link>
+                                            </Link> */}
 
-                                            <Link to="/book-puja" className="profile-item new-badge" onClick={() => setProfileOpen(false)}>
+                                            {/* <Link to="/book-puja" className="profile-item new-badge" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">📅</div>
                                                 <span>Book a Puja</span>
                                                 <div className="profile-badge">New</div>
                                                 <div className="profile-chevron">›</div>
-                                            </Link>
+                                            </Link> */}
 
-                                            <Link to="/book-chadhava" className="profile-item new-badge" onClick={() => setProfileOpen(false)}>
+                                            {/* <Link to="/book-chadhava" className="profile-item new-badge" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🔔</div>
                                                 <span>Book a Chadhava</span>
                                                 <div className="profile-badge">New</div>
                                                 <div className="profile-chevron">›</div>
-                                            </Link>
+                                            </Link> */}
 
                                            
                                         </div>
@@ -189,7 +189,7 @@ function Layout({ children }) {
                                             </button>
                                         </div>
 
-                                        <div className="profile-support">
+                                        {/* <div className="profile-support">
                                             <div className="support-title">Help & Support for Puja Booking</div>
                                             <div className="support-contact">
                                                 <div className="support-phone">
@@ -201,7 +201,7 @@ function Layout({ children }) {
                                                     <a href="https://wa.me/0000000000" className="support-link whatsapp">Whatsapp us</a>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> */}
                                     </div>
                                 )}
                             </div>

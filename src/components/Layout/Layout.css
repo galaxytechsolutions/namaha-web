@@ -366,7 +366,7 @@
   font-size: 14px;
   text-decoration: none;
   transition: all 0.2s;
-  display: none;
+  /* display: none; */
 }
 
 .login-btn-header:hover {

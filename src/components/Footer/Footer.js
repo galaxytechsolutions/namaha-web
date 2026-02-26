@@ -7,8 +7,6 @@ function Footer() {
     ];
     const serviceLinks = [
         { label: 'Puja', href: '#' },
-        { label: 'Chadhava', href: '#' },
-        { label: 'Panchang', href: '#' },
         { label: 'Temples', href: '#' },
     ];
     const socialLinks = [
@@ -55,7 +53,10 @@ function Footer() {
                     </div>
                     <div className="footer-col footer-address-col">
                         <h4 className="footer-heading">Our Address</h4>
-                        <p className="footer-address"> 2-342, Ground Floor, New Vadapalani, Madhapur,Hyderabad - 500081
+                        <p className="footer-address">
+                            F.No.703, 7th Flr, Block-B, SVC Tree Walk,<br />
+                            Kondapur, Kondapur, Serilingampally,<br />
+                            K.V.Rangareddy, Telangana - 500084.
                         </p>
                         <div className="footer-social">
                             {socialLinks.map((s) => (

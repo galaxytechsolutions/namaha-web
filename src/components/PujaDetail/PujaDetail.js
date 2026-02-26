@@ -168,6 +168,8 @@ function PujaDetail() {
   const [autoSelectedSlot, setAutoSelectedSlot] = useState(null);
   const [bookingDate, setBookingDate] = useState(null);
   const [selectedPanditId, setSelectedPanditId] = useState(null);
+  const [selectedPandit, setSelectedPandit] = useState(null); // mode, location from pandit
+  const [prasadam, setPrasadam] = useState(false);
   const [addonQuantities, setAddonQuantities] = useState({});
 
   const sectionRefs = useRef({});
@@ -236,7 +238,7 @@ const findPanditForPuja = useCallback(async (pujaId) => {
     }
   }, []);
 
-const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, pujaLocation) => {
+const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, pujaLocation, panditMode, panditLocation) => {
     console.log("🗓 getFirstAvailableSlot called");
     console.log("   panditId:", panditId);
     console.log("   pujaId:", pujaId);
@@ -280,15 +282,21 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
         poojaId: pujaId,
         date: dateStr,
         slots: [],
-        mode: "online",
-        location: {
-          lat: 17.385,
-          lng: 78.4867,
-          address: pujaLocation || "Sri Mandir",
-        },
+        mode: panditMode || "online",
+        location: panditLocation
+          ? {
+              lat: panditLocation.lat,
+              lng: panditLocation.long ?? panditLocation.lng,
+              address: panditLocation.address || pujaLocation || "Sri Mandir",
+            }
+          : {
+              lat: 17.385,
+              lng: 78.4867,
+              address: pujaLocation || "Sri Mandir",
+            },
       };
 
-      console.log("   Payload:", payload);
+      console.log("Payload:", payload);
 
       const res = await axiosInstance.post("/bookings/booking", payload);
 
@@ -342,7 +350,9 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           matchedPandit._id,
           puja.id,
           puja.date, // ← actual puja date only
-          puja.location
+          puja.location,
+          matchedPandit.mode,
+          matchedPandit.location
         );
 
         if (!result) {
@@ -350,10 +360,11 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           return;
         }
 
-        // ✅ Store everything in state
+        // ✅ Store everything in state (including pandit mode & location for payload)
         setAutoSelectedSlot(result.slot);
         setBookingDate(result.date);
         setSelectedPanditId(matchedPandit._id);
+        setSelectedPandit(matchedPandit);
         setPaymentError(""); // clear any previous error
 
         console.log("✅ autoLoad complete:", {
@@ -420,9 +431,6 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
 
     const mainImage = puja?.bannerUrls?.[0]?.url || null;
 
-    const activeCoupon =
-      puja?.coupon && puja.coupon.isActive ? puja.coupon : null;
-
     const billingState = {
       puja,
       selectedPackage,
@@ -440,8 +448,20 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
         selectedPackage.price +
         selectedAddons.reduce((sum, addon) => sum + addon.total, 0),
 
-      // ✅ NEW — pass coupon only if active
-      coupon: activeCoupon,
+      // coupon data from puja (send full coupon; billing validates isActive)
+      coupon: puja?.coupon ?? null,
+
+      // mode from puja (e.g. "hybrid")
+      mode: puja?.mode,
+
+      // temple address from puja
+      pujaLocation: puja?.location,
+
+      // pandit location (lat/lng) for booking payload
+      panditLocation: selectedPandit?.location,
+
+      // prasadam option
+      prasadam,
     };
 
     console.log("✅ Navigating to /billing with state:", {
@@ -848,7 +868,11 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           <div className="pd-section-content">
             <h2 className="pd-temple-name">{puja.location}</h2>
             <div className="pd-temple-grid">
-              <div className="pd-temple-image" />
+              <img
+                src={slides[0] || puja?.bannerUrls?.[0]?.url || "https://via.placeholder.com/800x600"}
+                alt={puja.location || "Temple image"}
+                className="pd-temple-image"
+              />
               <div className="pd-temple-text">
                 <div
                   dangerouslySetInnerHTML={{
@@ -930,13 +954,23 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           )}
 
           <div className="pd-sticky-content">
-            <div className="pd-sticky-price-block">
-              <span className="pd-sticky-price">
-                {selectedPackage?.price?.toLocaleString("en-IN") || "0"}
-              </span>
-              <span className="pd-sticky-name">
-                {selectedPackage?.name || "Select Package"}
-              </span>
+            <div className="pd-sticky-left">
+              <div className="pd-sticky-price-block">
+                <span className="pd-sticky-price">
+                  {selectedPackage?.price?.toLocaleString("en-IN") || "0"}
+                </span>
+                <span className="pd-sticky-name">
+                  {selectedPackage?.name || "Select Package"}
+                </span>
+              </div>
+              <label className="pd-sticky-prasadam">
+                <input
+                  type="checkbox"
+                  checked={prasadam}
+                  onChange={(e) => setPrasadam(e.target.checked)}
+                />
+                <span>Prasadam (Compulementary)</span>
+              </label>
             </div>
 
             <button
