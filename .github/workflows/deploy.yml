@@ -3,7 +3,7 @@ name: namaha-web deploy
 on:
   push:
     branches:
-      - develo
+      - develop
 
 jobs:
   deploy:
