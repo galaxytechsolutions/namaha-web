@@ -1,0 +1,33 @@
+name: namaha-web deploy
+
+on:
+  push:
+    branches:
+      - develo
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup SSH Agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Rsync files to server
+        run: |
+          rsync -avz --delete \
+          --exclude=".git" \
+          --exclude="node_modules" \
+          -e "ssh -o StrictHostKeyChecking=no" \
+          ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/lib/projects/namaha-web
+
+      - name: Build & Run Docker on Server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          cd /var/lib/projects/namaha-web
+          EOF
