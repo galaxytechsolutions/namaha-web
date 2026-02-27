@@ -51,7 +51,7 @@ function Features() {
       <div className="features-container">
         <h2 className="features-title">One App for all your devotional needs</h2>
         <p className="features-subtitle">
-          Sri Mandir brings these amazing features for you, get these features for free and start your devotional journey now.
+          Shri aaum brings these amazing features for you, get these features for free and start your devotional journey now.
         </p>
         <div className="features-grid">
           {features.map((item) => (

@@ -10,7 +10,7 @@ const CHADHAVA_CARDS = [
     title: 'Pashupatinath “Gana-Tirpti” Pashu SHRI AAUM',
     date: '9 February to 15 February, 2026',
     description:
-      'From Kalashtami till Maha Shivratri, the purohit ji will perform Gana-Tirpti SHRI AAUM on your name at the respective site on the specific tithi. The video of the SHRI AAUM will be shared on the Sri Mandir app in 24–48 hours of offering.',
+      'From Kalashtami till Maha Shivratri, the purohit ji will perform Gana-Tirpti SHRI AAUM on your name at the respective site on the specific tithi. The video of the SHRI AAUM will be shared on the Shri aaum app in 24–48 hours of offering.',
     cta: 'Perform Pashu SHRI AAUM →',
   },
   {
@@ -26,7 +26,7 @@ const CHADHAVA_CARDS = [
     title: 'Triyuginarayan Shiva–Parvati Vivah Mahotsav Path',
     date: '15 February 2026, Sunday, Phalguna Krishna Trayodashi',
     description:
-      'Celebrate the divine union of Shiva–Shakti at the very site of their marriage. The path and rituals will be performed in your name at Triyuginarayan Temple and shared on the Sri Mandir app in 24–48 hours.',
+      'Celebrate the divine union of Shiva–Shakti at the very site of their marriage. The path and rituals will be performed in your name at Triyuginarayan Temple and shared on the Shri aaum app in 24–48 hours.',
     cta: 'Book Vivah Path →',
   },
 ];
@@ -66,7 +66,7 @@ function Chadhava() {
         <div className="ch-offerings-header">
           <h2 className="ch-offerings-title">Upcoming Chadhava Offerings on SHRI AAUM.</h2>
           <p className="ch-offerings-subtitle">
-            Experience the divine with Sri Mandir Chadhava SHRI AAUM. Offer Chadhava at renowned
+            Experience the divine with Shri aaum Chadhava SHRI AAUM. Offer Chadhava at renowned
             temples across India, receiving blessings and a video recording of the ceremony
             performed by our Purohit ji on your behalf.
           </p>

@@ -155,7 +155,7 @@ function ChadhavaDetail() {
                 <p className="chd-date">{detail.dateRange}</p>
                 <p className="chd-devotees">
                   Till now <strong>{detail.devoteesCount} Devotees</strong> have participated in
-                  Chadhava conducted by Sri Mandir Chadhava SHRI AAUM.
+                  Chadhava conducted by Shri aaum Chadhava SHRI AAUM.
                 </p>
               </div>
             </div>

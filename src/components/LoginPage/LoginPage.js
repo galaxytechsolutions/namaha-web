@@ -64,6 +64,9 @@ function LoginPage() {
         const newToken = res.data.token;
         setToken(newToken);
         localStorage.setItem('token', newToken);
+        if (res.data.user) {
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+        }
         
         if (res.data.isNewUser) {
           setStep(3);
@@ -92,10 +95,13 @@ function LoginPage() {
         name,
         dob,
         zodiacSign,
-        gmail 
+        email: gmail
       });
       
       console.log('✅ Profile Complete:', res.data);
+      if (res.data?.user) {
+        localStorage.setItem('user', JSON.stringify(res.data.user));
+      }
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Profile update failed');

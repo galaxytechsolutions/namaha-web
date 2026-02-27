@@ -54,12 +54,14 @@ function SpecialPuja() {
       <div className="sp-container">
         <div className="sp-header">
           <h2>
-            <span className="sp-title-purple">SHRI AAUM</span> Special Pujas
+            <span className="sp-title-purple">Join Sacred Pujas</span> From
+            Anywhere
           </h2>
           <p className="sp-subtitle">
-            Begin 2026 with faith - get special pujas performed in your name at
-            India's powerful temples to achieve peace and protection for your
-            family.
+            Deepen your spiritual journey by offering sacred pujas at India’s
+            most revered Teerth Kshetras. Get your family’s names and gotras
+            chanted in Pujas performed by qualified Veda Pandits to attain peace
+            and protection for your family.
           </p>
         </div>
 
@@ -86,7 +88,9 @@ function SpecialPuja() {
                 {puja.soldTag ? (
                   <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
                 ) : (
-                  puja.topChoice && <span className="pl-top-choice-tag">TOP CHOICE</span>
+                  puja.topChoice && (
+                    <span className="pl-top-choice-tag">TOP CHOICE</span>
+                  )
                 )}
               </div>
               <p className="pl-card-category">{puja.category}</p>
@@ -94,7 +98,7 @@ function SpecialPuja() {
               {/* {puja.promoText && <p className="pl-card-promo-body">{puja.promoText}</p>} */}
 
               <p className="pl-card-purpose">Duration: {puja.duration}</p>
-              <p className="pl-card-meta">🏛 {puja.location}</p>
+              <p className="pl-card-meta">🏛 {puja.templeName}</p>
               <p className="pl-card-meta">📅 {puja.date}</p>
               <Link to={`/puja/${puja.id}`} className="pl-card-participate">
                 PARTICIPATE →

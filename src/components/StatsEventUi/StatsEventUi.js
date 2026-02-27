@@ -37,7 +37,7 @@ function StatsEventUi() {
             Start your Sacred Journey with SHRI AAUM Chadhava Service
           </h2>
           <p className="chadhava-subtitle">
-            Why make offerings through Sri Mandir Chadhava SHRI AAUM?
+            Why make offerings through Shri aaum Chadhava SHRI AAUM?
           </p>
           <div className="chadhava-cards-row">
             {OFFERING_CARDS.map((card) => (

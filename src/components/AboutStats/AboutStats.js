@@ -32,11 +32,10 @@ function AboutStats() {
     <section className="about-stats-section">
       <div className="about-stats-container">
         <div className="about-stats-content">
-          <p className="about-stats-eyebrow">Trusted by Over 30 Million Devotees</p>
-          <h2 className="about-stats-title">India's Largest Devotional Platform</h2>
+          {/* <p className="about-stats-eyebrow">Trusted by Over 30 Million Devotees</p> */}
+          <h2 className="about-stats-title">India’s Most Trusted Devotional Platform</h2>
           <p className="about-stats-desc">
-            We are committed to building the most trusted destination that serves the devotional needs of millions of devotees in India and abroad, providing them the access they always wanted.
-          </p>
+          Shri Aaum is committed to building the most trusted spiritual destination that serves the devotional needs of millions of devotees across India and abroad, providing them the access to pujas and spiritual activities from the comfort of their homes.          </p>
         </div>
         <div className="about-stats-grid">
           {stats.map((item) => (

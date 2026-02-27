@@ -57,10 +57,12 @@ function PujaList() {
   const benefitOptions = Array.from(
     new Set(
       pujaList.flatMap((p) =>
-        (p.benefits || []).map((b) => (b || "").trim())
+        (p.benefits || [])
+          .map((b) => ((typeof b === 'object' ? b?.title : b) || '').trim())
+          .filter(Boolean)
       )
     )
-  ).filter(Boolean);
+  );
 
   const locationOptions = Array.from(
     new Set(pujaList.map((p) => (p.location || "").trim()))
@@ -76,7 +78,7 @@ function PujaList() {
       // Benefits filter (match any)
       if (selectedBenefits.size > 0) {
         const hasAny = (p.benefits || []).some((b) =>
-          selectedBenefits.has(b)
+          selectedBenefits.has(typeof b === 'object' ? b?.title : b)
         );
         if (!hasAny) return false;
       }
@@ -293,17 +295,18 @@ function PujaList() {
               <h3 className="pl-card-title">{puja.title}</h3>
               <p className="pl-card-meta">Duration: {puja.duration}</p>
               {/* With this */}
-              <p className="pl-card-title">Benfits</p>
+              <p className="pl-card-title">Benefits</p>
               <div className="pl-card-purpose space-y-1">
-                {puja.benefits?.map((benefit, index) => (
-                  <div
-                    key={index}
-                    className="  flex items-center gap-2 text-sm"
-                  >
-                    <span className="w-2 h-2 bg-green-500 rounded-full" />
-                    {benefit}
-                  </div>
-                ))}
+                {puja.benefits?.map((benefit, index) => {
+                  const title = typeof benefit === 'object' ? benefit.title : benefit;
+                  const key = typeof benefit === 'object' && benefit._id ? benefit._id : index;
+                  return (
+                    <div key={key} className="flex items-center gap-2 text-sm">
+                      <span className="w-2 h-2 bg-green-500 rounded-full" />
+                      {title}
+                    </div>
+                  );
+                })}
               </div>
               <p className="pl-card-meta">🏛 {puja.location}</p>
               <p className="pl-card-meta">📅 {puja.date}</p>

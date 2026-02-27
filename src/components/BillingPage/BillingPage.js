@@ -186,12 +186,12 @@ function BillingPage() {
         ? {
             lat: panditLocation.lat,
             lng: panditLocation.long ?? panditLocation.lng,
-            address: pujaLocation || panditLocation.address || puja?.location || "Sri Mandir",
+            address: pujaLocation || panditLocation.address || puja?.location || "Shri aaum",
           }
         : {
             lat: 17.385,
             lng: 78.4867,
-            address: pujaLocation || puja?.location || "Sri Mandir",
+            address: pujaLocation || puja?.location || "Shri aaum",
           };
 
       const payload = {
@@ -277,7 +277,7 @@ function BillingPage() {
       amount: amount * 100, // ✅ paise
       currency: "INR",
       order_id: orderId,
-      name: "Sri Mandir Puja",
+      name: "Shri aaum Puja",
       description: `${puja.title} - ${selectedPackage.name}`,
 
       prefill: {

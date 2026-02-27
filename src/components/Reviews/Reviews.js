@@ -20,7 +20,7 @@ function Reviews() {
     {
       id: 3,
       type: 'text',
-      text: 'I really like the whole process of puja at Sri Mandir. Puja is conducted properly and customer support is available throughout the process. I asked questions to Mamta Maam and she resolved my queries. Most genuine and authentic.',
+      text: 'I really like the whole process of puja at Shri aaum. Puja is conducted properly and customer support is available throughout the process. I asked questions to Mamta Maam and she resolved my queries. Most genuine and authentic.',
       name: 'Aperna Mal',
       location: 'Puri',
       avatar: null,
@@ -40,7 +40,7 @@ function Reviews() {
       <div className="reviews-container">
         <h2 className="reviews-title">Reviews & Ratings</h2>
         <p className="reviews-subtitle">
-          Read to what our beloved devotees have to say about Sri Mandir.
+          Read to what our beloved devotees have to say about Shri aaum.
         </p>
         <div className="reviews-cards">
           {reviews.map((review) => (

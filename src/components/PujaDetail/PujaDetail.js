@@ -27,7 +27,7 @@ const PROCESS_STEPS = [
   },
   {
     title: "Puja Day Updates",
-    text: "Our experienced pandits perform the sacred puja. All Sri Mandir devotees' pujas will be conducted collectively on the day of the puja. You will receive real-time updates of the puja on your registered WhatsApp number.",
+    text: "Our experienced pandits perform the sacred puja. All Shri aaum devotees' pujas will be conducted collectively on the day of the puja. You will receive real-time updates of the puja on your registered WhatsApp number.",
   },
   {
     title: "Puja Video & Divine Aashirwad Box",
@@ -77,7 +77,7 @@ const TESTIMONIALS = [
     location: "Nagpur",
   },
   {
-    text: "I really like the whole process of puja at Sri Mandir. Puja is conducted properly and customer support is available throughout the process. I asked questions to Mamta Maam and she resolved my queries. Most genuine and authentic.",
+    text: "I really like the whole process of puja at Shri aaum. Puja is conducted properly and customer support is available throughout the process. I asked questions to Mamta Maam and she resolved my queries. Most genuine and authentic.",
     name: "Aperna Mal",
     location: "Puri",
   },
@@ -93,7 +93,7 @@ const USER_REVIEWS = [
     name: "Riya Das",
     date: "23 July, 2025",
     stars: 5,
-    text: "Thank you so much Sri Mandir for conducting the puja for those who can not go to the temple from so far. I am Happy to heard my name and gotra sankalp in the puja video. Jai Sri Gouri Kedareswar Mahadev",
+    text: "Thank you so much Shri aaum for conducting the puja for those who can not go to the temple from so far. I am Happy to heard my name and gotra sankalp in the puja video. Jai Sri Gouri Kedareswar Mahadev",
   },
   {
     name: "Suvomoy Bhowmick samarpitaa Bhowmick",
@@ -112,7 +112,7 @@ const USER_REVIEWS = [
 const FAQ_ITEMS = [
   {
     q: "Why should I choose SriMandir for performing a Puja?",
-    a: "Sri Mandir is an official temple partner with experienced pandits. We offer transparent pricing, real-time puja updates, and delivery of prasad to your doorstep.",
+    a: "Shri aaum is an official temple partner with experienced pandits. We offer transparent pricing, real-time puja updates, and delivery of prasad to your doorstep.",
   },
   {
     q: "I don't know my Gotra, what should I do?",
@@ -135,7 +135,7 @@ const FAQ_ITEMS = [
     a: "You receive the puja video on WhatsApp and an optional Aashirwad Box with Tirth Prasad delivered to your doorstep.",
   },
   {
-    q: "What are the other services offered by Sri Mandir?",
+    q: "What are the other services offered by Shri aaum?",
     a: "We offer various pujas, Gau SHRI AAUM, Deep Daan, Vastra SHRI AAUM, Anna SHRI AAUM, and other devotional services at partner temples.",
   },
   {
@@ -287,12 +287,12 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           ? {
               lat: panditLocation.lat,
               lng: panditLocation.long ?? panditLocation.lng,
-              address: panditLocation.address || pujaLocation || "Sri Mandir",
+              address: panditLocation.address || pujaLocation || "Shri aaum",
             }
           : {
               lat: 17.385,
               lng: 78.4867,
-              address: pujaLocation || "Sri Mandir",
+              address: pujaLocation || "Shri aaum",
             },
       };
 
@@ -340,7 +340,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
 
         if (!matchedPandit) {
           console.warn("⚠️ No pandit found — cannot proceed to booking");
-          setPaymentError("No pandit payment gateway available.");
+          setPaymentError("No pandit available.");
           return;
         }
 
@@ -714,7 +714,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
             <p className="pd-purpose">{puja.purpose}</p>
             <p className="pd-meta">
               <span className="pd-meta-icon">🏛</span>
-              {puja.location}
+              {puja.templeName}
             </p>
             <p className="pd-meta">
               <span className="pd-meta-icon">📅</span>
@@ -754,7 +754,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
             </div>
             <p className="pd-devotees">
               Till now <strong>{puja.devoteesCount} Devotees</strong> have
-              participated in Pujas conducted by Sri Mandir Puja SHRI AAUM.
+              participated in Pujas conducted by Shri aaum Puja SHRI AAUM.
             </p>
             <button
               type="button"
@@ -807,7 +807,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
             <div className="pd-about-body">
               <div
                 dangerouslySetInnerHTML={{
-                  __html: puja.promoText || "Loading description...",
+                  __html: puja.aboutPuja || "Loading description...",
                 }}
               />
             </div>
@@ -824,13 +824,18 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           <div className="pd-section-content">
             <h2 className="pd-section-title">Puja Benefits</h2>
             <div className="pd-benefits-grid">
-              {puja.benefits?.map((benefit, i) => (
-                <div key={i} className="pd-benefit-card">
-                  <div className="pd-benefit-icon">✓</div>
-                  <h3 className="pd-benefit-title">{benefit}</h3>
-                  {/* <button type="button" className="pd-read-more">Read more</button> */}
-                </div>
-              ))}
+              {puja.benefits?.map((benefit, i) => {
+                const title = typeof benefit === 'object' ? benefit.title : benefit;
+                const subtitle = typeof benefit === 'object' ? benefit.subtitle : null;
+                const key = typeof benefit === 'object' && benefit._id ? benefit._id : i;
+                return (
+                  <div key={key} className="pd-benefit-card">
+                    <div className="pd-benefit-icon">✓</div>
+                    <h3 className="pd-benefit-title">{title}</h3>
+                    {subtitle && <p className="pd-benefit-text">{subtitle}</p>}
+                  </div>
+                );
+              })}
             </div>
           </div>
         </section>
@@ -866,7 +871,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           }}
         >
           <div className="pd-section-content">
-            <h2 className="pd-temple-name">{puja.location}</h2>
+            <h2 className="pd-temple-name">{puja.templeName}</h2>
             <div className="pd-temple-grid">
               <img
                 src={slides[0] || puja?.bannerUrls?.[0]?.url || "https://via.placeholder.com/800x600"}
@@ -993,7 +998,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
           <div className="pd-section-content">
             <h2 className="pd-reviews-main-title">Reviews & Ratings</h2>
             <p className="pd-reviews-subtitle">
-              Read what our beloved devotees have to say about Sri Mandir.
+              Read what our beloved devotees have to say about Shri aaum.
             </p>
             <div className="pd-testimonials-wrap">
               <div

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate,  NavLink} from 'react-router-dom';
+import axiosInstance from '../../lib/instance';
 import './Layout.css';
 
 function Layout({ children }) {
@@ -14,16 +15,44 @@ function Layout({ children }) {
     // ⭐ 🔥 FIXED: Check auth on EVERY route change + mount
     useEffect(() => {
         const token = localStorage.getItem('token');
+        const userStr = localStorage.getItem('user');
         console.log('🔍 Layout auth check:', token ? 'LOGGED IN ✅' : 'GUEST');
         
-        if (token) {
-            setUser({ 
-                name: 'Devotee', 
-                mobile: '9177526153' // From your login response
-            });
-        } else {
+        if (!token) {
             setUser(null);
+            return;
         }
+
+        // Use stored user if available
+        if (userStr) {
+            try {
+                const userData = JSON.parse(userStr);
+                setUser({
+                    name: userData.name,
+                    role: userData.role,
+                    mobile: userData.mobile,
+                });
+                return;
+            } catch {
+                setUser(null);
+            }
+        }
+
+        // Fallback: fetch user from API when token exists but no user in localStorage
+        const fetchUser = async () => {
+            try {
+                const res = await axiosInstance.get('/auth/profile');
+                if (res.data?.success && res.data?.user) {
+                    const u = res.data.user;
+                    const userData = { name: u.name, role: u.role, mobile: u.mobile };
+                    localStorage.setItem('user', JSON.stringify(u));
+                    setUser(userData);
+                }
+            } catch {
+                setUser(null);
+            }
+        };
+        fetchUser();
     }, [location.pathname]); // 🔥 KEY FIX: Re-checks on every navigation!
 
     // Scroll to top when navigating to Home or Puja
@@ -54,6 +83,7 @@ function Layout({ children }) {
     const handleLogout = () => {
         console.log('🚪 Logging out...');
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         setUser(null);
         setProfileOpen(false);
         navigate('/login');
@@ -135,8 +165,9 @@ function Layout({ children }) {
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <div className="profile-name">{user?.name || 'Devotee'}</div>
-                                                    <div className="profile-email">{user?.mobile || '+91 77526 153'}</div>
+                                                    <div className="profile-name">{user?.name}</div>
+                                                    <div className="profile-role">{user?.role}</div>
+                                                    <div className="profile-email">{user?.mobile}</div>
                                                 </div>
                                             </div>
                                         </div>
