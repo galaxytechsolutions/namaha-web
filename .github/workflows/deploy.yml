@@ -31,6 +31,6 @@ jobs:
           ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /var/lib/projects/namaha-web
           sudo docker system prune -af
-          sudo docker build -t namaha-api .
+          sudo docker build -t namaha-web .
           sudo docker compose up -d
           EOF
