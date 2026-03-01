@@ -1,23 +1,26 @@
-# Use official Node.js LTS image
+# Use Node image
 FROM node:20-alpine
-
-# Disable husky in Docker to avoid errors
-ENV HUSKY=0
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files first (for better caching)
-COPY package*.json ./
+# Copy package files
+COPY package.json package-lock.json* ./
 
-# Install dependencies (including dev if needed)
+# Install dependencies
 RUN npm install
 
-# Copy the rest of the application
+# Copy project files
 COPY . .
 
-# Expose app port
+# Build React app
+RUN npm run build
+
+# Install serve to serve static files
+RUN npm install -g serve
+
+# Expose port
 EXPOSE 8080
 
-# Start the server
-CMD ["node", "src/server.js"]
+# Start app
+CMD ["serve", "-s", "build", "-l", "8080"]
