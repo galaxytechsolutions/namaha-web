@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  backend:
+    image: namaha-web
+    container_name: namaha-web
+    restart: always
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env
