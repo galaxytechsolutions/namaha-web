@@ -19,15 +19,17 @@ function SpecialPuja() {
     fetchPujaList()
       .then((apiPujas) => {
         // Map API data to SpecialPuja format
-        const specialPujas = apiPujas.map((p) => ({
-          ...p,
-          imageClass:
-            SP_IMAGE_MAP[p.id] ||
-            p.imageClass ||
-            `sp-banner-${Math.floor(Math.random() * 3) + 1}`,
-        }));
-        console.log("✅ SpecialPuja mapped:", specialPujas);
-        setPujas(specialPujas.slice(0, 4)); // Show top 3 only
+        const specialPujas = apiPujas
+          .map((p) => ({
+            ...p,
+            imageClass:
+              SP_IMAGE_MAP[p.id] ||
+              p.imageClass ||
+              `sp-banner-${Math.floor(Math.random() * 3) + 1}`,
+          }))
+          .sort((a, b) => (a.eventDateRaw || 0) - (b.eventDateRaw || 0));
+        console.log("✅ SpecialPuja mapped (sorted by date):", specialPujas);
+        setPujas(specialPujas.slice(0, 4));
       })
       .catch((err) => {
         console.error("❌ SpecialPuja fetch failed:", err);
@@ -102,7 +104,7 @@ function SpecialPuja() {
               {/* duration: estimated puja time */}
               {/* <p className="pl-card-purpose">Duration: {puja.duration}</p> */}
               {/* templeName: temple/venue where puja is performed */}
-              <p className="pl-card-meta">🏛 {puja.templeName || puja.location}</p>
+              <p className="pl-card-meta">🏛 {puja.templeName}</p>
               {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta">📅 {puja.date}</p>
               <Link to={`/puja/${puja.id}`} className="pl-card-participate">

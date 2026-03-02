@@ -88,7 +88,12 @@ function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await axiosInstance.post('/auth/complete-profile', { name });
+      const res = await axiosInstance.post('/auth/complete-profile', {
+        name,
+        dob: null,
+        zodiacSign: null,
+        email: null,
+      });
       
       console.log('✅ Profile Complete:', res.data);
       if (res.data?.user) {

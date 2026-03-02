@@ -122,9 +122,24 @@
 
 .pl-upcoming {
     max-width: 1200px;
+    width: 100%;
     margin: 0 auto;
     padding: 0 1.5rem;
     margin-bottom: 3rem;
+    box-sizing: border-box;
+}
+
+@media (min-width: 1200px) {
+  .pl-upcoming {
+    max-width: 1380px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .pl-upcoming {
+    max-width: 100%;
+    padding: 0 48px;
+  }
 }
 
 .pl-upcoming-title {
@@ -375,8 +390,10 @@
 
 .pl-cards {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1.5rem;
+    width: 100%;
+    align-items: stretch;
 }
 
 .pl-card {
@@ -388,6 +405,8 @@
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     border: 1px solid #e5e7eb;
+    min-width: 0;
+    width: 100%;
   }
 
 .pl-card-banner {
@@ -556,6 +575,10 @@
     margin: 0 0 6px;
     padding: 0 16px;
     line-height: 1.35;
+    letter-spacing: 0.04em;
+    word-spacing: 0.06em;
+    overflow-wrap: break-word;
+    min-width: 0;
 }
 
 .pl-card-desc {
@@ -564,6 +587,9 @@
     margin: 0 0 8px;
     padding: 0 16px;
     line-height: 1.45;
+    letter-spacing: 0.03em;
+    overflow-wrap: break-word;
+    min-width: 0;
 }
 
 .pl-card-purpose {
@@ -580,6 +606,9 @@
     color: #6b7280;
     margin: 0 0 6px;
     padding: 0 16px;
+    letter-spacing: 0.03em;
+    overflow-wrap: break-word;
+    min-width: 0;
 }
 
 .pl-card-participate {
@@ -727,20 +756,20 @@
 }
 @media (max-width: 480px) {
   .pl-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* Cards - Tablet 2 cols, Mobile 1 col */
 @media (max-width: 992px) {
   .pl-cards {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .pl-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.25rem;
     max-width: 100%;
   }

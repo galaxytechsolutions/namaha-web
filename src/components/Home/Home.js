@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import './Home.css';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import "./Home.css";
 
 // 🔹 Static images
 const Images = [
@@ -12,35 +12,37 @@ const Images = [
 // 🔹 Static hero text
 const HERO_CONTENT = [
   {
-    title: 'Sacred Pujas, Performed at Holy Teerth Kshetras',
-    subtitle: 'Perform Pujas and watch your names and gotras being chanted from the comfort of your homes',
-    twoButtons: false,
-  },
-  {
-    title: 'Temples Teerth Tatva within your reach',
-    subtitle: 'Connect to sacred teerth kshetras and perform pujas from anywhere. Get Prasad at your doorstep.',
+    title: "Temples Teerth Tatva within your reach",
+    subtitle:
+      "Connect to sacred teerth kshetras and perform pujas from anywhere. Get Prasad at your doorstep.",
     twoButtons: false,
     // singleButtonLabel: 'Explore Now',
   },
   {
-    title: 'Your Sankalpa, Performed Where It Truly Matters',
-    subtitle: 'Worship the divine deities and receive blessings with recorded videos and Prasad from your homes.',
+    title: "Sacred Pujas, Performed at Holy Teerth Kshetras",
+    subtitle:
+      "Perform Pujas and watch your names and gotras being chanted from the comfort of your homes",
+    twoButtons: false,
+  },
+  {
+    title: "Your Sankalpa, Performed Where It Truly Matters",
+    subtitle:
+      "Worship the divine deities and receive blessings with recorded videos and Prasad from your homes.",
     twoButtons: false,
     // singleButtonLabel: 'Book Now',
   },
 ];
 
 const TRUST_STRIP_ITEMS = [
-  { id: 1, icon: 'shield', text: 'Pujas Performed by Qualified Veda Pandits' },
-  { id: 2, icon: 'shield', text: '100% Refund Policy on No Sankalpa' },
-  { id: 3, icon: 'shield', text: 'Puja Recordings within 48 hours' },
-  { id: 4, icon: 'shield', text: 'Prasad at your Doorstep' },
+  { id: 1, icon: "shield", text: "Pujas Performed by Qualified Veda Pandits" },
+  { id: 2, icon: "shield", text: "100% Refund Policy on No Sankalpa" },
+  { id: 3, icon: "shield", text: "Puja Recordings within 48 hours" },
+  { id: 4, icon: "shield", text: "Prasad at your Doorstep in 10 days" },
 ];
 
 function Home() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [heroSlides, setHeroSlides] = useState([]);
- 
 
   // ✅ Load slides from STATIC images
   useEffect(() => {
@@ -58,30 +60,27 @@ function Home() {
     if (heroSlides.length === 0) return;
 
     const timer = setInterval(() => {
-      setCurrentSlide(prev => (prev + 1) % heroSlides.length);
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
 
     return () => clearInterval(timer);
   }, [heroSlides]);
-
- 
 
   const goToSlide = (index) => setCurrentSlide(index);
 
   return (
     <div className="App">
       <main>
-
         {/* ================= HERO ================= */}
         <section id="home" className="hero-section1">
-
           <div className="hero-carousel-track">
             {heroSlides.map((slide, index) => (
               <div
                 key={slide.id}
-                className={`hero-slide1 ${index === currentSlide ? 'hero-slide-active' : ''}`}
+                className={`hero-slide1 ${
+                  index === currentSlide ? "hero-slide-active" : ""
+                }`}
               >
-
                 {/* Banner */}
                 <img
                   src={slide.image}
@@ -101,7 +100,6 @@ function Home() {
                     </Link>
                   </div>
                 </div>
-
               </div>
             ))}
           </div>
@@ -111,30 +109,35 @@ function Home() {
             {heroSlides.map((slide, index) => (
               <button
                 key={slide.id}
-                className={`hero-dot ${index === currentSlide ? 'hero-dot-active' : ''}`}
+                className={`hero-dot ${
+                  index === currentSlide ? "hero-dot-active" : ""
+                }`}
                 onClick={() => goToSlide(index)}
               />
             ))}
           </div>
         </section>
 
-        {/* Trust strip section hidden */}
-        {false && (
-          <div className="trust-strip-wrap">
+        {/* Trust strip */}
+        <div className="trust-strip-wrap">
             <div className="trust-strip-scroll">
               <div className="trust-strip-inner">
-                {[...TRUST_STRIP_ITEMS, ...TRUST_STRIP_ITEMS].map((item, index) => (
-                  <span key={index} className="trust-strip-item">
-                    {item.icon === 'shield' && <span className="trust-strip-icon">✓</span>}
-                    {item.icon === 'badge' && <span className="trust-strip-icon">1</span>}
-                    <span className="trust-strip-text">{item.text}</span>
-                  </span>
-                ))}
+                {[...TRUST_STRIP_ITEMS, ...TRUST_STRIP_ITEMS].map(
+                  (item, index) => (
+                    <span key={index} className="trust-strip-item">
+                      {item.icon === "shield" && (
+                        <span className="trust-strip-icon">✓</span>
+                      )}
+                      {item.icon === "badge" && (
+                        <span className="trust-strip-icon">1</span>
+                      )}
+                      <span className="trust-strip-text">{item.text}</span>
+                    </span>
+                  )
+                )}
               </div>
             </div>
           </div>
-        )}
-
       </main>
     </div>
   );

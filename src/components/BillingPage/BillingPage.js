@@ -166,8 +166,8 @@ function BillingPage() {
   // ================= PAYMENT =================
   const handlePayment = async () => {
     // Validate required fields
-    if (!form.name || !form.phone) {
-      alert("Please fill Name and Phone Number");
+    if (!form.name || !form.phone || !form.address) {
+      alert("Please fill Name, Phone Number, and Address");
       return;
     }
 
@@ -476,9 +476,10 @@ function BillingPage() {
           />
           <textarea
             name="address"
-            placeholder="Address"
+            placeholder="Address *"
             value={form.address}
             onChange={handleChange}
+            required
           />
         </div>
 

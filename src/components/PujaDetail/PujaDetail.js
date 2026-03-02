@@ -70,7 +70,7 @@ const INCLUDES = [
 
 const FAQ_ITEMS = [
   {
-    q: "Why should I choose SriMandir for performing a Puja?",
+    q: "Why should I choose Shri aaum for performing a Puja?",
     a: "Shri aaum is an official temple partner with experienced pandits. We offer transparent pricing, real-time puja updates, and delivery of prasad to your doorstep.",
   },
   {
@@ -141,6 +141,10 @@ function PujaDetail() {
   const handleGoToBilling = () => {
     if (puja?.soldTag) {
       alert("This puja is SOLD OUT and cannot be booked.");
+      return;
+    }
+    if (!selectedPackage) {
+      alert("Please select a package before proceeding to payment.");
       return;
     }
     const token = localStorage.getItem("token");
@@ -480,7 +484,7 @@ function PujaDetail() {
               </div>
             </div>
 
-            <div className="pd-participants">
+            {/* <div className="pd-participants">
               <div className="pd-avatars">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div key={i} className="pd-avatar" />
@@ -489,11 +493,11 @@ function PujaDetail() {
               <span className="pd-rating">
                 ⭐ {puja.rating} ({puja.ratingCount} ratings)
               </span>
-            </div>
-            <p className="pd-devotees">
+            </div> */}
+            {/* <p className="pd-devotees">
               Till now <strong>{puja.devoteesCount} Devotees</strong> have
               participated in Pujas conducted by Shri aaum Puja SHRI AAUM.
-            </p>
+            </p> */}
             <button
               type="button"
               className="pd-cta"
@@ -682,11 +686,11 @@ function PujaDetail() {
                 </button>
               ))}
             </div>
-            <div className="pd-trust-badges">
+            {/* <div className="pd-trust-badges">
               <span>🛡 ISO 27001 Certified Company</span>
               <span>🏛 Official Temple Partner</span>
               <span>🎧 Customer Support</span>
-            </div>
+            </div> */}
           </div>
         </section>
 
