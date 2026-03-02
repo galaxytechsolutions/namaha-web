@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://developapi.shriaaum.com/api";
+const BASE_URL = "https://api.shriaaum.com/api";
 
 const getToken = () => {
   // 1. Check cookies first
