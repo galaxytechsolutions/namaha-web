@@ -476,15 +476,17 @@
   max-width: 800px;
 }
 
-.pd-about-body p {
-  font-size: 1rem;
-  color: #4b5563;
-  line-height: 1.7;
-  margin: 0 0 1rem;
-  text-align: justify;
+/* Match puja benefit subtitle (.pd-benefit-text) */
+.pd-about-body p,
+.pd-about-body > div {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
 }
 
-.pd-about-body p:last-child {
+.pd-about-body p:last-child,
+.pd-about-body > div > p:last-child {
   margin-bottom: 0;
 }
 
@@ -605,11 +607,18 @@
   display: block;
 }
 
-.pd-temple-text p {
-  font-size: 1rem;
-  color: #4b5563;
-  line-height: 1.7;
-  margin: 0 0 1rem;
+/* Match puja benefit subtitle (.pd-benefit-text) */
+.pd-temple-text p,
+.pd-temple-text > div {
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0 0 0.75rem;
+}
+
+.pd-temple-text p:last-child,
+.pd-temple-text > div > p:last-child {
+  margin-bottom: 0;
 }
 
 /* ----- All Puja Packages includes ----- */

@@ -36,9 +36,6 @@ function PujaList() {
   const [selectedBenefits, setSelectedBenefits] = useState(new Set());
   const [selectedLocations, setSelectedLocations] = useState(new Set());
 
-  // ✅ selected pujas (cart)
-  const [selectedPujas, setSelectedPujas] = useState([]);
-
   /* ================= HERO AUTO SLIDE ================= */
   useEffect(() => {
     const t = setInterval(() => {
@@ -108,22 +105,6 @@ function PujaList() {
     setSelectedLocations(new Set());
   };
 
-  /* ================= SELECT / UNSELECT ================= */
-  // selection handler for cards (checkbox)
-  const toggleSelectPuja = (puja) => {
-    setSelectedPujas((prev) => {
-      const exists = prev.find((p) => p.id === puja.id);
-
-      if (exists) {
-        return prev.filter((p) => p.id !== puja.id);
-      } else {
-        return [...prev, puja];
-      }
-    });
-  };
-
-  const isSelected = (id) => selectedPujas.some((p) => p.id === id);
-
   /* ================= LOADING ================= */
   if (loading) {
     return (
@@ -138,11 +119,6 @@ function PujaList() {
 
   return (
     <main className="puja-list-page">
-      {/* ================= CART COUNT ================= */}
-      {selectedPujas.length > 0 && (
-        <div className="cart-floating">🛒 Cart ({selectedPujas.length})</div>
-      )}
-
       <h1 className="pl-main-heading">
         Perform Puja as per Vedic rituals at Famous Hindu Temples in India
       </h1>
@@ -256,17 +232,8 @@ function PujaList() {
           {filteredPujas.map((puja) => (
             <div
               key={puja.id}
-              className={`pl-card ${
-                isSelected(puja.id) ? "selected-card" : ""
-              }`}
+              className="pl-card"
             >
-              {/* ===== CHECKBOX ===== */}
-              {/* <input
-                type="checkbox"
-                className="puja-checkbox"
-                checked={isSelected(puja.id)}
-                onChange={() => toggleSelectPuja(puja)}
-              />  */}
 
               <div
                 className={`pl-card-banner ${puja.imageClass}`}
@@ -291,9 +258,11 @@ function PujaList() {
                 )}
               </div>
 
-              <p className="pl-card-category">{puja.category}</p>
+              {/* category: puja type/classification */}
+              {/* <p className="pl-card-category">{puja.category}</p> */}
               <h3 className="pl-card-title">{puja.title}</h3>
-              <p className="pl-card-meta">Duration: {puja.duration}</p>
+              {/* duration: estimated puja time */}
+              {/* <p className="pl-card-meta">Duration: {puja.duration}</p> */}
               {/* With this */}
               <p className="pl-card-title">Benefits</p>
               <div className="pl-card-purpose space-y-1">
@@ -308,7 +277,8 @@ function PujaList() {
                   );
                 })}
               </div>
-              <p className="pl-card-meta">🏛 {puja.location}</p>
+              <p className="pl-card-meta">🏛 {puja.templeName}</p>
+              {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta">📅 {puja.date}</p>
 
               <Link to={`/puja/${puja.id}`} className="pl-card-participate">

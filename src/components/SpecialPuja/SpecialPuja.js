@@ -93,12 +93,16 @@ function SpecialPuja() {
                   )
                 )}
               </div>
-              <p className="pl-card-category">{puja.category}</p>
+              {/* category: puja type/classification */}
+              {/* <p className="pl-card-category">{puja.category}</p> */}
               <h3 className="pl-card-title">{puja.title}</h3>
               {/* {puja.promoText && <p className="pl-card-promo-body">{puja.promoText}</p>} */}
 
-              <p className="pl-card-purpose">Duration: {puja.duration}</p>
-              <p className="pl-card-meta">🏛 {puja.templeName}</p>
+              {/* duration: estimated puja time */}
+              {/* <p className="pl-card-purpose">Duration: {puja.duration}</p> */}
+              {/* templeName: temple/venue where puja is performed */}
+              <p className="pl-card-meta">🏛 {puja.templeName || puja.location}</p>
+              {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta">📅 {puja.date}</p>
               <Link to={`/puja/${puja.id}`} className="pl-card-participate">
                 PARTICIPATE →

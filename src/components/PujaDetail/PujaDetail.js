@@ -648,7 +648,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
                   </div>
                 ))}
               </div>
-              <span className="pd-badge">{puja.specialTag}</span>
+              {/* <span className="pd-badge">{puja.specialTag}</span> */}
             </div>
 
             {/* Add-ons section */}
@@ -709,7 +709,8 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
 
           {/* Right: Event details */}
           <div className="pd-details">
-            <p className="pd-category">{puja.category}</p>
+            {/* category: puja type/classification */}
+            {/* <p className="pd-category">{puja.category}</p> */}
             <h1 className="pd-title">{puja.title}</h1>
             <p className="pd-purpose">{puja.purpose}</p>
             <p className="pd-meta">
@@ -720,7 +721,8 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
               <span className="pd-meta-icon">📅</span>
               {puja.date}
             </p>
-            <p className="pd-purpose">Duration: {puja.duration}</p>
+            {/* duration: estimated puja time */}
+            {/* <p className="pd-purpose">Duration: {puja.duration}</p> */}
             <p className="pd-purpose">Mode: {puja.mode}</p>
             <p className="pd-countdown-label">Puja booking will close in:</p>
             <div className="pd-countdown">

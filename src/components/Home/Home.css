@@ -263,7 +263,7 @@
    ======================================== */
 @media (max-width: 1024px) {
   .hero-section1 {
-    height: 65vh;
+    height: 85vh;
     min-height: 380px;
   }
 }
@@ -312,7 +312,7 @@
 
   /* Mobile: make hero take less vertical space so main content is visible */
   .hero-section1 {
-    height: 30vh;          /* reduced height on small phones */
+    height: 60vh;          /* reduced height on small phones */
     min-height: 220px;
     max-height: 320px;
   }

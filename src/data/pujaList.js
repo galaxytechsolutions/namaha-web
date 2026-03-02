@@ -17,6 +17,7 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
   promoText: `${apiPuja.name} Puja - ${
     apiPuja.description || "Divine Blessings"
   }`,
+  // category: puja type/classification (e.g. GENERAL PUJA, FESTIVAL, WEALTH)
   category: apiPuja.category?.category?.toUpperCase() || "GENERAL PUJA",
   title: apiPuja.name,
   location:
@@ -44,7 +45,8 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
       id: pkg._id,
     })) || [],
   imageClass: `pl-card-${Math.floor(Math.random() * 3) + 1}`,
-  templeName: apiPuja.templeName,
+  // templeName: temple/venue name (API may return as temple.name, temple.templeName, or templeName)
+  templeName: apiPuja.temple?.name || apiPuja.temple?.templeName || apiPuja.templeName || apiPuja.customSection || null,
   templeDescription: apiPuja.templeDescription,
   aboutPuja: apiPuja.aboutPuja,
   rating: "4.9",
@@ -56,12 +58,15 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
     "pl-card-1",
   ],
   bannerUrls: apiPuja.bannerUrls,
+  // duration: estimated time for the puja (e.g. "1-2 hours", "30 mins")
   duration: apiPuja.duration,
   mode: apiPuja.mode,
   benefits: apiPuja.benefits,
   isActive: apiPuja.isActive,
   section: apiPuja.section,
   description: apiPuja.description,
+  // occasion: auspicious event/festival when puja is performed (e.g. Ram Navami, Diwali)
+  occasion: apiPuja.occasion || apiPuja.eventOccasion || apiPuja.specialTag || null,
   soldTag: apiPuja.soldTag,
   coupon: apiPuja.coupon
     ? {
@@ -90,6 +95,7 @@ export const PUJA_LIST = [
     title: "Maha Ganapathi Homam",
     purpose: "Removes obstacles and brings prosperity",
     location: "Tirupati Temple, India",
+    templeName: "Tirupati Temple",
     date: "12 Feb 2026",
     imageClass: "pl-card-1",
     rating: "4.9",
@@ -117,6 +123,7 @@ export const PUJA_LIST = [
     title: "Lakshmi Kubera Homam",
     purpose: "Financial growth and prosperity",
     location: "Chennai Temple, India",
+    templeName: "Chennai Temple",
     date: "15 Feb 2026",
     imageClass: "pl-card-2",
     rating: "4.8",

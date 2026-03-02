@@ -1,6 +1,12 @@
 import axios from "axios";
 
-const BASE_URL = "https://api.shriaaum.com/api";
+// On localhost use local API; otherwise use production API
+const isLocalhost =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
+const BASE_URL = isLocalhost
+  ? (process.env.REACT_APP_API_URL_LOCAL || "http://localhost:8080/api")
+  : (process.env.REACT_APP_API_URL || "https://api.shriaaum.com/api");
 
 const getToken = () => {
   // 1. Check cookies first
