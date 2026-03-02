@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom';
 import './Footer.css';
 
 function Footer() {
     const companyLinks = [
-        { label: 'About Us', href: '#' },
-        { label: 'Contact Us', href: '#' },
+        { label: 'About Us', href: '/about' },
+        { label: 'Contact Us', href: '/contact' },
     ];
     const serviceLinks = [
         { label: 'Puja', href: '#' },
@@ -24,7 +25,7 @@ function Footer() {
                 <div className="footer-top">
                     <div className="footer-col footer-brand">
                         <div className="footer-logo-wrap">
-                            <div className="footer-logo" />
+                            <img src="/logo.png" alt="Shri AAUM" className="footer-logo" />
                             <span className="footer-brand-name">SHRI AAUM</span>
                         </div>
                         <p className="footer-desc">
@@ -36,7 +37,7 @@ function Footer() {
                         <ul className="footer-links">
                             {companyLinks.map((link) => (
                                 <li key={link.label}>
-                                    <a href={link.href}>{link.label}</a>
+                                    <Link to={link.href}>{link.label}</Link>
                                 </li>
                             ))}
                         </ul>
@@ -68,24 +69,8 @@ function Footer() {
                     </div>
                 </div>
 
-                <div className="footer-divider" />
 
-                <div className="footer-bottom">
-                    <div className="footer-store-badges">
-                        <p  className="footer-badge footer-google-play">GET IT ON Google Play</p>
-                        <p  className="footer-badge footer-app-store">Download on the App Store</p>
-                    </div>
-                    <div className="footer-trust-logos">
-                        <span className="footer-trust-item">Digital India</span>
-                        <span className="footer-trust-item">ISO 27001</span>
-                        <span className="footer-trust-item">Razorpay</span>
-                    </div>
-                    <div className="footer-legal">
-                        <p >Privacy Policy</p>
-                        <p >Terms and Conditions</p>
-                        <p className="footer-copyright">© 2026 SriMandir, Inc. All rights reserved.</p>
-                    </div>
-                </div>
+               
             </div>
         </footer>
     );
