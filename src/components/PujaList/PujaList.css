@@ -572,7 +572,7 @@
     font-size: 1rem;
     font-weight: 700;
     color: #1a1a1a;
-    margin: 0 0 6px;
+    margin: 0.75rem 0 6px;
     padding: 0 16px;
     line-height: 1.35;
     letter-spacing: 0.04em;
@@ -609,6 +609,11 @@
     letter-spacing: 0.03em;
     overflow-wrap: break-word;
     min-width: 0;
+}
+
+.pl-card-date {
+    color: #ea580c;
+    font-weight: 600;
 }
 
 .pl-card-participate {
