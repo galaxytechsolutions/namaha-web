@@ -57,7 +57,7 @@ function Layout({ children }) {
 
     // Scroll to top when navigating to Home or Puja
     useEffect(() => {
-        if (location.pathname === '/' || location.pathname === '/puja' || location.pathname === '/chadhava') {
+        if (['/', '/puja', '/chadhava', '/about', '/contact'].includes(location.pathname)) {
             window.scrollTo({ top: 0, behavior: 'auto' });
         }
     }, [location.pathname]);
@@ -98,7 +98,7 @@ function Layout({ children }) {
             <header className={`header ${isScrolled ? 'scrolled' : ''} ${menuOpen ? 'open' : ''}`}>
                 <nav className="nav-container">
                     <Link to="/" className="logo">
-                        <span className="logo-icon">🪔</span>
+                        <img src="/logo.png" alt="Shri AAUM" className="logo-img" />
                         <span>SHRI AAUM</span>
                     </Link>
                     <ul className="nav-links">
@@ -115,11 +115,28 @@ function Layout({ children }) {
                             <NavLink
                                 to="/puja"
                                 className={location.pathname === '/puja' ? 'active' : ''}
-                                
                                 onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
                             >
                                 Puja
                             </NavLink>
+                        </li>
+                        <li>
+                            <Link
+                                to="/about"
+                                className={location.pathname === '/about' ? 'active' : ''}
+                                onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
+                            >
+                                About
+                            </Link>
+                        </li>
+                        <li>
+                            <Link
+                                to="/contact"
+                                className={location.pathname === '/contact' ? 'active' : ''}
+                                onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
+                            >
+                                Contact
+                            </Link>
                         </li>
                         {/* <li>
                             <NavLink

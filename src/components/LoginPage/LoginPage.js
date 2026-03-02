@@ -115,7 +115,7 @@ function LoginPage() {
     <main className="login-page">
       <div className="login-container">
         <div className="login-header">
-          <div className="login-logo">🛕 Shri aaum</div>
+          <img src="/logo.png" alt="Shri AAUM" className="login-logo" />
           <h1>Welcome Back</h1>
           <p>Enter your mobile to receive OTP</p>
         </div>

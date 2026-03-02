@@ -17,6 +17,8 @@ import LoginPage from './components/LoginPage/LoginPage';
 import BillingPage from './components/BillingPage/BillingPage';
 import MyBookings from './components/MyBooking/MyBooking';
 import BookingDetailsModal from './components/BookingDetailsModal/BookingDetailsModal';
+import About from './components/About/About';
+import Contact from './components/Contact/Contact';
 
 function App() {
   return (
@@ -39,6 +41,16 @@ function App() {
 
         
 
+        <Route path="/about" element={
+          <Layout>
+            <About />
+          </Layout>
+        } />
+        <Route path="/contact" element={
+          <Layout>
+            <Contact />
+          </Layout>
+        } />
         <Route path="/Profile" element={
           <Layout>
             <Profile />

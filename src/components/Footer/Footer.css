@@ -33,10 +33,9 @@
   }
   
   .footer-logo {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #fbbf24;
+    width: 56px;
+    height: 56px;
+    object-fit: contain;
     flex-shrink: 0;
   }
   
