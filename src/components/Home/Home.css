@@ -3,6 +3,8 @@
   position: relative;
   height: 100vh;
   min-height: 400px;
+  padding-top: 100px; /* Clear fixed header */
+  box-sizing: border-box;
   display: flex;
   align-items: stretch;
   justify-content: center;  
@@ -42,11 +44,35 @@
   object-position: center;
 }
 
+/* Gradient overlay for text readability - stronger on smaller screens */
+.hero-slide1::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.15) 45%, transparent 70%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+@media (max-width: 1024px) {
+  .hero-slide1::after {
+    background: linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 50%, transparent 75%);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-slide1::after {
+    background: linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.25) 55%, transparent 80%);
+  }
+}
+
 /* Hero Content - Perfect Alignment */
 .hero-section1 {
   position: relative;
   height: 100vh;
   min-height: 400px;
+  padding-top: 100px; /* Clear fixed header so content is not cut off */
+  box-sizing: border-box;
   display: flex;
   align-items: stretch;
   justify-content: center;
@@ -65,10 +91,11 @@
   flex-direction: column;
   gap: 1.2rem;
   align-items: flex-start;
-  padding: 0 clamp(2rem, 5vw, 4rem);
+  padding: clamp(1.5rem, 4vw, 2.5rem) clamp(2rem, 5vw, 4rem);
   max-width: min(520px, 48%);
   margin: 0;
   z-index: 3;
+  border-radius: 0 12px 12px 0;
 }
 
 
@@ -83,27 +110,29 @@
 }
 
 .hero-content1 h1 {
-  font-size: 30px;
+  font-size: clamp(1.25rem, 3.5vw, 30px);
   color: #FFD700;
   font-weight: 800;
-  line-height: 1.12;
+  line-height: 1.2;
   margin: 0;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
 }
 
 
 
 .hero-subtitle {
-  font-size: clamp(1rem, 3.2vw, 1.25rem);
-  color: #d1d5db;
+  font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+  color: #e8ecf0;
   margin: 0;
-  font-weight: 400;
+  font-weight: 500;
   font-style: normal;
-  line-height: 1.6;
+  line-height: 1.5;
   letter-spacing: 0.01em;
   max-width: 95%;
   text-align: left;
   font-family: inherit;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6), 0 2px 6px rgba(0,0,0,0.4);
 }
 
 /* Hero Buttons - responsive by viewport */
@@ -117,13 +146,13 @@
 }
 
 .hero-btn {
-  padding: 0.65rem 1.25rem;
-  font-size: 0.95rem;
+  padding: clamp(0.5rem, 1.5vw, 0.75rem) clamp(1rem, 3vw, 1.5rem);
+  font-size: clamp(0.85rem, 2vw, 1rem);
   font-weight: 600;
   border-radius: 10px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  min-height: 44px;
+  min-height: clamp(40px, 8vw, 48px);
   box-sizing: border-box;
   font-family: inherit;
   border: none;
@@ -260,56 +289,62 @@
 /* ========================================
    RESPONSIVE BREAKPOINTS
    ======================================== */
-/* Tablet: left-aligned only, smaller button */
+/* Tablet: left-aligned, above space, centered vertically with offset */
 @media (max-width: 1024px) {
   .hero-section1 {
     height: 85vh;
     min-height: 380px;
+    padding-top: 90px;
   }
   .hero-content1 {
     left: 0;
     right: auto;
-    top: 50%;
+    top: 52%;
     transform: translateY(-50%);
     bottom: auto;
     max-width: min(420px, 52%);
-    padding: 0 clamp(1.5rem, 4vw, 2.5rem);
+    padding: clamp(1.5rem, 4vh, 2.5rem) clamp(1.5rem, 4vw, 2.5rem);
     align-items: flex-start;
     text-align: left;
   }
   .hero-content1 h1 {
     font-size: clamp(1.25rem, 3.5vw, 1.6rem);
     text-align: left;
+    line-height: 1.25;
   }
   .hero-text-stack {
     align-items: flex-start;
     text-align: left;
+    gap: clamp(0.6rem, 1.5vw, 1rem);
   }
   .hero-subtitle {
     text-align: left;
+    line-height: 1.55;
   }
   .hero-buttons {
     max-width: 260px;
     align-self: flex-start;
+    margin-top: 0.25rem;
   }
   .hero-btn {
-    padding: 0.55rem 1rem;
-    font-size: 0.9rem;
-    min-height: 40px;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.95rem;
+    min-height: 46px;
   }
 }
 
 @media (max-width: 768px) {
   .hero-section1 {
-    height: 60vh;
-    min-height: 380px;
+    height: 65vh;
+    min-height: 360px;
+    padding-top: 85px;
   }
   .hero-content1 {
     left: 0;
     right: auto;
-    top: 50%;
-    transform: translateY(-50%);
-    bottom: auto;
+    top: auto;
+    bottom: clamp(3.5rem, 12vh, 4.5rem);
+    transform: none;
     max-width: 88%;
     padding: 0 1.25rem;
     align-items: flex-start;
@@ -334,20 +369,20 @@
     align-self: flex-start;
   }
   .hero-btn {
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-    min-height: 38px;
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    min-height: 44px;
   }
 }
 
 
 @media (max-width: 480px) {
 
-  /* Mobile: make hero take less vertical space so main content is visible */
+  /* Mobile: enough height for hero content to stay visible */
   .hero-section1 {
-    height: 60vh;          /* reduced height on small phones */
-    min-height: 220px;
-    max-height: 320px;
+    height: 55vh;
+    min-height: 300px;
+    padding-top: 80px;
   }
 
   /* Trust strip - more compact on small phones */
@@ -373,7 +408,7 @@
   }
 
   .hero-subtitle {
-    font-size: 12px;
+    font-size: clamp(0.8rem, 2.5vw, 0.95rem);
     line-height: 1.35;
     opacity: 0.95;
     max-width: 92%;
@@ -388,12 +423,12 @@
   }
 
   .hero-buttons {
-    max-width: 180px;
+    max-width: 200px;
   }
   .hero-btn {
-    font-size: 0.8rem;
-    min-height: 36px;
-    padding: 0.45rem 0.85rem;
+    font-size: 0.875rem;
+    min-height: 42px;
+    padding: 0.55rem 1rem;
     border-radius: 8px;
   }
 
@@ -413,11 +448,11 @@
     transform: none;
   }
 
-  /* Small phones: centered on left */
+  /* Small phones: anchored from bottom so content stays visible */
   .hero-content1 {
-    top: 50%;
-    transform: translateY(-50%);
-    bottom: auto;
+    top: 40px;
+    transform: none;
+    bottom: clamp(3rem, 10vh, 4rem);
     padding: 0 1rem;
     align-items: flex-start;
     text-align: left;
@@ -480,14 +515,15 @@
     left: clamp(1.5rem, 4vw, 2.5rem) !important;
     right: auto !important;
     margin: 0 !important;
-    top: 50%;
+    top: 52% !important;
+    bottom: auto !important;
     transform: translateY(-50%) !important;
-    bottom: auto;
     width: min(420px, 52%);
     max-width: min(420px, 52%);
     align-items: flex-start;
     text-align: left;
-    padding: 0 clamp(1.5rem, 4vw, 2.5rem);
+    padding: clamp(1.5rem, 4vh, 2.5rem) clamp(1.5rem, 4vw, 2.5rem);
+    justify-content: center;
   }
 
   .hero-content1 h1,
@@ -506,6 +542,11 @@
     align-self: flex-start;
   }
 
+  .hero-btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.95rem;
+    min-height: 46px;
+  }
 }
 
 

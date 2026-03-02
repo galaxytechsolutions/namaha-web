@@ -28,6 +28,11 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
   eventDate: apiPuja.eventDate
     ? new Date(apiPuja.eventDate).toLocaleDateString("en-IN")
     : null,
+  eventDateRaw: apiPuja.eventDate
+    ? new Date(apiPuja.eventDate).getTime()
+    : apiPuja.createdAt
+    ? new Date(apiPuja.createdAt).getTime()
+    : 0,
   date: apiPuja.eventDate
     ? new Date(apiPuja.eventDate).toLocaleDateString("en-IN")
     : new Date(apiPuja.createdAt).toLocaleDateString("en-IN"),
@@ -87,6 +92,7 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
 export const PUJA_LIST = [
   {
     id: "1001",
+    eventDateRaw: new Date("2026-02-12").getTime(),
     specialTag: "MOST POPULAR",
     tagColor: "red",
     topChoice: true,
@@ -116,6 +122,7 @@ export const PUJA_LIST = [
   },
   {
     id: "1002",
+    eventDateRaw: new Date("2026-02-15").getTime(),
     specialTag: "WEALTH SPECIAL",
     tagColor: "green",
     topChoice: false,
