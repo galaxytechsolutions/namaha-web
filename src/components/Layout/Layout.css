@@ -48,11 +48,10 @@
   }
   
   .logo-img {
-    height: 74px;
+    height: 84px;
     width: auto;
     object-fit: contain;
     display: block;
-    vertical-align: middle;
   }
   
   .logo-brand {
@@ -449,7 +448,7 @@
   }
 
   .logo .logo-img {
-    height: 38px;
+    height: 58px;
   }
 
   .logo .logo-brand {

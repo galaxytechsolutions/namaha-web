@@ -15,9 +15,6 @@ function LoginPage() {
 
   // Profile fields
   const [name, setName] = useState('');
-  const [dob, setDob] = useState('');
-  const [zodiacSign, setZodiacSign] = useState('');
-  const [gmail, setGmail] = useState(''); 
 
   // Send OTP
   const sendOtp = async () => {
@@ -81,22 +78,17 @@ function LoginPage() {
     }
   };
 
-  // Complete Profile - NOW INCLUDES GMAIL
+  // Complete Profile
   const completeProfile = async () => {
-    if (!name || !dob || !token || !gmail) { 
-      setError('Please complete all required fields');
+    if (!name || !token) { 
+      setError('Please enter your name');
       return;
     }
 
     setLoading(true);
     setError('');
     try {
-      const res = await axiosInstance.post('/auth/complete-profile', {
-        name,
-        dob,
-        zodiacSign,
-        email: gmail
-      });
+      const res = await axiosInstance.post('/auth/complete-profile', { name });
       
       console.log('✅ Profile Complete:', res.data);
       if (res.data?.user) {
@@ -194,40 +186,11 @@ function LoginPage() {
                 placeholder="Enter your name"
               />
             </div>
-            
-            <div className="login-input-group">
-              <label>Date of Birth *</label>
-              <input
-                type="date"
-                value={dob}
-                onChange={(e) => setDob(e.target.value)}
-              />
-            </div>
-            
-            <div className="login-input-group">
-              <label>Gmail Address *</label>
-              <input
-                type="email"
-                value={gmail}
-                onChange={(e) => setGmail(e.target.value)}
-                placeholder="yourname@gmail.com"
-              />
-            </div>
-            
-            <div className="login-input-group">
-              <label>Zodiac Sign</label>
-              <select value={zodiacSign} onChange={(e) => setZodiacSign(e.target.value)}>
-                <option value="">Select Zodiac</option>
-                <option value="aries">Aries (मेष)</option>
-                <option value="taurus">Taurus (वृषभ)</option>
-                <option value="gemini">Gemini (मिथुन)</option>
-              </select>
-            </div>
-            
+
             <button 
               className="login-btn" 
               onClick={completeProfile}
-              disabled={loading || !name || !dob || !gmail} 
+              disabled={loading || !name} 
             >
               {loading ? 'Saving...' : 'Complete Profile'}
             </button>

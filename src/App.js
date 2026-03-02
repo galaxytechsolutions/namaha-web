@@ -2,9 +2,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import Home from './components/Home/Home';
 import SpecialPuja from './components/SpecialPuja/SpecialPuja';
-import Reviews from './components/Reviews/Reviews';
-import AboutStats from './components/AboutStats/AboutStats';
-import Features from './components/Features/Features';
 // import ArticlesSection from './components/ArticlesSection/ArticleSection';
 import Footer from './components/Footer/Footer';
 import Faqs from './components/Faqs/Faqs';
@@ -31,9 +28,9 @@ function App() {
             <Home />
             <SpecialPuja />
             <Faqs />
-            <Reviews />
-            <AboutStats />
-            <Features />
+            {/* <Reviews /> */}
+            {/* <AboutStats /> */}
+            {/* <Features /> */}
             {/* <ArticlesSection /> */}
             <Footer />
           </Layout>

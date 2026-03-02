@@ -51,7 +51,7 @@ function Contact() {
                 <span className="contact-icon">📧</span>
                 <div>
                   <strong>Email</strong>
-                  <p>support@shriaaum.com</p>
+                  <p>bhakta@shriaaum.com</p>
                 </div>
               </div>
               <div className="contact-info-item">

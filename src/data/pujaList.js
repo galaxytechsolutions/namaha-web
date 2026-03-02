@@ -49,6 +49,7 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
   templeName: apiPuja.temple?.name || apiPuja.temple?.templeName || apiPuja.templeName || apiPuja.customSection || null,
   templeDescription: apiPuja.templeDescription,
   aboutPuja: apiPuja.aboutPuja,
+  description: apiPuja.description || null,
   rating: "4.9",
   ratingCount: `${Math.floor(Math.random() * 6 + 2)}K+`,
   devoteesCount: `${Math.floor(Math.random() * 4 + 1)}0,000+`,
@@ -64,7 +65,6 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
   benefits: apiPuja.benefits,
   isActive: apiPuja.isActive,
   section: apiPuja.section,
-  description: apiPuja.description,
   // occasion: auspicious event/festival when puja is performed (e.g. Ram Navami, Diwali)
   occasion: apiPuja.occasion || apiPuja.eventOccasion || apiPuja.specialTag || null,
   soldTag: apiPuja.soldTag,
@@ -121,6 +121,7 @@ export const PUJA_LIST = [
     promoText: "Lakshmi Kubera Puja - Attract wealth and abundance",
     category: "LAKSHMI PUJA",
     title: "Lakshmi Kubera Homam",
+    description: "Attract wealth and abundance through sacred offerings.",
     purpose: "Financial growth and prosperity",
     location: "Chennai Temple, India",
     templeName: "Chennai Temple",

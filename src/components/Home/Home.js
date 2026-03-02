@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import './Home.css';
 
 // 🔹 Static images
@@ -88,24 +89,17 @@ function Home() {
                   className="hero-bg-image1"
                 />
 
-                {/* Content */}
+                {/* Content - left side only */}
                 <div className="hero-content1">
                   <div className="hero-text-stack">
                     <h1>{slide.title}</h1>
                     <p className="hero-subtitle">{slide.subtitle}</p>
                   </div>
-
-                  {/* <div className="hero-buttons">
-                    {slide.twoButtons ? (
-                      <button className="hero-btn hero-btn-outline">
-                        Install App
-                      </button>
-                    ) : (
-                      <button className="hero-btn hero-btn-solid">
-                        {slide.singleButtonLabel || 'Explore Now'}
-                      </button>
-                    )}
-                  </div> */}
+                  <div className="hero-buttons">
+                    <Link to="/puja" className="hero-btn hero-btn-solid">
+                      Book Puja
+                    </Link>
+                  </div>
                 </div>
 
               </div>
@@ -124,20 +118,22 @@ function Home() {
           </div>
         </section>
 
-        {/* ================= TRUST STRIP ================= */}
-        <div className="trust-strip-wrap">
-          <div className="trust-strip-scroll">
-            <div className="trust-strip-inner">
-              {[...TRUST_STRIP_ITEMS, ...TRUST_STRIP_ITEMS].map((item, index) => (
-                <span key={index} className="trust-strip-item">
-                  {item.icon === 'shield' && <span className="trust-strip-icon">✓</span>}
-                  {item.icon === 'badge' && <span className="trust-strip-icon">1</span>}
-                  <span className="trust-strip-text">{item.text}</span>
-                </span>
-              ))}
+        {/* Trust strip section hidden */}
+        {false && (
+          <div className="trust-strip-wrap">
+            <div className="trust-strip-scroll">
+              <div className="trust-strip-inner">
+                {[...TRUST_STRIP_ITEMS, ...TRUST_STRIP_ITEMS].map((item, index) => (
+                  <span key={index} className="trust-strip-item">
+                    {item.icon === 'shield' && <span className="trust-strip-icon">✓</span>}
+                    {item.icon === 'badge' && <span className="trust-strip-icon">1</span>}
+                    <span className="trust-strip-text">{item.text}</span>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
       </main>
     </div>

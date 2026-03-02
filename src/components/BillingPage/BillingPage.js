@@ -13,21 +13,16 @@ function BillingPage() {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
-  // ✅ Destructure ALL values passed from PujaDetail navigate state
+  // ✅ Destructure values passed from PujaDetail navigate state (no pandit/slot/location)
   const {
     puja,
     selectedPackage,
-    panditId,
-    slot,
-    bookingDate,
     image,
     addons = [],
     addonsTotal = 0,
     grandTotal,
     coupon,
     mode: pujaMode,
-    pujaLocation,
-    panditLocation,
     prasadam = false,
   } = location.state || {};
 
@@ -45,14 +40,8 @@ function BillingPage() {
   const subtotal =
     passedGrandTotal > 0 ? passedGrandTotal : packagePrice + addonsPrice;
 
-  // Debug: confirm all values arrived
-  console.log("📦 BillingPage state received:");
-  console.log("   puja.id:", puja?.id);
-  console.log("   puja.title:", puja?.title);
-  console.log("   panditId:", panditId); // ✅ should be real ObjectId
-  console.log("   bookingDate:", bookingDate);
-  console.log("   slot:", slot);
-  console.log("   selectedPackage:", selectedPackage);
+  // Debug: confirm values arrived
+  console.log("📦 BillingPage state received:", { pujaId: puja?.id, pujaTitle: puja?.title, selectedPackage });
 
   // ================= DATE PARSER =================
   const parseDDMMYYYY = (dateStr) => {
@@ -89,6 +78,7 @@ function BillingPage() {
 
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
+  const [couponInput, setCouponInput] = useState("");
 
   const discountAmount = couponApplied ? calculateDiscount() : 0;
   const finalPayable = Math.max(subtotal - discountAmount, 0);
@@ -99,6 +89,19 @@ function BillingPage() {
       setCouponError("No coupon available.");
       return;
     }
+
+    const entered = (couponInput || "").trim();
+    if (!entered) {
+      setCouponError("Please enter a coupon code.");
+      return;
+    }
+
+    if (entered.toUpperCase() !== (coupon.code || "").trim().toUpperCase()) {
+      setCouponError("Invalid coupon code.");
+      setCouponApplied(false);
+      return;
+    }
+
     if (!coupon.isActive) {
       setCouponError("This coupon is not active.");
       return;
@@ -109,11 +112,13 @@ function BillingPage() {
       return;
     }
     setCouponApplied(true);
+    setCouponError("");
   };
 
   const handleRemoveCoupon = () => {
     setCouponApplied(false);
     setCouponError("");
+    setCouponInput("");
   };
 
   // ================= PARTICIPANT COUNT =================
@@ -166,15 +171,8 @@ function BillingPage() {
       return;
     }
 
-    // Safety check — all booking data must exist
-    if (!panditId || !puja?.id || !slot || !bookingDate) {
-      console.error("❌ Missing booking data:", {
-        panditId,
-        pujaId: puja?.id,
-        slot,
-        bookingDate,
-      });
-      alert("Booking details missing. Please go back and try again.");
+    if (!puja?.id) {
+      alert("Puja details missing. Please go back and try again.");
       navigate(-1);
       return;
     }
@@ -182,36 +180,17 @@ function BillingPage() {
     try {
       setLoading(true);
 
-      const locationPayload = panditLocation
-        ? {
-            lat: panditLocation.lat,
-            lng: panditLocation.long ?? panditLocation.lng,
-            address: pujaLocation || panditLocation.address || puja?.location || "Shri aaum",
-          }
-        : {
-            lat: 17.385,
-            lng: 78.4867,
-            address: pujaLocation || puja?.location || "Shri aaum",
-          };
-
       const payload = {
-        panditId,
         poojaId: puja.id,
-        date: bookingDate,
-        slots: [slot],
-
         mode: pujaMode || "online",
 
         coupon,
-
         couponCode: coupon?.code || null,
         isCouponApplied: couponApplied,
 
         devoteeDetails: form,
         participants: participants,
         appliedCoupon: couponApplied && coupon ? coupon.code : null,
-
-        location: locationPayload,
 
         ...(prasadam && { prasadam: true }),
       };
@@ -244,7 +223,7 @@ function BillingPage() {
       }
 
       if (status === 409) {
-        alert("This slot was just booked. Please go back and select another.");
+        alert("Booking conflict. Please go back and try again.");
         navigate(-1);
         return;
       }
@@ -288,11 +267,55 @@ function BillingPage() {
 
       theme: { color: "#f96b26" },
 
-      // ✅ Payment success — webhook auto-creates booking in DB
-      handler: function (response) {
+      // POST /api/bookings/booking/confirm-razorpay — call after user completes Razorpay.
+      // Full URL = baseURL + "/bookings/booking/confirm-razorpay" (e.g. https://developapi.shriaaum.com/api/bookings/booking/confirm-razorpay)
+      handler: async function (response) {
         console.log("✅ Razorpay payment success:", response);
-        alert("🎉 Payment successful! Your puja has been booked.");
-        navigate("/");
+        const token = localStorage.getItem("token");
+        const payload = {
+          razorpay_order_id: orderId,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_signature: response.razorpay_signature,
+          devoteeDetails: {
+            name: form.name,
+            email: form.email || "",
+            phone: form.phone,
+            gotra: form.gotra || "",
+            address: form.address || "",
+          },
+          participants: participants.map((p) => ({
+            name: p.name || "",
+            nakshatra: p.nakshatra || "",
+            gotra: p.gotra || "",
+          })),
+          coupon: couponApplied && coupon ? coupon : null,
+          couponCode: couponApplied && coupon ? coupon.code : null,
+          isCouponApplied: couponApplied,
+          discountAmount,
+          poojaId: puja?._id || puja?.id,
+          date: selectedPackage?.date || null,
+          grandTotal: finalPayable,
+          puja,
+          selectedPackage,
+          addons,
+          addonsTotal,
+          prasadam,
+        };
+        try {
+          await axiosInstance.post(
+            "/bookings/booking/confirm-razorpay",
+            payload,
+            {
+              withCredentials: true,
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            }
+          );
+          alert("🎉 Payment successful! Your puja has been booked.");
+          navigate("/");
+        } catch (err) {
+          console.error("Confirm payment error:", err);
+          alert(err.response?.data?.message || "Failed to confirm booking. Please contact support.");
+        }
       },
 
       modal: {
@@ -376,14 +399,20 @@ function BillingPage() {
             </div>
           )}
 
-          {/* COUPON: show with Apply button; deduct only when applied */}
+          {/* COUPON: user enters code; discount only if matches and is valid */}
           {coupon && (
             <div className="billing-coupon-section">
               {!couponApplied ? (
                 <>
                   <div className="billing-coupon-row">
                     <span className="billing-coupon-label">Coupon:</span>
-                    <span className="billing-coupon-code">{coupon.code}</span>
+                    <input
+                      type="text"
+                      className="billing-coupon-input"
+                      placeholder="Enter coupon code"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                    />
                     <button
                       type="button"
                       className="billing-coupon-apply-btn"
@@ -410,12 +439,6 @@ function BillingPage() {
                 </div>
               )}
             </div>
-          )}
-
-          {slot && (
-            <p>
-              <b>Slot:</b> {slot.start} – {slot.end} on {bookingDate}
-            </p>
           )}
 
           {/* ✅ GRAND TOTAL */}

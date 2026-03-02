@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchPujaList } from "../../data/pujaList";
 import "./PujaDetail.css";
 import Footer from "../Footer/Footer";
-import axiosInstance from "../../lib/instance";
 
 const SECTION_TABS = [
   { id: "about", label: "About Puja" },
@@ -149,7 +148,6 @@ function PujaDetail() {
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
-  const [paymentError, setPaymentError] = useState("");
   const [selectedPackage, setSelectedPackage] = useState(null);
   const [puja, setPuja] = useState(null);
   const [carouselIndex, setCarouselIndex] = useState(0);
@@ -165,10 +163,6 @@ function PujaDetail() {
   const [openFaq, setOpenFaq] = useState(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [isNavSticky, setIsNavSticky] = useState(false);
-  const [autoSelectedSlot, setAutoSelectedSlot] = useState(null);
-  const [bookingDate, setBookingDate] = useState(null);
-  const [selectedPanditId, setSelectedPanditId] = useState(null);
-  const [selectedPandit, setSelectedPandit] = useState(null); // mode, location from pandit
   const [prasadam, setPrasadam] = useState(false);
   const [addonQuantities, setAddonQuantities] = useState({});
 
@@ -178,148 +172,6 @@ function PujaDetail() {
 
   const slides = puja?.bannerUrls?.map((img) => img.url) || [];
 
-const findPanditForPuja = useCallback(async (pujaId) => {
-    try {
-      // ✅ Guard: pujaId must be a valid 24-char MongoDB ObjectId
-
-      if (!pujaId || pujaId.length !== 24) {
-        console.error(
-          "❌ pujaId is not a valid ObjectId — check pujaList.js mapping!"
-        );
-        console.error("   Expected: full _id like '6942677920c6344505bfd99f'");
-        console.error("   Got:", pujaId);
-        return null;
-      }
-
-      // ✅ Pass poojaId as query param to backend
-      const res = await axiosInstance.get("/pandit/by-pooja-id", {
-        params: { poojaId: pujaId }, // ← THIS was missing before
-      });
-
-      console.log("📡 /by-pooja-id response status:", res.status);
-      console.log("📡 /by-pooja-id full response:", res.data);
-      console.log("📡 pandits returned:", res.data?.pandits?.length ?? 0);
-
-      const allPandits = res.data?.pandits || [];
-
-      if (allPandits.length === 0) {
-        console.warn("⚠️ dummy testing:", pujaId);
-        return null;
-      }
-
-      // Log each pandit for debugging
-      allPandits.forEach((p, i) => {
-        console.log(`👤 Pandit[${i}]:`, {
-          _id: p._id,
-          name: p.name,
-          isActive: p.isActive,
-          services: p.services,
-        });
-      });
-
-      // Backend already filtered by service, just return the first active one
-      // (isActive check is a safety net in case backend doesn't filter)
-      const matched = allPandits.find((p) => p.isActive !== false);
-
-      console.log(
-        "✅ Matched pandit:",
-        matched
-          ? `${matched.name} (${matched._id})`
-          : "NONE — all pandits inactive or empty"
-      );
-
-      return matched || null;
-  } catch (err) {
-      console.error("❌ findPanditForPuja API error:");
-      console.error("   Status:", err.response?.status);
-      console.error("   Message:", err.response?.data?.message || err.message);
-      console.error("   Full error:", err.response?.data);
-      return null;
-    }
-  }, []);
-
-const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, pujaLocation, panditMode, panditLocation) => {
-    console.log("🗓 getFirstAvailableSlot called");
-    console.log("   panditId:", panditId);
-    console.log("   pujaId:", pujaId);
-    console.log("   pujaDate:", pujaDate);
-
-    const normalizePujaDate = (dateStr) => {
-      if (!dateStr) return null;
-
-      if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) return dateStr;
-
-      const parts = dateStr.split("/");
-      if (parts.length === 3) {
-        const day = parts[0].padStart(2, "0");
-        const month = parts[1].padStart(2, "0");
-        const year = parts[2];
-        return `${day}/${month}/${year}`;
-      }
-
-      try {
-        const parsed = new Date(dateStr);
-        if (!isNaN(parsed)) {
-          return parsed.toLocaleDateString("en-GB");
-        }
-      } catch (e) {}
-
-      return null;
-    };
-
-    const dateStr = normalizePujaDate(pujaDate);
-
-    if (!dateStr) {
-      console.error("❌ Could not normalize puja date:", pujaDate);
-      return null;
-    }
-
-    console.log("📅 Checking slots ONLY for puja date:", dateStr);
-
-    try {
-    const payload = {
-        panditId,
-        poojaId: pujaId,
-        date: dateStr,
-        slots: [],
-        mode: panditMode || "online",
-        location: panditLocation
-          ? {
-              lat: panditLocation.lat,
-              lng: panditLocation.long ?? panditLocation.lng,
-              address: panditLocation.address || pujaLocation || "Shri aaum",
-            }
-          : {
-              lat: 17.385,
-              lng: 78.4867,
-              address: pujaLocation || "Shri aaum",
-            },
-      };
-
-      console.log("Payload:", payload);
-
-      const res = await axiosInstance.post("/bookings/booking", payload);
-
-      console.log("   Response:", res.data);
-      console.log("   availableSlots:", res.data?.availableSlots);
-
-      if (res.data.success && res.data.availableSlots?.length > 0) {
-        const firstSlot = res.data.availableSlots[0];
-        console.log("✅ Slot found on puja date:", firstSlot);
-        return { slot: firstSlot, date: dateStr };
-      }
-
-      // No slots on puja date — do NOT fallback
-      console.warn("⚠️ No slots available on puja date:", dateStr);
-      return null;
-    } catch (err) {
-      console.error("❌ Slot check failed for puja date:", dateStr);
-      console.error("   Status:", err.response?.status);
-      console.error("   Message:", err.response?.data?.message || err.message);
-      return null;
-    }
-  }, []);
-
   const updateAddonQuantity = (addonId, change) => {
     setAddonQuantities((prev) => ({
       ...prev,
@@ -327,62 +179,6 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
     }));
   };
 
-  // ─────────────────────────────────────────────────────────
-  // STEP 3: Auto-run on puja load — find pandit + slot
-  // ─────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!puja?.id) return;
-
-    const autoLoad = async () => {
-      try {
-        // Use puja.id (should be full ObjectId after pujaList.js fix)
-        const matchedPandit = await findPanditForPuja(puja.id);
-
-        if (!matchedPandit) {
-          console.warn("⚠️ No pandit found — cannot proceed to booking");
-          setPaymentError("No pandit available.");
-          return;
-        }
-
-        console.log("✅ Using pandit:", matchedPandit._id, matchedPandit.name);
-
-        const result = await getFirstAvailableSlot(
-          matchedPandit._id,
-          puja.id,
-          puja.date, // ← actual puja date only
-          puja.location,
-          matchedPandit.mode,
-          matchedPandit.location
-        );
-
-        if (!result) {
-          setPaymentError(`No slots available for this puja on ${puja.date}.`);
-          return;
-        }
-
-        // ✅ Store everything in state (including pandit mode & location for payload)
-        setAutoSelectedSlot(result.slot);
-        setBookingDate(result.date);
-        setSelectedPanditId(matchedPandit._id);
-        setSelectedPandit(matchedPandit);
-        setPaymentError(""); // clear any previous error
-
-        console.log("✅ autoLoad complete:", {
-          panditId: matchedPandit._id,
-          slot: result.slot,
-          date: result.date,
-        });
-      } catch (err) {
-        console.error("❌ autoLoad crashed:", err);
-      }
-    };
-
-    autoLoad();
-  }, [puja?.id, puja?.date, puja?.location, findPanditForPuja, getFirstAvailableSlot]);
-
-  // ─────────────────────────────────────────────────────────
-  // STEP 4: Navigate to billing with all collected data
-  // ─────────────────────────────────────────────────────────
   const handleGoToBilling = () => {
     if (puja?.soldTag) {
       alert("This puja is SOLD OUT and cannot be booked.");
@@ -393,16 +189,6 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
     if (!token) {
       alert("Please login first to proceed");
       navigate("/login");
-      return;
-    }
-
-    if (!autoSelectedSlot || !bookingDate || !selectedPanditId) {
-      alert("Finding available slots... Please wait a moment and try again.");
-      return;
-    }
-
-    if (paymentError) {
-      alert(paymentError);
       return;
     }
 
@@ -434,9 +220,6 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
     const billingState = {
       puja,
       selectedPackage,
-      panditId: selectedPanditId,
-      bookingDate,
-      slot: autoSelectedSlot,
       image: mainImage,
 
       // addons
@@ -453,12 +236,6 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
 
       // mode from puja (e.g. "hybrid")
       mode: puja?.mode,
-
-      // temple address from puja
-      pujaLocation: puja?.location,
-
-      // pandit location (lat/lng) for booking payload
-      panditLocation: selectedPandit?.location,
 
       // prasadam option
       prasadam,
@@ -651,60 +428,60 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
               {/* <span className="pd-badge">{puja.specialTag}</span> */}
             </div>
 
-            {/* Add-ons section */}
-            <div className="pd-addons-card">
-              <div className="pd-addons-header">
-                <span className="pd-addons-icon">＋</span>
-                <h3>Add-ons</h3>
-              </div>
-
-              {!puja?.addOns || puja.addOns.length === 0 ? (
-                <p className="pd-addons-empty">No add-ons available</p>
-              ) : (
-                <div className="pd-addons-list">
-                  {puja.addOns.map((addon, index) => {
-                    const addonId = addon.id || `addon-${index}`;
-                    const quantity = addonQuantities[addonId] || 0;
-
-                    return (
-                      <div key={addonId} className="pd-addon-item">
-                        {/* Name - Left */}
-                        <div className="pd-addon-info">
-                          <div className="pd-addon-info">
-                            <p
-                              className="pd-addon-name"
-                              title={addon.name} // ✅ Native browser tooltip
-                            >
-                              {addon.name}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Price + Controls - Right */}
-                        <div className="pd-addon-controls">
-                          <span className="pd-addon-price">{addon.price}</span>
-                          <div className="pd-quantity-group">
-                            <button
-                              className="pd-qty-btn pd-minus"
-                              onClick={() => updateAddonQuantity(addonId, -1)}
-                            >
-                              −
-                            </button>
-                            <span className="pd-qty-display">{quantity}</span>
-                            <button
-                              className="pd-qty-btn pd-plus"
-                              onClick={() => updateAddonQuantity(addonId, 1)}
-                            >
-                              +
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
+            {/* Add-ons section hidden */}
+            {false && (
+              <div className="pd-addons-card">
+                <div className="pd-addons-header">
+                  <span className="pd-addons-icon">＋</span>
+                  <h3>Add-ons</h3>
                 </div>
-              )}
-            </div>
+
+                {!puja?.addOns || puja.addOns.length === 0 ? (
+                  <p className="pd-addons-empty">No add-ons available</p>
+                ) : (
+                  <div className="pd-addons-list">
+                    {puja.addOns.map((addon, index) => {
+                      const addonId = addon.id || `addon-${index}`;
+                      const quantity = addonQuantities[addonId] || 0;
+
+                      return (
+                        <div key={addonId} className="pd-addon-item">
+                          <div className="pd-addon-info">
+                            <div className="pd-addon-info">
+                              <p
+                                className="pd-addon-name"
+                                title={addon.name}
+                              >
+                                {addon.name}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="pd-addon-controls">
+                            <span className="pd-addon-price">{addon.price}</span>
+                            <div className="pd-quantity-group">
+                              <button
+                                className="pd-qty-btn pd-minus"
+                                onClick={() => updateAddonQuantity(addonId, -1)}
+                              >
+                                −
+                              </button>
+                              <span className="pd-qty-display">{quantity}</span>
+                              <button
+                                className="pd-qty-btn pd-plus"
+                                onClick={() => updateAddonQuantity(addonId, 1)}
+                              >
+                                +
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Right: Event details */}
@@ -877,7 +654,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
             <div className="pd-temple-grid">
               <img
                 src={slides[0] || puja?.bannerUrls?.[0]?.url || "https://via.placeholder.com/800x600"}
-                alt={puja.location || "Temple image"}
+                alt={puja.templeName ? `${puja.templeName} temple` : "Temple"}
                 className="pd-temple-image"
               />
               <div className="pd-temple-text">
@@ -956,10 +733,6 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
 
         {/* Sticky footer CTA */}
         <div className="pd-sticky-footer">
-          {paymentError && (
-            <div className="pd-error-banner">{paymentError}</div>
-          )}
-
           <div className="pd-sticky-content">
             <div className="pd-sticky-left">
               <div className="pd-sticky-price-block">
@@ -976,7 +749,7 @@ const getFirstAvailableSlot = useCallback(async (panditId, pujaId, pujaDate, puj
                   checked={prasadam}
                   onChange={(e) => setPrasadam(e.target.checked)}
                 />
-                <span>Prasadam (Compulementary)</span>
+                <span>Prasadam (complementary)</span>
               </label>
             </div>
 

@@ -124,6 +124,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1.5rem;
+    margin-bottom: 3rem;
 }
 
 .pl-upcoming-title {
@@ -374,7 +375,7 @@
 
 .pl-cards {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
 }
 
@@ -390,10 +391,17 @@
   }
 
 .pl-card-banner {
-    height: 200px;
     position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-width: 1524px;
+    max-height: 1524px;
+    margin: 0 auto;
     background-size: cover;
     background-position: center;
+    background-repeat: no-repeat;
+    background-color: #000;
+    overflow: hidden;
 }
 
 .pl-card-overlay {
@@ -548,6 +556,14 @@
     margin: 0 0 6px;
     padding: 0 16px;
     line-height: 1.35;
+}
+
+.pl-card-desc {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0 0 8px;
+    padding: 0 16px;
+    line-height: 1.45;
 }
 
 .pl-card-purpose {
@@ -711,21 +727,22 @@
 }
 @media (max-width: 480px) {
   .pl-cards {
-    grid-template-columns: 1fr ;
+    grid-template-columns: 1fr;
   }
 }
 
-/* Cards - Mobile Single Column */
+/* Cards - Tablet 2 cols, Mobile 1 col */
+@media (max-width: 992px) {
+  .pl-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .pl-cards {
-    grid-template-columns: 1fr ;
+    grid-template-columns: 1fr;
     gap: 1.25rem;
-    /* padding: 0 1rem; */
     max-width: 100%;
-  }
-
-  .pl-card-banner {
-    height: 180px;
   }
 
   .pl-card-title {
@@ -833,7 +850,10 @@
 
 .pl-card-banner {
   position: relative;
-  height: 160px;
+  aspect-ratio: 1 / 1;
+  max-width: 1524px;
+  max-height: 1524px;
+  width: 100%;
   border-radius: 12px 12px 0 0;
   overflow: hidden;
 }

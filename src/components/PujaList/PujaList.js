@@ -1,56 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./PujaList.css";
-import StatsEventUi from "../StatsEventUi/StatsEventUi";
 import Footer from "../Footer/Footer";
 import { usePujaList, PUJA_LIST } from "../../data/pujaList";
 
-const PUJA_HERO_SLIDES = [
-  {
-    id: 1,
-    badge: "Maa Bagalamukhi Special",
-    slogan:
-      "Open the doors to legal justice and victory through this divine puja",
-    imageClass: "puja-hero-1",
-  },
-  {
-    id: 2,
-    badge: "Special Puja",
-    slogan: "Seek blessings at famous temples across India",
-    imageClass: "puja-hero-2",
-  },
-];
-
 function PujaList() {
-  const [heroSlide, setHeroSlide] = useState(0);
   const { pujas: pujaList, loading } = usePujaList();
   const [filteredPujas, setFilteredPujas] = useState(PUJA_LIST);
 
   // Filter state
   const [filtersOpen, setFiltersOpen] = useState({
-    category: false,
     benefits: false,
     location: false,
   });
-  const [selectedCategories, setSelectedCategories] = useState(new Set());
   const [selectedBenefits, setSelectedBenefits] = useState(new Set());
   const [selectedLocations, setSelectedLocations] = useState(new Set());
-
-  /* ================= HERO AUTO SLIDE ================= */
-  useEffect(() => {
-    const t = setInterval(() => {
-      setHeroSlide((s) => (s + 1) % PUJA_HERO_SLIDES.length);
-    }, 5000);
-    return () => clearInterval(t);
-  }, []);
 
   /* ================= FETCH PUJAS handled by usePujaList hook ================= */
 
   // Build filter option lists from pujaList
-  const categoryOptions = Array.from(
-    new Set(pujaList.map((p) => (p.category || "").trim()))
-  ).filter(Boolean);
-
   const benefitOptions = Array.from(
     new Set(
       pujaList.flatMap((p) =>
@@ -68,10 +36,6 @@ function PujaList() {
   // Apply filters whenever selection changes or pujaList updates
   useEffect(() => {
     const filtered = pujaList.filter((p) => {
-      // Category filter
-      if (selectedCategories.size > 0 && !selectedCategories.has(p.category))
-        return false;
-
       // Benefits filter (match any)
       if (selectedBenefits.size > 0) {
         const hasAny = (p.benefits || []).some((b) =>
@@ -88,7 +52,7 @@ function PujaList() {
     });
 
     setFilteredPujas(filtered);
-  }, [pujaList, selectedCategories, selectedBenefits, selectedLocations]);
+  }, [pujaList, selectedBenefits, selectedLocations]);
 
   const toggleSelection = (setState, value) => {
     setState((prev) => {
@@ -100,7 +64,6 @@ function PujaList() {
   };
 
   const clearAllFilters = () => {
-    setSelectedCategories(new Set());
     setSelectedBenefits(new Set());
     setSelectedLocations(new Set());
   };
@@ -122,27 +85,6 @@ function PujaList() {
       <h1 className="pl-main-heading">
         Perform Puja as per Vedic rituals at Famous Hindu Temples in India
       </h1>
-
-      {/* filters will be shown below hero (desktop: inline row; mobile: modal) */}
-
-      {/* ================= HERO ================= */}
-      <section className="pl-hero">
-        <div className="pl-hero-inner">
-          {PUJA_HERO_SLIDES.map((slide, i) => (
-            <div
-              key={slide.id}
-              className={`pl-hero-slide ${i === heroSlide ? "active" : ""}`}
-            >
-              <div className="pl-hero-content">
-                <span className="pl-hero-badge">{slide.badge}</span>
-                <p className="pl-hero-slogan">{slide.slogan}</p>
-                {/* <button className="pl-hero-cta">BOOK PUJA</button> */}
-              </div>
-              <div className={`pl-hero-image ${slide.imageClass}`} />
-            </div>
-          ))}
-        </div>
-      </section>
 
       {/* FILTERS: row for desktop/tablet, mobile uses modal */}
       <div className="pl-filters-row">
@@ -174,19 +116,6 @@ function PujaList() {
               </button>
             </div>
             <div className="filter-modal-body">
-              <div className="filter-section">
-                <h4>Category</h4>
-                {categoryOptions.map((c) => (
-                  <label key={c} className="filter-item">
-                    <input
-                      type="checkbox"
-                      checked={selectedCategories.has(c)}
-                      onChange={() => toggleSelection(setSelectedCategories, c)}
-                    />
-                    <span>{c}</span>
-                  </label>
-                ))}
-              </div>
               <div className="filter-section">
                 <h4>Benefits</h4>
                 {benefitOptions.map((b) => (
@@ -241,7 +170,7 @@ function PujaList() {
                   puja.bannerUrls?.[0]
                     ? {
                         backgroundImage: `url(${puja.bannerUrls[0].url})`,
-                        backgroundSize: "cover",
+                        backgroundSize: "contain",
                         backgroundPosition: "center",
                       }
                     : {}
@@ -261,22 +190,11 @@ function PujaList() {
               {/* category: puja type/classification */}
               {/* <p className="pl-card-category">{puja.category}</p> */}
               <h3 className="pl-card-title">{puja.title}</h3>
+              {puja.description && (
+                <p className="pl-card-desc">{puja.description}</p>
+              )}
               {/* duration: estimated puja time */}
               {/* <p className="pl-card-meta">Duration: {puja.duration}</p> */}
-              {/* With this */}
-              <p className="pl-card-title">Benefits</p>
-              <div className="pl-card-purpose space-y-1">
-                {puja.benefits?.map((benefit, index) => {
-                  const title = typeof benefit === 'object' ? benefit.title : benefit;
-                  const key = typeof benefit === 'object' && benefit._id ? benefit._id : index;
-                  return (
-                    <div key={key} className="flex items-center gap-2 text-sm">
-                      <span className="w-2 h-2 bg-green-500 rounded-full" />
-                      {title}
-                    </div>
-                  );
-                })}
-              </div>
               <p className="pl-card-meta">🏛 {puja.templeName}</p>
               {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta">📅 {puja.date}</p>
@@ -289,7 +207,7 @@ function PujaList() {
         </div>
       </section>
 
-      <StatsEventUi />
+      
       <Footer />
     </main>
   );

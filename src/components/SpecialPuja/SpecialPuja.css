@@ -47,6 +47,19 @@
   gap: 1.5rem;
 }
 
+/* Card banner: 1524x1524 square (responsive, max 1524px) */
+.sp-cards .pl-card-banner {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-width: 1524px;
+  max-height: 1524px;
+  flex-shrink: 0;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #1a1a1a;
+}
+
 /* Banner backgrounds for Special Puja cards (used with .pl-card-banner from PujaList) */
 .sp-cards .pl-card-banner.sp-banner-1 {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);

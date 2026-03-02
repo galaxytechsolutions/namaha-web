@@ -75,7 +75,7 @@ function SpecialPuja() {
                   puja.bannerUrls?.[0]
                     ? {
                         backgroundImage: `url(${puja.bannerUrls[0].url})`,
-                        backgroundSize: "cover",
+                        backgroundSize: "contain",
                         backgroundPosition: "center",
                       }
                     : {}
@@ -96,8 +96,9 @@ function SpecialPuja() {
               {/* category: puja type/classification */}
               {/* <p className="pl-card-category">{puja.category}</p> */}
               <h3 className="pl-card-title">{puja.title}</h3>
-              {/* {puja.promoText && <p className="pl-card-promo-body">{puja.promoText}</p>} */}
-
+              {puja.description && (
+                <p className="pl-card-desc">{puja.description}</p>
+              )}
               {/* duration: estimated puja time */}
               {/* <p className="pl-card-purpose">Duration: {puja.duration}</p> */}
               {/* templeName: temple/venue where puja is performed */}
