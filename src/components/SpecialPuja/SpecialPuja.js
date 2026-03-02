@@ -106,7 +106,7 @@ function SpecialPuja() {
               {/* templeName: temple/venue where puja is performed */}
               <p className="pl-card-meta">🏛 {puja.templeName}</p>
               {/* occasion: auspicious date/event when puja is performed */}
-              <p className="pl-card-meta">📅 {puja.date}</p>
+              <p className="pl-card-meta pl-card-date">📅 {puja.date}</p>
               <Link to={`/puja/${puja.id}`} className="pl-card-participate">
                 PARTICIPATE →
               </Link>

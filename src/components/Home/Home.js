@@ -35,9 +35,8 @@ const HERO_CONTENT = [
 
 const TRUST_STRIP_ITEMS = [
   { id: 1, icon: "shield", text: "Pujas Performed by Qualified Veda Pandits" },
-  { id: 2, icon: "shield", text: "100% Refund Policy on No Sankalpa" },
-  { id: 3, icon: "shield", text: "Puja Recordings within 48 hours" },
-  { id: 4, icon: "shield", text: "Prasad at your Doorstep in 10 days" },
+  { id: 2, icon: "shield", text: "Puja Recordings within 48 hours" },
+  { id: 3, icon: "shield", text: "Prasad at your Doorstep in 10 days" },
 ];
 
 function Home() {
@@ -71,6 +70,7 @@ function Home() {
   return (
     <div className="App">
       <main>
+        <div className="home-hero-viewport">
         {/* ================= HERO ================= */}
         <section id="home" className="hero-section1">
           <div className="hero-carousel-track">
@@ -138,6 +138,7 @@ function Home() {
               </div>
             </div>
           </div>
+        </div>
       </main>
     </div>
   );
