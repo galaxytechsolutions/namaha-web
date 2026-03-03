@@ -48,9 +48,13 @@ function Footer() {
                             <img src="/logo.png" alt="Shri AAUM" className="footer-logo" />
                             <span className="footer-brand-name">SHRI AAUM</span>
                         </div>
-                        <p className="footer-desc">
-                            SHRI AAUM has brought religious services to the masses in India by connecting devotees, pandits and temples. Partnering with over 100 renowned temples, we provide exclusive pujas and offerings performed by expert pandits and share videos of the completed puja rituals.
-                        </p>
+                        <div className="footer-desc">
+                            <p>Shri embodies divine abundance, grace, prosperity, and the auspicious flow of life.</p>
+                            <p>Aaum (Om) is the primordial cosmic vibration — the eternal sound from which all creation unfolds.</p>
+                            <p>Together, Shri Aaum signifies the conscious invitation of divine order into one's life.</p>
+                            <p>Our purpose is to preserve sacred traditions with authenticity, structure them with clarity, and make their power accessible to all.</p>
+                            <p>Temple. Teerth. Tattva. Within your reach.</p>
+                        </div>
                     </div>
                     <div className="footer-col">
                         <h4 className="footer-heading">Company</h4>

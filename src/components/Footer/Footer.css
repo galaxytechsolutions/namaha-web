@@ -52,6 +52,14 @@
     line-height: 1.6;
     margin: 0;
   }
+
+  .footer-desc p {
+    margin: 0 0 0.5em 0;
+  }
+
+  .footer-desc p:last-child {
+    margin-bottom: 0;
+  }
   
   .footer-heading {
     font-family: var(--font-heading);

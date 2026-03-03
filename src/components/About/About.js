@@ -44,7 +44,7 @@ function About() {
 
       <section className="about-values">
         <div className="about-container">
-          <h2>Our work is rooted in three core principles</h2>
+          <h2>Our work is rooted in three core principles:</h2>
           <div className="about-values-grid">
             <div className="about-value-card">
               <h3>Temple</h3>
