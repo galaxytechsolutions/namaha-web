@@ -71,10 +71,14 @@
     margin-bottom: 10px;
   }
   
-  .footer-links a {
+  .footer-links a,
+  .footer-links .footer-link-text {
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.9);
     text-decoration: none;
+  }
+
+  .footer-links a {
     transition: color 0.2s;
   }
   

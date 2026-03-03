@@ -30,8 +30,7 @@ function Footer() {
         { label: 'Contact Us', href: '/contact' },
     ];
     const serviceLinks = [
-        { label: 'Puja', href: '#' },
-        { label: 'Temples', href: '#' },
+        { label: 'Puja', href: '/puja' },
     ];
     const socialLinks = [
         { name: 'YouTube', href: 'https://youtube.com/@shri_aaum?si=5kOi-XTTaETP85jK' },
@@ -68,7 +67,11 @@ function Footer() {
                         <ul className="footer-links">
                             {serviceLinks.map((link) => (
                                 <li key={link.label}>
-                                    <a href={link.href}>{link.label}</a>
+                                    {link.href ? (
+                                        <Link to={link.href}>{link.label}</Link>
+                                    ) : (
+                                        <span className="footer-link-text">{link.label}</span>
+                                    )}
                                 </li>
                             ))}
                         </ul>
