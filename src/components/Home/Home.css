@@ -330,7 +330,7 @@
   .hero-section1 {
     height: 85vh;
     min-height: 380px;
-    padding-top: 90px;
+    padding-top: 75px;
   }
   .hero-content1 {
     left: 0;
@@ -371,9 +371,9 @@
 
 @media (max-width: 768px) {
   .hero-section1 {
-    height: 65vh;
-    min-height: 360px;
-    padding-top: 85px;
+    height: 50vh;
+    min-height: 280px;
+    padding-top: 60px;
   }
   .hero-content1 {
     left: 0;
@@ -415,11 +415,11 @@
 
 @media (max-width: 480px) {
 
-  /* Mobile: enough height for hero content to stay visible */
+  /* Mobile: reduced height for compact display */
   .hero-section1 {
-    height: 55vh;
-    min-height: 300px;
-    padding-top: 80px;
+    height: 42vh;
+    min-height: 240px;
+    padding-top: 58px;
   }
 
   /* Trust strip - more compact on small phones */
@@ -438,7 +438,7 @@
 
   /* Typography - reduced font sizes for mobile */
   .hero-content1 h1 {
-    font-size: clamp(0.72rem, 3.5vw, 0.88rem);
+    font-size: 12px;
     line-height: 1.2;
     letter-spacing: -0.01em;
     margin-bottom: 0.2rem;
@@ -498,9 +498,9 @@
     max-width: 60%;
   }
 
-  /* Keep dots and controls visible within the smaller banner */
+  /* Keep dots visible within the compact hero */
   .hero-carousel-dots {
-    bottom: 12px;
+    bottom: 8px;
   }
 }
 

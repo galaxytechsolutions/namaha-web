@@ -132,6 +132,7 @@ function LoginPage() {
                   type="tel"
                   value={mobile}
                   onChange={(e) => setMobile(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') sendOtp(); }}
                   placeholder="Enter 10-digit mobile"
                   maxLength={10}
                 />
@@ -162,6 +163,7 @@ function LoginPage() {
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))}
+                onKeyDown={(e) => { if (e.key === 'Enter') verifyOtp(); }}
                 placeholder="123456"
                 maxLength={6}
               />
@@ -188,6 +190,7 @@ function LoginPage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') completeProfile(); }}
                 placeholder="Enter your name"
               />
             </div>

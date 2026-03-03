@@ -23,7 +23,6 @@ function BillingPage() {
     grandTotal,
     coupon,
     mode: pujaMode,
-    prasadam = false,
   } = location.state || {};
 
   const parseAmount = (value) => {
@@ -79,6 +78,9 @@ function BillingPage() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [couponError, setCouponError] = useState("");
   const [couponInput, setCouponInput] = useState("");
+  const [prasadam, setPrasadam] = useState(location.state?.prasadam ?? false);
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [invoiceData, setInvoiceData] = useState(null);
 
   const discountAmount = couponApplied ? calculateDiscount() : 0;
   const finalPayable = Math.max(subtotal - discountAmount, 0);
@@ -325,8 +327,22 @@ function BillingPage() {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             }
           );
-          alert("🎉 Payment successful! Your puja has been booked.");
-          navigate("/");
+          const invoice = {
+            devoteeDetails: payload.devoteeDetails,
+            participants: payload.participants,
+            pujaName: puja.title,
+            pujaDate: payload.date,
+            packageName: selectedPackage?.name,
+            packagePrice: selectedPackage?.price,
+            addons: addons || [],
+            addonsTotal,
+            coupon: payload.coupon,
+            couponCode: payload.couponCode,
+            discountAmount: payload.discountAmount || discountAmount,
+            grandTotal: payload.grandTotal,
+          };
+          setInvoiceData(invoice);
+          setShowInvoiceModal(true);
         } catch (err) {
           console.error("Confirm payment error:", err);
           alert(err.response?.data?.message || "Failed to confirm booking. Please contact support.");
@@ -353,6 +369,151 @@ function BillingPage() {
     rzp.open();
   };
 
+  const handleDownloadInvoice = () => {
+    if (!invoiceData) return;
+
+    const {
+      devoteeDetails,
+      participants,
+      pujaName,
+      pujaDate,
+      packageName,
+      packagePrice,
+      addons,
+      addonsTotal,
+      coupon,
+      couponCode,
+      discountAmount,
+      grandTotal,
+    } = invoiceData;
+
+    const participantRows =
+      participants && participants.length
+        ? participants
+            .map(
+              (p, index) =>
+                `<tr>
+                  <td style="padding:4px 8px;">${index + 1}</td>
+                  <td style="padding:4px 8px;">${p.name || "-"}</td>
+                  <td style="padding:4px 8px;">${p.nakshatra || "-"}</td>
+                  <td style="padding:4px 8px;">${p.gotra || "-"}</td>
+                </tr>`
+            )
+            .join("")
+        : `<tr><td colspan="4" style="padding:4px 8px;">No participants listed</td></tr>`;
+
+    const addonsRows =
+      addons && addons.length
+        ? addons
+            .map(
+              (a, index) =>
+                `<tr>
+                  <td style="padding:4px 8px;">${index + 1}</td>
+                  <td style="padding:4px 8px;">${a.name || "-"}</td>
+                  <td style="padding:4px 8px; text-align:right;">${a.quantity || 1}</td>
+                  <td style="padding:4px 8px; text-align:right;">${a.total || a.price || "-"}</td>
+                </tr>`
+            )
+            .join("")
+        : `<tr><td colspan="4" style="padding:4px 8px;">No add-ons selected</td></tr>`;
+
+    const couponRow =
+      coupon && couponCode
+        ? `<p style="margin:4px 0;">Coupon: <strong>${couponCode}</strong> (Discount: ₹${discountAmount || 0})</p>`
+        : `<p style="margin:4px 0;">Coupon: <strong>Not applied</strong></p>`;
+
+    const win = window.open("", "_blank");
+    if (!win) return;
+
+    win.document.write(`
+      <html>
+        <head>
+          <title>Invoice - ${pujaName}</title>
+          <meta charset="UTF-8" />
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 24px; color: #111827; }
+            h1, h2, h3 { margin: 0 0 8px; }
+            .section { margin-bottom: 16px; }
+            .section-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+            table { border-collapse: collapse; width: 100%; font-size: 13px; }
+            th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; }
+            th { background: #f3f4f6; }
+          </style>
+        </head>
+        <body>
+          <h1>Invoice</h1>
+          <p style="margin:4px 0;">Puja: <strong>${pujaName}</strong></p>
+          <p style="margin:4px 0;">Date: <strong>${pujaDate || "-"}</strong></p>
+
+          <div class="section">
+            <div class="section-title">Devotee Details</div>
+            <p style="margin:4px 0;">Name: <strong>${devoteeDetails?.name || "-"}</strong></p>
+            <p style="margin:4px 0;">Phone: <strong>${devoteeDetails?.phone || "-"}</strong></p>
+            <p style="margin:4px 0;">Email: <strong>${devoteeDetails?.email || "-"}</strong></p>
+            <p style="margin:4px 0;">Gotra: <strong>${devoteeDetails?.gotra || "-"}</strong></p>
+            <p style="margin:4px 0;">Address: <strong>${devoteeDetails?.address || "-"}</strong></p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Participants</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Nakshatra</th>
+                  <th>Gotra</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${participantRows}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Puja Package</div>
+            <p style="margin:4px 0;">Package: <strong>${packageName || "-"}</strong></p>
+            <p style="margin:4px 0;">Price: <strong>${packagePrice || "-"}</strong></p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Add-ons</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th style="text-align:right;">Qty</th>
+                  <th style="text-align:right;">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${addonsRows}
+              </tbody>
+            </table>
+            <p style="margin:6px 0; text-align:right;"><strong>Add-ons Total: ${addonsTotal || 0}</strong></p>
+          </div>
+
+          <div class="section">
+            <div class="section-title">Coupon & Total</div>
+            ${couponRow}
+            <p style="margin:4px 0;">Grand Total: <strong>₹${grandTotal}</strong></p>
+          </div>
+        </body>
+      </html>
+    `);
+
+    win.document.close();
+    win.focus();
+    win.print();
+  };
+
+  const handleCloseInvoice = () => {
+    setShowInvoiceModal(false);
+    navigate("/");
+  };
+
   // Guard: if accessed directly without state
   if (!puja) {
     return (
@@ -366,14 +527,58 @@ function BillingPage() {
 
   return (
     <>
+    {showInvoiceModal && invoiceData && (
+      <div className="billing-invoice-backdrop">
+        <div className="billing-invoice-modal">
+          <h2 className="billing-invoice-title">Payment Successful</h2>
+          <p className="billing-invoice-subtitle">
+            Your puja has been booked successfully. You can download the invoice or close this window.
+          </p>
+
+          <div className="billing-invoice-section">
+            <h3>Invoice Summary</h3>
+            <p><strong>Puja:</strong> {invoiceData.pujaName}</p>
+            <p><strong>Date:</strong> {invoiceData.pujaDate || "-"}</p>
+            <p><strong>Package:</strong> {invoiceData.packageName} ({invoiceData.packagePrice})</p>
+            <p><strong>Grand Total:</strong> ₹{invoiceData.grandTotal}</p>
+          </div>
+
+          <div className="billing-invoice-section">
+            <h3>Devotee Details</h3>
+            <p><strong>Name:</strong> {invoiceData.devoteeDetails?.name || "-"}</p>
+            <p><strong>Phone:</strong> {invoiceData.devoteeDetails?.phone || "-"}</p>
+            <p><strong>Email:</strong> {invoiceData.devoteeDetails?.email || "-"}</p>
+          </div>
+
+          <div className="billing-invoice-section billing-invoice-actions">
+            <button
+              type="button"
+              className="billing-invoice-btn billing-invoice-btn-primary"
+              onClick={handleDownloadInvoice}
+            >
+              Download Invoice
+            </button>
+            <button
+              type="button"
+              className="billing-invoice-btn billing-invoice-btn-secondary"
+              onClick={handleCloseInvoice}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     <div className="billing-container">
       {/* LEFT IMAGE + MESSAGE */}
       <div className="billing-left">
         <div className="billing-left-inner">
-          <img
-            src={image || "https://via.placeholder.com/600x800"}
-            alt={puja.title}
-          />
+          <div className="billing-left-image-wrap">
+            <img
+              src={image || "https://via.placeholder.com/600x800"}
+              alt={puja.title}
+            />
+          </div>
           <div className="billing-left-message">
             <p className="billing-left-message-title">You're almost there!</p>
             <p className="billing-left-message-text">
@@ -458,6 +663,16 @@ function BillingPage() {
               )}
             </div>
           )}
+
+          {/* Prasadam option */}
+          <label className="billing-prasadam-option">
+            <input
+              type="checkbox"
+              checked={prasadam}
+              onChange={(e) => setPrasadam(e.target.checked)}
+            />
+            <span>Prasadam (complimentary)</span>
+          </label>
 
           {/* ✅ GRAND TOTAL */}
           <div className="grand-total-row">

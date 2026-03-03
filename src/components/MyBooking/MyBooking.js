@@ -29,8 +29,10 @@ function MyBookings() {
         params: { filter }
       });
 
-      console.log("📋 Bookings data:", response.data);
-      setBookings(response.data.bookings || []);
+      const data = response.data;
+      const list = data?.bookings ?? data?.data ?? (Array.isArray(data) ? data : []);
+      console.log("📋 Bookings data:", list);
+      setBookings(Array.isArray(list) ? list : []);
     } catch (err) {
       console.error("Error fetching bookings:", err);
       setError(err.response?.data?.message || "Failed to load bookings");
@@ -79,13 +81,39 @@ function MyBookings() {
   };
 
   const formatDate = (dateStr) => {
-    const [day, month, year] = dateStr.split('/');
-    const date = new Date(year, month - 1, day);
-    return date.toLocaleDateString('en-GB', { 
-      day: '2-digit', 
-      month: '2-digit', 
-      year: 'numeric' 
+    if (!dateStr) return "—";
+    if (dateStr.includes("/")) {
+      const [day, month, year] = dateStr.split("/");
+      const date = new Date(year, month - 1, day);
+      return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+    }
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? dateStr : date.toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
     });
+  };
+
+  const getBookingDisplayData = (b) => {
+    const pooja = b.poojaId ?? b.pooja;
+    const pujaObj = typeof pooja === "object" ? pooja : null;
+    const selectedPkg = b.selectedPackage ?? b.package;
+    return {
+      id: b._id ?? b.id,
+      name: pujaObj?.title ?? pujaObj?.name ?? "Puja Booking",
+      deity: pujaObj?.category ?? pujaObj?.section ?? selectedPkg?.name ?? "N/A",
+      pandit: b.panditId ?? b.pandit,
+      date: b.date,
+      slotStart: b.slots?.[0]?.start,
+      duration: b.duration ?? selectedPkg?.duration ?? "—",
+      price: b.price ?? b.grandTotal ?? b.payment?.amount ?? 0,
+      mode: b.mode ?? "online",
+    };
   };
 
   if (loading) {
@@ -236,82 +264,77 @@ function MyBookings() {
         </div>
       ) : (
         <div className="bookings-grid">
-          {bookings.map((booking) => (
-            <div key={booking._id} className="booking-card">
-              {/* Status Badge */}
-              <div className={`status-badge ${getStatusBadgeClass(booking.status)}`}>
-                {getStatusText(booking.status)}
-              </div>
+          {bookings.map((booking) => {
+            const d = getBookingDisplayData(booking);
+            const pandit = d.pandit && typeof d.pandit === "object" ? d.pandit : null;
+            const imgUrl = pandit?.profileImage?.url ?? pandit?.profileImage;
+            return (
+              <div key={d.id || booking._id} className="booking-card">
+                <div className={`status-badge ${getStatusBadgeClass(booking.status)}`}>
+                  {getStatusText(booking.status)}
+                </div>
 
-              {/* Puja Info */}
-              <div className="booking-content">
-                <h3 className="puja-name">
-                  {booking.poojaId?.name || "Puja Booking"}
-                </h3>
-                <p className="puja-deity">
-                  Deity: {booking.poojaId?.section || "N/A"}
-                </p>
+                <div className="booking-content">
+                  <h3 className="puja-name">{d.name}</h3>
+                  <p className="puja-deity">Package: {d.deity}</p>
 
-                {/* Pandit Info */}
-                <div className="pandit-info">
-                  <div className="pandit-avatar">
-                    {booking.panditId?.profileImage?.url ? (
-                      <img 
-                        src={booking.panditId.profileImage.url} 
-                        alt={booking.panditId.name}
-                      />
-                    ) : (
-                      <div className="avatar-placeholder">
-                        {booking.panditId?.name?.charAt(0) || "P"}
+                  <div className="pandit-info">
+                    <div className="pandit-avatar">
+                      {imgUrl ? (
+                        <img src={imgUrl} alt={pandit?.name ?? "Pandit"} />
+                      ) : (
+                        <div className="avatar-placeholder">
+                          {pandit?.name?.charAt(0) ?? "P"}
+                        </div>
+                      )}
+                    </div>
+                    <div className="pandit-details">
+                      <span className="pandit-name">
+                        👤 {pandit?.name ?? "To be assigned"}
+                      </span>
+                      {pandit?.rating && (
+                        <span className="pandit-rating">⭐ {pandit.rating}</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="booking-datetime">
+                    <div className="datetime-item">
+                      <span className="icon">📅</span>
+                      <span>{formatDate(d.date)}</span>
+                    </div>
+                    {d.slotStart && (
+                      <div className="datetime-item">
+                        <span className="icon">🕐</span>
+                        <span>{d.slotStart}</span>
+                      </div>
+                    )}
+                    {d.duration && d.duration !== "—" && (
+                      <div className="datetime-item">
+                        <span className="icon">⏱️</span>
+                        <span>{d.duration}</span>
                       </div>
                     )}
                   </div>
-                  <div className="pandit-details">
-                    <span className="pandit-name">
-                      👤 {booking.panditId?.name || "Pandit"}
-                    </span>
-                    <span className="pandit-rating">
-                      ⭐ 4.5
-                    </span>
-                  </div>
-                </div>
 
-                {/* Date & Time */}
-                <div className="booking-datetime">
-                  <div className="datetime-item">
-                    <span className="icon">📅</span>
-                    <span>{formatDate(booking.date)}</span>
+                  <div className={`mode-badge ${d.mode === "online" ? "mode-online" : "mode-offline"}`}>
+                    {d.mode === "online" ? "🖥️ Online" : "📍 Offline"}
                   </div>
-                  <div className="datetime-item">
-                    <span className="icon">🕐</span>
-                    <span>{booking.slots[0]?.start}</span>
+
+                  <div className="booking-price">
+                    ₹ {Number(d.price).toLocaleString("en-IN")}
                   </div>
-                  <div className="datetime-item">
-                    <span className="icon">⏱️</span>
-                    <span>{booking.duration}</span>
-                  </div>
-                </div>
 
-                {/* Mode Badge */}
-                <div className={`mode-badge ${booking.mode === "online" ? "mode-online" : "mode-offline"}`}>
-                  {booking.mode === "online" ? "🖥️ Online" : "📍 Offline"}
+                  <button
+                    className="view-btn"
+                    onClick={() => handleViewBooking(d.id || booking._id)}
+                  >
+                    View Details
+                  </button>
                 </div>
-
-                {/* Price */}
-                <div className="booking-price">
-                  ₹ {booking.price?.toLocaleString('en-IN') || '0'}
-                </div>
-
-                {/* Action Button */}
-                <button 
-                  className="view-btn"
-                  onClick={() => handleViewBooking(booking._id)}
-                >
-                  View Details
-                </button>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 

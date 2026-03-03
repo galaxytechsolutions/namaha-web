@@ -59,7 +59,7 @@ function Contact() {
                 <div>
                   <strong>Customer Support</strong>
                   <p>Available via whatsapp</p>
-                  <a href="https://wa.me/918523055561" target="_blank" rel="noopener noreferrer"> 90599 26363 (WhatsApp)</a>
+                  <a href="https://wa.me/9059926363" target="_blank" rel="noopener noreferrer"> 90599 26363 (WhatsApp)</a>
                 </div>
               </div>
             </div>

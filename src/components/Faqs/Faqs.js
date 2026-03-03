@@ -17,7 +17,7 @@ const benefits = [
   {
     id: 3,
     title: 'Personalised Sankalpa and Sacred Prasad Delivery',
-    description: 'Your names and Gotras are chanted in the Puja Sankalpa, get recorded Puja videos within 48 hours and Prasad at your doorstep in 7-10 days.',
+    description: 'Your names and Gotras are chanted in the Puja Sankalpa, get recorded Puja videos within 2-4 days and Prasad at your doorstep in 7-10 days.',
     icon: '📦',
   },
   {

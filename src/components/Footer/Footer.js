@@ -36,7 +36,7 @@ function Footer() {
     const socialLinks = [
         { name: 'YouTube', href: 'https://youtube.com/@shri_aaum?si=5kOi-XTTaETP85jK' },
         { name: 'Instagram', href: 'https://www.instagram.com/shri_aaum' },
-        { name: 'WhatsApp', href: 'https://wa.me/918523055561' },
+        { name: 'WhatsApp', href: 'https://wa.me/9059926363' },
         { name: 'Facebook', href: 'https://www.facebook.com/shri_aaum' },
     ];
 

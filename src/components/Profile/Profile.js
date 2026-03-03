@@ -8,9 +8,11 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [avatarFile, setAvatarFile] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     mobile: "",
+    email: "",
     dob: "",
     zodiacSign: "",
   });
@@ -66,10 +68,16 @@ function Profile() {
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        alert("Image must be smaller than 5MB");
+        return;
+      }
+      setAvatarFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setAvatarPreview(reader.result);
       reader.readAsDataURL(file);
     }
+    e.target.value = "";
   };
 
   const handleInputChange = (e) => {
@@ -78,7 +86,8 @@ function Profile() {
   };
 
   const hasChanges = () => {
-    return JSON.stringify(formData) !== JSON.stringify(originalData);
+    const formChanged = JSON.stringify(formData) !== JSON.stringify(originalData);
+    return formChanged || !!avatarFile;
   };
 
   const handleSave = async () => {
@@ -92,6 +101,10 @@ function Profile() {
       updateData.append("mobile", formData.mobile);
       updateData.append("dob", formData.dob);
       updateData.append("zodiacSign", formData.zodiacSign);
+
+      if (avatarFile) {
+        updateData.append("profilePic", avatarFile);
+      }
 
       const res = await axiosInstance.put("/auth/profile", updateData, {
         headers: {
@@ -157,14 +170,26 @@ function Profile() {
             </div>
             <div className="avatar-actions">
               <label className="avatar-btn primary">
-                Change Photo
+                {avatarPreview ? "Change Photo" : "Add Photo"}
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
                   onChange={handleAvatarChange}
                   style={{ display: "none" }}
                 />
               </label>
+              {avatarPreview && (
+                <button
+                  type="button"
+                  className="avatar-btn secondary"
+                  onClick={() => {
+                    setAvatarPreview(null);
+                    setAvatarFile(null);
+                  }}
+                >
+                  Remove
+                </button>
+              )}
             </div>
           </div>
 

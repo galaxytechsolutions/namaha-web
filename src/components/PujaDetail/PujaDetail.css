@@ -17,22 +17,45 @@
 
 .pd-container {
   width: 100%;
-  /* max-width: 900px; */
+  max-width: 100%;
   margin: 0 auto;
-  padding: 0 1rem 1.5rem; /* consistent 1rem side padding for all content */
+  padding: 0 clamp(0.75rem, 3vw, 1.5rem) 1.5rem;
   box-sizing: border-box;
 }
 
 .pd-grid {
   display: grid;
-  grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.2fr);
-  gap: 2.5rem;
-  align-items: start;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1.2fr);
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  align-items: stretch;
+  width: 100%;
+}
+
+/* Laptop L (1440px) - use full available space */
+@media (min-width: 1440px) {
+  .pd-container {
+    max-width: 1400px;
+    padding: 0 2rem 1.5rem;
+  }
+
+  .pd-grid {
+    grid-template-columns: minmax(400px, 1fr) minmax(420px, 1.3fr);
+    gap: 3rem;
+    align-items: stretch;
+  }
+
+  .pd-details {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 /* ----- Left: Carousel ----- */
 .pd-carousel-wrap {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
 }
 
 .pd-carousel-frame {
@@ -214,10 +237,19 @@
 .pd-details {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 0.5rem;
   width: 100%;
   min-width: 0;
+  max-width: 100%;
   align-self: stretch;
+  justify-content: flex-start;
+  flex: 1;
+}
+
+.pd-details-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
 
 .pd-details .pd-title {
@@ -255,23 +287,27 @@
 
 .pd-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.75rem, 4vw + 1rem, 2.5rem);
+  font-size: clamp(1.25rem, 2.5vw + 1rem, 2.5rem);
   font-weight: 700;
   color: #1f2937;
-  margin: 0;
+  margin: 0 0 0.15em;
   line-height: 1.35;
   max-width: 100%;
 }
 
 .pd-purpose {
-  font-size: 15px;
+  font-size: clamp(0.875rem, 1.2vw, 1rem);
   color: #4b5563;
   margin: 0;
   line-height: 1.5;
 }
 
+.pd-details-header .pd-meta {
+  margin: 0;
+}
+
 .pd-meta {
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
   color: #4b5563;
   margin: 0;
   display: flex;
@@ -284,37 +320,38 @@
 }
 
 .pd-countdown-label {
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
   color: #374151;
-  margin: 0 0 0.5rem;
+  margin: 0.35rem 0 0.35rem;
 }
 
 .pd-countdown {
   display: flex;
-  gap: 10px;
+  gap: clamp(6px, 1.5vw, 12px);
   flex-wrap: nowrap;
   width: 100%;
+  max-width: 100%;
 }
 
 .pd-countdown-item {
   flex: 1;
   min-width: 0;
   background: #fef3c7;
-  border-radius: 10px;
-  padding: 12px 10px;
+  border-radius: clamp(8px, 1.5vw, 10px);
+  padding: clamp(8px, 1.5vw, 12px) clamp(6px, 1.2vw, 10px);
   text-align: center;
   border: 1px solid #fde68a;
 }
 
 .pd-countdown-num {
   display: block;
-  font-size: 1.5rem;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
   font-weight: 700;
   color: #1f2937;
 }
 
 .pd-countdown-label-sm {
-  font-size: 0.8rem;
+  font-size: clamp(0.7rem, 1vw, 0.8rem);
   color: #6b7280;
 }
 
@@ -362,13 +399,14 @@
 .pd-cta {
   margin-top: 0.25rem;
   width: fit-content;
-  min-width: 180px;
+  min-width: clamp(140px, 20vw, 180px);
+  max-width: 100%;
   background: #ea580c;
   color: #fff;
   border: none;
-  padding: 10px 20px;
+  padding: clamp(12px, 1.5vw, 16px) clamp(16px, 2.5vw, 24px);
   border-radius: 10px;
-  font-size: 0.95rem;
+  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
   font-weight: 700;
   cursor: pointer;
   display: inline-flex;
@@ -381,6 +419,52 @@
 
 .pd-cta:hover {
   background: #c2410c;
+}
+
+/* About Puja in pd-details (right side) - below date */
+.pd-details-about {
+  width: 100%;
+  min-height: 0;
+}
+
+.pd-details-about-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #4b5563;
+  margin: 0;
+}
+
+/* Inner HTML - blocks inline for line-clamp */
+.pd-details-about-text p,
+.pd-details-about-text div {
+  display: inline;
+  margin: 0;
+}
+
+/* Read more/less buttons outside clamped text - always visible */
+.pd-details-about-actions {
+  margin-top: 0.2rem;
+  line-height: 1.5;
+}
+
+.pd-read-more-btn {
+  display: inline;
+  background: none;
+  border: none;
+  color: #ea580c;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  text-decoration: underline;
+}
+
+.pd-read-more-btn:hover {
+  color: #c2410c;
 }
 
 /* ----- How it Works ----- */
@@ -583,37 +667,87 @@
 
 @media (max-width: 768px) {
   .pd-how-it-works {
-    padding: 1.5rem 1rem;
+    padding: 0.75rem 0.5rem;
   }
   .pd-how-title {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    gap: 0.35rem;
+  }
+  .pd-how-ornament {
+    font-size: 0.55rem;
   }
   .pd-how-steps {
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 0;
+    max-width: 100%;
   }
   .pd-how-step {
-    max-width: 100%;
+    min-width: 0;
+    flex: 1;
+    max-width: 58px;
+  }
+  .pd-how-icon-wrap {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 0.25rem;
+  }
+  .pd-how-icon-grid {
+    width: 18px;
+    height: 18px;
+    gap: 1px;
+  }
+  .pd-how-icon-form {
+    width: 20px;
+    height: 16px;
+  }
+  .pd-how-form-field {
+    height: 10px;
+    border-width: 1px;
+    border-radius: 3px;
+  }
+  .pd-how-form-check {
+    width: 10px;
+    height: 10px;
+    font-size: 6px;
+    top: -2px;
+    right: -2px;
+  }
+  .pd-how-icon-video-inner {
+    width: 20px;
+    gap: 1px;
+  }
+  .pd-how-video-play {
+    width: 20px;
+    height: 12px;
+    font-size: 6px;
+    border-radius: 3px;
+  }
+  .pd-how-icon-box {
+    width: 18px;
+    height: 16px;
+    border-radius: 3px;
+  }
+  .pd-how-step-title {
+    font-size: 0.55rem;
+    line-height: 1.15;
   }
   .pd-how-connector {
     width: 6px;
-    height: 20px;
-    margin: 0;
+    height: 3px;
+    margin-top: 14px;
+    flex-shrink: 0;
   }
 
   .pd-how-connector-fill {
-    width: 100%;
-    height: 0;
-    bottom: 0;
-    top: auto;
-    left: 0;
-    transition: height 0.3s ease;
+    width: 0;
+    height: 100%;
   }
 
   .pd-how-connector-fill.filled {
-    height: 100%;
+    width: 100%;
   }
 }
 
@@ -666,6 +800,19 @@
   border-bottom: 1px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.2s ease;
+}
+
+.pd-section-nav::-webkit-scrollbar {
+  height: 1px;
+}
+
+.pd-section-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pd-section-nav::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 0;
 }
 
 .pd-section-nav--fixed {
@@ -1031,6 +1178,23 @@
   left: 0;
   color: #1f2937;
   font-weight: 700;
+}
+
+.pd-package-read-more {
+  display: inline-block;
+  background: none;
+  border: none;
+  color: #ea580c;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.25rem 0;
+  margin-bottom: 0.5rem;
+  margin-top: 0px;
+}
+
+.pd-package-read-more:hover {
+  color: #c2410c;
 }
 
 .pd-package-btn {
@@ -1430,18 +1594,74 @@
   line-height: 1.6;
 }
 
+/* Tablet - side by side like desktop, smaller right-column fonts to fit */
+@media (max-width: 1024px) {
+  .pd-grid {
+    grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr);
+    gap: clamp(1.25rem, 3vw, 2rem);
+    align-items: stretch;
+  }
+
+  .pd-details {
+    gap: 0.5rem;
+  }
+
+  .pd-title {
+    font-size: clamp(1rem, 2.5vw, 1.35rem);
+  }
+
+  .pd-purpose {
+    font-size: 0.8rem;
+  }
+
+  .pd-meta {
+    font-size: 0.8rem;
+  }
+
+  .pd-details-about-text {
+    font-size: 0.82rem;
+  }
+
+  .pd-read-more-btn {
+    font-size: 0.82rem;
+  }
+
+  .pd-countdown-label {
+    font-size: 0.8rem;
+  }
+
+  .pd-countdown-num {
+    font-size: clamp(1rem, 1.8vw, 1.2rem);
+  }
+
+  .pd-countdown-label-sm {
+    font-size: 0.65rem;
+  }
+
+  .pd-cta {
+    font-size: 0.85rem;
+    padding: clamp(10px, 1.2vw, 12px) clamp(14px, 2vw, 20px);
+  }
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .pd-container {
     max-width: 100%;
     margin: 0 auto;
-    padding: 0.75rem 1rem 1.5rem; /* same 1rem side padding on mobile */
+    padding: 0.75rem 1rem 1.5rem;
   }
 
   .pd-grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 12px 0px;
+    gap: 1.25rem;
+    padding: 12px 0;
+  }
+
+  .pd-details {
+    width: 100%;
+    max-width: 100%;
+    gap: 1rem;
   }
 
   .pd-carousel-frame {
@@ -1460,23 +1680,40 @@
     font-size: clamp(1.35rem, 5vw, 1.75rem);
   }
 
+  .pd-countdown-label {
+    font-size: 0.8rem;
+    margin: 0.3rem 0 0.3rem;
+  }
+
   .pd-countdown {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    gap: 4px;
   }
 
   .pd-countdown-item {
-    flex: 1 1 calc(50% - 5px);
-    min-width: 60px;
-    padding: 10px 12px;
+    flex: 1;
+    min-width: 0;
+    padding: 6px 4px;
   }
 
   .pd-countdown-num {
-    font-size: 1.25rem;
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+  }
+
+  .pd-countdown-label-sm {
+    font-size: 0.6rem;
+  }
+
+  .pd-cta {
+    width: 100%;
+    max-width: 280px;
+    min-width: 0;
   }
 
   .pd-section-nav {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
   }
 
   .pd-section-nav-inner {
@@ -1494,6 +1731,28 @@
   /* Stack benefit cards on small screens to avoid horizontal overflow */
   .pd-benefits-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .pd-benefit-card {
+    padding: 1rem;
+  }
+
+  .pd-benefit-icon {
+    width: 36px;
+    height: 36px;
+    font-size: 1.15rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .pd-benefit-title {
+    font-size: 0.95rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .pd-benefit-text {
+    font-size: 0.8rem;
+    line-height: 1.45;
   }
 
   /* Stack process steps vertically on small screens to prevent cropping */
@@ -1506,13 +1765,55 @@
 
   .pd-temple-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .pd-temple-name {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .pd-temple-text p,
+  .pd-temple-text > div {
+    font-size: 0.8rem;
+    line-height: 1.5;
   }
 
   .pd-package-cards {
     grid-template-columns: 1fr;
   }
 
-  
+  .pd-section-title {
+    font-size: 16px;
+  }
+
+  .pd-package-name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pd-package-bullets li {
+    font-size: 0.8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .pd-package-price-tag {
+    font-size: 0.85rem;
+    padding: 5px 10px;
+  }
+
+  .pd-package-read-more {
+    font-size: 0.8rem;
+  }
+
+  .pd-package-btn {
+    font-size: 0.85rem;
+    padding: 10px 16px;
+  }
+
+  .pd-package-body {
+    padding: 1rem;
+  }
 
 }
 
@@ -1566,6 +1867,48 @@
 
 /* Mobile Portrait (320px - 480px) */
 @media (max-width: 480px) {
+  .pd-details {
+    gap: 0.875rem;
+  }
+
+  .pd-title {
+    font-size: clamp(1.1rem, 4.5vw, 1.4rem);
+  }
+
+  .pd-purpose,
+  .pd-meta {
+    font-size: 0.8rem;
+  }
+
+  .pd-countdown-label {
+    font-size: 0.75rem;
+    margin: 0.25rem 0 0.25rem;
+  }
+
+  .pd-countdown {
+    gap: 4px;
+  }
+
+  .pd-countdown-item {
+    padding: 5px 3px;
+    min-width: 0;
+  }
+
+  .pd-countdown-num {
+    font-size: 0.9rem;
+  }
+
+  .pd-countdown-label-sm {
+    font-size: 0.55rem;
+  }
+
+  .pd-cta {
+    width: 100%;
+    max-width: 100%;
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
   .pd-sticky-footer {
     padding: 12px 12px;
   }
@@ -1582,6 +1925,71 @@
   }
   .pd-addons-card{
     width: 100%;
+  }
+
+  .pd-section-title {
+    font-size: 15px;
+  }
+
+  .pd-package-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .pd-package-bullets li {
+    font-size: 0.75rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .pd-package-price-tag {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+  }
+
+  .pd-package-read-more {
+    font-size: 0.75rem;
+  }
+
+  .pd-package-btn {
+    font-size: 0.8rem;
+    padding: 8px 14px;
+  }
+
+  .pd-package-body {
+    padding: 0.875rem;
+  }
+
+  .pd-benefit-card {
+    padding: 0.875rem;
+  }
+
+  .pd-benefit-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pd-benefit-title {
+    font-size: 0.875rem;
+  }
+
+  .pd-benefit-text {
+    font-size: 0.75rem;
+  }
+
+  .pd-temple-name {
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .pd-temple-text p,
+  .pd-temple-text > div {
+    font-size: 0.75rem;
+  }
+
+  .pd-temple-grid {
+    gap: 1rem;
   }
 }
 

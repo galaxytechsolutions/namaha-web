@@ -6,34 +6,10 @@ import Footer from "../Footer/Footer";
 
 const SECTION_TABS = [
   { id: "packages", label: "Packages" },
-  { id: "about", label: "About Puja" },
   { id: "benefits", label: "Benefits" },
-  { id: "process", label: "Process" },
   { id: "temple", label: "Temple Details" },
-  { id: "reviews", label: "Reviews" },
   { id: "faqs", label: "FAQs" },
 ];
-
-const PROCESS_STEPS = [
-  { title: "Select Puja", text: "Choose from puja packages listed below." },
-  {
-    title: "Add Offerings",
-    text: "Enhance your puja experience with optional offerings like Gau SHRI AAUM, Deep Daan, Vastra SHRI AAUM, and Anna SHRI AAUM.",
-  },
-  {
-    title: "Provide Sankalp details",
-    text: "Enter your Name and Gotra for the Sankalp.",
-  },
-  {
-    title: "Puja Day Updates",
-    text: "Our experienced pandits perform the sacred puja. All Shri aaum devotees' pujas will be conducted collectively on the day of the puja. You will receive real-time updates of the puja on your registered WhatsApp number.",
-  },
-  {
-    title: "Puja Video & Divine Aashirwad Box",
-    text: "Get the puja video within 3-4 days on WhatsApp. Receive Divine Aashirwad Box delivered to your doorstep within 8-10 days.",
-  },
-];
-
 const PACKAGE_BULLETS = [
   "The Puja will be performed by qualified Veda Pandits by following the right Puja Vidhi.",
   "The Prasad will be delivered to your door step within 7-10 days and the puja video will be sent to your whatsapp within 24-48 hrs.",
@@ -42,7 +18,7 @@ const PACKAGE_BULLETS = [
 
 const PACKAGE_IMAGES = {
   Individual: "https://img.freepik.com/premium-photo/indian-girl-dressed-traditional-attire-performing-graceful-dhunuchi-dance-with-clay-incense-burner-vibrant-durga-puja-celebrations_748982-26973.jpg?semt=ais_rp_progressive&w=740&q=80",
-  Couple: "https://img.freepik.com/premium-photo/portrait-indian-married-couple-traditional-wear-namaskara-prayer-welcoming-pose-holding-puja-thali_466689-10276.jpg",
+  Couple: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrZHdY1aqFNTp-HqB_YjnU6GZXvS2dZEehRQ&s",
   Family: "https://t3.ftcdn.net/jpg/09/48/77/26/360_F_948772697_m5ITrhbmM3FFkI0dNIm78wscg5D8GX6G.jpg",
   "Joint Family": "https://img.freepik.com/premium-photo/indian-family-celebrating-gudi-padwa-ugadi-festival-while-lady-wife-holding-puja-pooja-thali-it-s-new-year-hindu-religion_466689-44362.jpg",
 };
@@ -89,7 +65,7 @@ const INCLUDES = [
 ];
 
 const HOW_IT_WORKS_STEPS = [
-  { id: "select", title: "Select Puja", icon: "grid" },
+  { id: "select", title: "Puja Package", icon: "grid" },
   { id: "name-gotra", title: "Name and Gotra", icon: "form" },
   { id: "watch", title: "Watch Puja Video", icon: "video" },
   { id: "prashad", title: "Prashad Shipped", icon: "box" },
@@ -146,17 +122,23 @@ function PujaDetail() {
     seconds: 0, // ✅ Changed from 'min', 'secs'
   });
 
-  const [activeTab, setActiveTab] = useState("about");
+  const [activeTab, setActiveTab] = useState("packages");
   const [openFaq, setOpenFaq] = useState(null);
   const [isNavSticky, setIsNavSticky] = useState(false);
-  const [prasadam, setPrasadam] = useState(false);
   const [addonQuantities, setAddonQuantities] = useState({});
+  const [aboutVisibleLines, setAboutVisibleLines] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth <= 768 ? 2 : 7
+  );
+  const [aboutHasOverflow, setAboutHasOverflow] = useState(false);
+  const [isMobileView, setIsMobileView] = useState(typeof window !== "undefined" && window.innerWidth <= 768);
+  const collapsedLines = isMobileView ? 2 : 7;
   const [howItWorksHoverIndex, setHowItWorksHoverIndex] = useState(null);
+  const [packageBulletsExpanded, setPackageBulletsExpanded] = useState(false);
 
   const sectionRefs = useRef({});
   const sectionNavRef = useRef(null);
   const stickyThresholdRef = useRef(null);
-  const stickyFooterRef = useRef(null);
+  const aboutTextRef = useRef(null);
 
   const slides = puja?.bannerUrls?.map((img) => img.url) || [];
 
@@ -167,76 +149,54 @@ function PujaDetail() {
     }));
   };
 
-  const handleGoToBilling = () => {
+  const handleBookPujaClick = (pkg) => {
     if (puja?.soldTag) {
       alert("This puja is SOLD OUT and cannot be booked.");
       return;
     }
-    if (!selectedPackage) {
-      alert("Please select a package before proceeding to payment.");
-      return;
-    }
     const token = localStorage.getItem("token");
-
     if (!token) {
       alert("Please login first to proceed");
       navigate("/login");
       return;
     }
 
-    // ✅ BUILD ADDON ITEMS WITH TOTAL AMOUNTS
-    const selectedAddons = Object.entries(addonQuantities)
-      .filter(([_, qty]) => qty > 0)
-      .map(([addonId, quantity]) => {
-        // Find matching addon from puja.addOns
-        const addon = puja.addOns.find(
-          (a) => (a.id || `addon-${puja.addOns.indexOf(a)}`) === addonId
-        );
-
-        if (!addon) return null;
-
-        const price = parseInt(addon.price.replace(/[^0-9]/g, ""));
-
-        return {
-          id: addon.id || addonId,
-          name: addon.name,
-          price: price,
-          quantity: quantity,
-          total: price * quantity,
-        };
-      })
-      .filter(Boolean); // Remove nulls
+    const selectedAddons = (puja?.addOns || []).length
+      ? Object.entries(addonQuantities)
+          .filter(([_, qty]) => qty > 0)
+          .map(([addonId, quantity]) => {
+            const addon = puja.addOns.find(
+              (a) => (a.id || `addon-${puja.addOns.indexOf(a)}`) === addonId
+            );
+            if (!addon) return null;
+            const price = parseInt(String(addon.price).replace(/[^0-9]/g, ""), 10) || 0;
+            return {
+              id: addon.id || addonId,
+              name: addon.name,
+              price,
+              quantity,
+              total: price * quantity,
+            };
+          })
+          .filter(Boolean)
+      : [];
 
     const mainImage = puja?.bannerUrls?.[0]?.url || null;
+    const addonsTotalAmount = selectedAddons.reduce((sum, a) => sum + a.total, 0);
+    const pkgPrice = Number(pkg?.price) || 0;
+    const grandTotalVal = pkgPrice + addonsTotalAmount;
 
     const billingState = {
       puja,
-      selectedPackage,
+      selectedPackage: pkg,
       image: mainImage,
-
-      // addons
       addons: selectedAddons,
-      addonsTotal: selectedAddons.reduce((sum, addon) => sum + addon.total, 0),
-
-      // totals
-      grandTotal:
-        selectedPackage.price +
-        selectedAddons.reduce((sum, addon) => sum + addon.total, 0),
-
-      // coupon data from puja (send full coupon; billing validates isActive)
+      addonsTotal: addonsTotalAmount,
+      grandTotal: grandTotalVal,
       coupon: puja?.coupon ?? null,
-
-      // mode from puja (e.g. "hybrid")
       mode: puja?.mode,
-
-      // prasadam option
-      prasadam,
+      prasadam: false, // user selects on BillingPage
     };
-
-    console.log("✅ Navigating to /billing with state:", {
-      ...billingState,
-      addons: selectedAddons, // Don't log full puja to avoid clutter
-    });
 
     navigate("/billing", { state: billingState });
   };
@@ -273,6 +233,36 @@ function PujaDetail() {
     };
     loadPuja();
   }, [id]);
+
+  // Sync mobile viewport and collapse lines on resize
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const handleChange = (e) => {
+      const mobile = e.matches;
+      setIsMobileView(mobile);
+      setAboutVisibleLines((prev) => {
+        if (prev < 999) return mobile ? 2 : 7;
+        return prev;
+      });
+    };
+    handleChange(mq);
+    mq.addEventListener("change", handleChange);
+    return () => mq.removeEventListener("change", handleChange);
+  }, []);
+
+  // Detect if About Puja content overflows when collapsed (show Read more only when needed)
+  useEffect(() => {
+    if (!puja?.aboutPuja || aboutVisibleLines > collapsedLines) {
+      setAboutHasOverflow(false);
+      return;
+    }
+    const t = setTimeout(() => {
+      const el = aboutTextRef.current;
+      if (!el) return;
+      setAboutHasOverflow(el.scrollHeight > el.clientHeight);
+    }, 0);
+    return () => clearTimeout(t);
+  }, [puja?.aboutPuja, aboutVisibleLines, collapsedLines]);
 
   const scrollToSection = (sectionId) => {
     setActiveTab(sectionId);
@@ -480,19 +470,55 @@ function PujaDetail() {
           <div className="pd-details">
             {/* category: puja type/classification */}
             {/* <p className="pd-category">{puja.category}</p> */}
-            <h1 className="pd-title">{puja.title}</h1>
-            <p className="pd-purpose">{puja.purpose}</p>
-            <p className="pd-meta">
-              <span className="pd-meta-icon">🏛</span>
-              {puja.templeName}
-            </p>
-            <p className="pd-meta">
-              <span className="pd-meta-icon">📅</span>
-              {puja.date}
-            </p>
-            {/* duration: estimated puja time */}
-            {/* <p className="pd-purpose">Duration: {puja.duration}</p> */}
-            {/* <p className="pd-purpose">Mode: {puja.mode}</p> */}
+            <div className="pd-details-header">
+              <h1 className="pd-title">{puja.title}</h1>
+              <p className="pd-purpose">{puja.purpose}</p>
+              <p className="pd-meta">
+                <span className="pd-meta-icon">🏛</span>
+                {puja.templeName}
+              </p>
+              <p className="pd-meta">
+                <span className="pd-meta-icon">📅</span>
+                {puja.date}
+              </p>
+            </div>
+
+            {/* About Puja - below date, Read more outside clamped area so it stays visible */}
+            {puja?.aboutPuja && (
+              <div className="pd-details-about">
+                <div
+                  className="pd-details-about-text"
+                  style={{
+                    WebkitLineClamp: aboutVisibleLines,
+                    lineClamp: aboutVisibleLines,
+                  }}
+                  ref={aboutTextRef}
+                >
+                  <span dangerouslySetInnerHTML={{ __html: puja.aboutPuja }} />
+                </div>
+                <div className="pd-details-about-actions">
+                  {aboutVisibleLines <= collapsedLines && aboutHasOverflow && (
+                    <button
+                      type="button"
+                      className="pd-read-more-btn"
+                      onClick={() => setAboutVisibleLines(999)}
+                    >
+                      Read more
+                    </button>
+                  )}
+                  {aboutVisibleLines > collapsedLines && (
+                    <button
+                      type="button"
+                      className="pd-read-more-btn pd-read-less"
+                      onClick={() => setAboutVisibleLines(collapsedLines)}
+                    >
+                      Read less
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
             <p className="pd-countdown-label">Puja booking will close in:</p>
             <div className="pd-countdown">
               <div className="pd-countdown-item">
@@ -640,82 +666,32 @@ function PujaDetail() {
                   <div className="pd-package-body">
                     <h3 className="pd-package-name">{pkg.name}</h3>
                     <ul className="pd-package-bullets">
-                      {PACKAGE_BULLETS.map((bullet, i) => (
+                      {(packageBulletsExpanded
+                        ? PACKAGE_BULLETS
+                        : PACKAGE_BULLETS.slice(0, 2)
+                      ).map((bullet, i) => (
                         <li key={i}>{bullet}</li>
                       ))}
                     </ul>
+                    {PACKAGE_BULLETS.length > 2 && (
+                      <button
+                        type="button"
+                        className="pd-package-read-more"
+                        onClick={() => setPackageBulletsExpanded((prev) => !prev)}
+                      >
+                        {packageBulletsExpanded ? "Read less" : "Read more"}
+                      </button>
+                    )}
                     <button
                       type="button"
                       className="pd-package-btn"
-                      onClick={() => {
-                        setSelectedPackage(pkg);
-                        setTimeout(() => {
-                          stickyFooterRef.current?.scrollIntoView({
-                            behavior: "smooth",
-                            block: "end",
-                          });
-                        }, 50);
-                      }}
+                      onClick={() => handleBookPujaClick(pkg)}
                     >
                       BOOK PUJA
                     </button>
                   </div>
                 </div>
               ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Sticky footer CTA - below packages */}
-        <div className="pd-sticky-footer" ref={stickyFooterRef}>
-          <div className="pd-sticky-content">
-            <div className="pd-sticky-left">
-              <div className="pd-sticky-price-block">
-                <span className="pd-sticky-price">
-                  {selectedPackage?.price?.toLocaleString("en-IN") || "0"}
-                </span>
-                <span className="pd-sticky-name">
-                  {selectedPackage?.name || "Select Package"}
-                </span>
-              </div>
-              <label className="pd-sticky-prasadam">
-                <input
-                  type="checkbox"
-                  checked={prasadam}
-                  onChange={(e) => setPrasadam(e.target.checked)}
-                />
-                <span>Prasadam (complimentary )</span>
-              </label>
-            </div>
-
-            <button
-              className={`pd-sticky-btn ${puja?.soldTag ? "sold-out" : ""}`}
-              onClick={handleGoToBilling}
-              disabled={loading || puja?.soldTag}
-            >
-              {puja?.soldTag ? "SOLD OUT" : loading ? "⏳ Processing..." : "Proceed to Payment →"}
-            </button>
-          </div>
-        </div>
-
-        {/* About Puja */}
-        <section
-          className="pd-section pd-about"
-          ref={(el) => {
-            sectionRefs.current.about = el;
-          }}
-        >
-          <div className="pd-section-content">
-            <div className="pd-about-inner">
-              <span className="pd-about-icon">🪔</span>
-              <h2 className="pd-about-heading">{puja.title}</h2>
-            </div>
-            <div className="pd-about-body">
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: puja.aboutPuja || "Loading description...",
-                }}
-              />
             </div>
           </div>
         </section>
@@ -742,29 +718,6 @@ function PujaDetail() {
                   </div>
                 );
               })}
-            </div>
-          </div>
-        </section>
-
-        {/* Process */}
-        <section
-          className="pd-section pd-process"
-          ref={(el) => {
-            sectionRefs.current.process = el;
-          }}
-        >
-          <div className="pd-section-content">
-            <h2 className="pd-section-title">Puja Process</h2>
-            <div className="pd-process-list">
-              {PROCESS_STEPS.map((step, i) => (
-                <div key={i} className="pd-process-step">
-                  <div className="pd-process-num">{i + 1}</div>
-                  <div>
-                    <h3 className="pd-process-step-title">{step.title}</h3>
-                    <p className="pd-process-step-text">{step.text}</p>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
