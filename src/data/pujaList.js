@@ -78,12 +78,40 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
         code: apiPuja.coupon.code,
         discountType: apiPuja.coupon.discountType,
         discountValue: apiPuja.coupon.discountValue,
+        maxDiscountAmount: apiPuja.coupon.maxDiscountAmount,
         expiryDate: apiPuja.coupon.expiryDate
           ? new Date(apiPuja.coupon.expiryDate).toLocaleDateString("en-IN")
           : null,
         isActive: apiPuja.coupon.isActive,
       }
     : null,
+  // Multiple coupons per pooja (backend); legacy single coupon as one-item list
+  coupons:
+    apiPuja.coupons?.length > 0
+      ? apiPuja.coupons.map((c) => ({
+          code: c.code,
+          discountType: c.discountType,
+          discountValue: c.discountValue,
+          maxDiscountAmount: c.maxDiscountAmount,
+          expiryDate: c.expiryDate
+            ? new Date(c.expiryDate).toLocaleDateString("en-IN")
+            : null,
+          isActive: c.isActive !== false,
+        }))
+      : apiPuja.coupon
+        ? [
+            {
+              code: apiPuja.coupon.code,
+              discountType: apiPuja.coupon.discountType,
+              discountValue: apiPuja.coupon.discountValue,
+              maxDiscountAmount: apiPuja.coupon.maxDiscountAmount,
+              expiryDate: apiPuja.coupon.expiryDate
+                ? new Date(apiPuja.coupon.expiryDate).toLocaleDateString("en-IN")
+                : null,
+              isActive: apiPuja.coupon.isActive !== false,
+            },
+          ]
+        : [],
 });
 
 /* =====================================================

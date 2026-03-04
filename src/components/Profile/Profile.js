@@ -36,6 +36,7 @@ function Profile() {
           const userData = {
             name: user.name || "",
             mobile: user.mobile || "",
+            email: user.email || "",
             dob: user.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
             zodiacSign: user.zodiacSign || "",
           };
@@ -53,7 +54,7 @@ function Profile() {
           });
 
           // Avatar (if backend returns it)
-          if (user.profilePic) setAvatarPreview(user.profilePic);
+          if (user.profileImageUrl) setAvatarPreview(user.profileImageUrl);
         }
       } catch (err) {
         console.error("Profile fetch error:", err);
@@ -99,11 +100,14 @@ function Profile() {
       // ✅ SEND EXACT API FIELDS
       updateData.append("name", formData.name);
       updateData.append("mobile", formData.mobile);
+      if (formData.email) {
+        updateData.append("email", formData.email);
+      }
       updateData.append("dob", formData.dob);
       updateData.append("zodiacSign", formData.zodiacSign);
 
       if (avatarFile) {
-        updateData.append("profilePic", avatarFile);
+        updateData.append("profileImage", avatarFile);
       }
 
       const res = await axiosInstance.put("/auth/profile", updateData, {
@@ -115,6 +119,16 @@ function Profile() {
 
       if (res.data.success) {
         setOriginalData(formData);
+        if (avatarFile) {
+          setAvatarFile(null);
+        }
+        if (res.data.user) {
+          if (res.data.user.profileImageUrl) {
+            setAvatarPreview(res.data.user.profileImageUrl);
+          }
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+          window.dispatchEvent(new CustomEvent("profile-updated"));
+        }
         alert("Profile updated successfully!");
       }
     } catch (err) {

@@ -22,8 +22,13 @@ function BillingPage() {
     addonsTotal = 0,
     grandTotal,
     coupon,
+    coupons: stateCoupons,
     mode: pujaMode,
   } = location.state || {};
+
+  // Support multiple coupons (array) and legacy single coupon
+  const hasCoupons =
+    (stateCoupons && stateCoupons.length > 0) || (coupon != null);
 
   const parseAmount = (value) => {
     if (!value) return 0;
@@ -42,83 +47,76 @@ function BillingPage() {
   // Debug: confirm values arrived
   console.log("📦 BillingPage state received:", { pujaId: puja?.id, pujaTitle: puja?.title, selectedPackage });
 
-  // ================= DATE PARSER =================
-  const parseDDMMYYYY = (dateStr) => {
-    if (!dateStr) return null;
-
-    const [day, month, year] = dateStr.split("/");
-    return new Date(year, month - 1, day);
-  };
-
-  const calculateDiscount = () => {
-    if (!coupon || !coupon.isActive) return 0;
-
-    const today = new Date();
-    const expiry = parseDDMMYYYY(coupon.expiryDate);
-
-    if (!expiry || expiry < today) return 0;
-
-    let discount = 0;
-
-    if (coupon.discountType === "percentage") {
-      discount = (subtotal * coupon.discountValue) / 100;
-
-      if (coupon.maxDiscountAmount) {
-        discount = Math.min(discount, coupon.maxDiscountAmount);
-      }
-    }
-
-    if (coupon.discountType === "flat") {
-      discount = coupon.discountValue;
-    }
-
-    return Math.floor(discount);
-  };
-
-  const [couponApplied, setCouponApplied] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  const [finalAmount, setFinalAmount] = useState(subtotal);
   const [couponError, setCouponError] = useState("");
   const [couponInput, setCouponInput] = useState("");
+  const [couponLoading, setCouponLoading] = useState(false);
   const [prasadam, setPrasadam] = useState(location.state?.prasadam ?? false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
 
-  const discountAmount = couponApplied ? calculateDiscount() : 0;
-  const finalPayable = Math.max(subtotal - discountAmount, 0);
+  const couponApplied = appliedCoupon != null;
+  const finalPayable = couponApplied ? finalAmount : Math.max(subtotal, 0);
 
-  const handleApplyCoupon = () => {
-    setCouponError("");
-    if (!coupon) {
-      setCouponError("No coupon available.");
-      return;
+  // Sync finalAmount when subtotal changes and no coupon applied
+  useEffect(() => {
+    if (!couponApplied) {
+      setFinalAmount(subtotal);
+      setDiscountAmount(0);
     }
+  }, [subtotal, couponApplied]);
 
+  const handleApplyCoupon = async () => {
+    setCouponError("");
     const entered = (couponInput || "").trim();
     if (!entered) {
       setCouponError("Please enter a coupon code.");
       return;
     }
 
-    if (entered.toUpperCase() !== (coupon.code || "").trim().toUpperCase()) {
-      setCouponError("Invalid coupon code.");
-      setCouponApplied(false);
+    const poojaId = puja?._id || puja?.id;
+    if (!poojaId) {
+      setCouponError("Puja details missing. Cannot validate coupon.");
       return;
     }
 
-    if (!coupon.isActive) {
-      setCouponError("This coupon is not active.");
-      return;
+    try {
+      setCouponLoading(true);
+      const res = await axiosInstance.post("/pooja/validate-coupon", {
+        poojaId,
+        couponCode: entered,
+        subtotal,
+      });
+      const data = res.data;
+
+      if (data.success && data.valid === true) {
+        setAppliedCoupon(data.coupon ?? { code: entered, ...data.coupon });
+        setDiscountAmount(Number(data.discountAmount) || 0);
+        setFinalAmount(Number(data.finalAmount) ?? Math.max(subtotal - (Number(data.discountAmount) || 0), 0));
+        setCouponError("");
+      } else {
+        setAppliedCoupon(null);
+        setDiscountAmount(0);
+        setFinalAmount(subtotal);
+        setCouponError(data.message || "Invalid or expired coupon code");
+      }
+    } catch (err) {
+      const message = err.response?.data?.message || "Failed to validate coupon. Please try again.";
+      setCouponError(message);
+      setAppliedCoupon(null);
+      setDiscountAmount(0);
+      setFinalAmount(subtotal);
+    } finally {
+      setCouponLoading(false);
     }
-    const expiry = parseDDMMYYYY(coupon.expiryDate);
-    if (!expiry || expiry < new Date()) {
-      setCouponError("This coupon has expired.");
-      return;
-    }
-    setCouponApplied(true);
-    setCouponError("");
   };
 
   const handleRemoveCoupon = () => {
-    setCouponApplied(false);
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+    setFinalAmount(subtotal);
     setCouponError("");
     setCouponInput("");
   };
@@ -183,16 +181,17 @@ function BillingPage() {
       setLoading(true);
 
       const payload = {
-        poojaId: puja.id,
+        poojaId: puja._id || puja.id,
         mode: pujaMode || "online",
 
-        coupon,
-        couponCode: coupon?.code || null,
+        coupon: appliedCoupon ?? coupon ?? null,
+        couponCode: appliedCoupon?.code || coupon?.code || null,
         isCouponApplied: couponApplied,
+        discountAmount: couponApplied ? discountAmount : 0,
 
         devoteeDetails: form,
         participants: participants,
-        appliedCoupon: couponApplied && coupon ? coupon.code : null,
+        appliedCoupon: couponApplied && appliedCoupon ? appliedCoupon : null,
 
         grandTotal: finalPayable,
         selectedPackage,
@@ -299,10 +298,10 @@ function BillingPage() {
             nakshatra: p.nakshatra || "",
             gotra: p.gotra || "",
           })),
-          coupon: couponApplied && coupon ? coupon : null,
-          couponCode: couponApplied && coupon ? coupon.code : null,
+          coupon: couponApplied && appliedCoupon ? appliedCoupon : (couponApplied && coupon ? coupon : null),
+          couponCode: couponApplied && (appliedCoupon?.code || coupon?.code) ? (appliedCoupon?.code || coupon?.code) : null,
           isCouponApplied: couponApplied,
-          discountAmount,
+          discountAmount: couponApplied ? discountAmount : 0,
           poojaId: puja?._id || puja?.id,
           date:
             selectedPackage?.date ||
@@ -319,7 +318,7 @@ function BillingPage() {
           prasadam,
         };
         try {
-          await axiosInstance.post(
+          const confirmRes = await axiosInstance.post(
             "/bookings/booking/confirm-razorpay",
             payload,
             {
@@ -327,6 +326,23 @@ function BillingPage() {
               headers: token ? { Authorization: `Bearer ${token}` } : {},
             }
           );
+
+          // If backend generated an invoice PDF, ask it to send via WhatsApp
+          const pdfUrlFromBackend =
+            confirmRes?.data?.invoicePdfUrl || confirmRes?.data?.pdfUrl || null;
+          if (pdfUrlFromBackend) {
+            const safeName = `invoice-${confirmRes?.data?.bookingId || orderId}.pdf`;
+            const caption =
+              confirmRes?.data?.whatsAppCaption ||
+              `Your booking for ${puja.title} - ${selectedPackage?.name} is confirmed. Here is your invoice.`;
+            await sendInvoiceToBackend({
+              mobile: form.phone,
+              pdfUrl: pdfUrlFromBackend,
+              fileName: safeName,
+              caption,
+            });
+          }
+
           const invoice = {
             devoteeDetails: payload.devoteeDetails,
             participants: payload.participants,
@@ -525,6 +541,28 @@ function BillingPage() {
     );
   }
 
+  // ================= SEND INVOICE PDF VIA WHATSAPP (backend helper) =================
+  const sendInvoiceToBackend = async ({ mobile, pdfUrl, fileName, caption }) => {
+    if (!mobile || !pdfUrl || !fileName) {
+      console.warn("Skipping WhatsApp invoice send, missing data:", {
+        mobile,
+        pdfUrl,
+        fileName,
+      });
+      return;
+    }
+    try {
+      await axiosInstance.post("/send-pdf-whatsapp", {
+        mobile,
+        pdfUrl,
+        fileName,
+        caption,
+      });
+    } catch (err) {
+      console.error("Failed to send invoice PDF via WhatsApp:", err.response?.data || err.message);
+    }
+  };
+
   return (
     <>
     {showInvoiceModal && invoiceData && (
@@ -622,8 +660,8 @@ function BillingPage() {
             </div>
           )}
 
-          {/* COUPON: user enters code; discount only if matches and is valid */}
-          {coupon && (
+          {/* COUPON: user enters code; backend validates via validate-coupon API */}
+          {hasCoupons && (
             <div className="billing-coupon-section">
               {!couponApplied ? (
                 <>
@@ -635,13 +673,15 @@ function BillingPage() {
                       placeholder="Enter coupon code"
                       value={couponInput}
                       onChange={(e) => setCouponInput(e.target.value)}
+                      disabled={couponLoading}
                     />
                     <button
                       type="button"
                       className="billing-coupon-apply-btn"
                       onClick={handleApplyCoupon}
+                      disabled={couponLoading}
                     >
-                      Apply
+                      {couponLoading ? "Checking…" : "Apply"}
                     </button>
                   </div>
                   {couponError && (
@@ -650,7 +690,7 @@ function BillingPage() {
                 </>
               ) : (
                 <div className="discount-row billing-coupon-applied">
-                  <span>Coupon ({coupon.code}) applied</span>
+                  <span>Coupon ({appliedCoupon?.code}) applied</span>
                   <span className="discount-price">- ₹{discountAmount}</span>
                   <button
                     type="button"
