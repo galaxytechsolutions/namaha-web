@@ -146,7 +146,9 @@ function Home() {
         type="button"
         className="wa-fab"
         aria-label="Chat on WhatsApp"
-        onClick={() => window.open("https://wa.me/9059926363", "_blank")}
+        onClick={() => {
+          window.open("https://wa.me/9059926363", "_blank");
+        }}
       >
         <span className="wa-fab-icon" aria-hidden="true">
           <svg
