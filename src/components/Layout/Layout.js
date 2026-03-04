@@ -31,6 +31,7 @@ function Layout({ children }) {
                     name: userData.name,
                     role: userData.role,
                     mobile: userData.mobile,
+                    profileImageUrl: userData.profileImageUrl || null,
                 });
                 return;
             } catch {
@@ -44,7 +45,12 @@ function Layout({ children }) {
                 const res = await axiosInstance.get('/auth/profile');
                 if (res.data?.success && res.data?.user) {
                     const u = res.data.user;
-                    const userData = { name: u.name, role: u.role, mobile: u.mobile };
+                    const userData = {
+                        name: u.name,
+                        role: u.role,
+                        mobile: u.mobile,
+                        profileImageUrl: u.profileImageUrl || null,
+                    };
                     localStorage.setItem('user', JSON.stringify(u));
                     setUser(userData);
                 }
@@ -54,6 +60,29 @@ function Layout({ children }) {
         };
         fetchUser();
     }, [location.pathname]); // 🔥 KEY FIX: Re-checks on every navigation!
+
+    // Refetch profile when Profile page updates (e.g. avatar change)
+    useEffect(() => {
+        const onProfileUpdated = () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            axiosInstance.get('/auth/profile').then((res) => {
+                if (res.data?.success && res.data?.user) {
+                    const u = res.data.user;
+                    const userData = {
+                        name: u.name,
+                        role: u.role,
+                        mobile: u.mobile,
+                        profileImageUrl: u.profileImageUrl || null,
+                    };
+                    localStorage.setItem('user', JSON.stringify(u));
+                    setUser(userData);
+                }
+            }).catch(() => {});
+        };
+        window.addEventListener('profile-updated', onProfileUpdated);
+        return () => window.removeEventListener('profile-updated', onProfileUpdated);
+    }, []);
 
     // Scroll to top when navigating to Home or Puja
     useEffect(() => {
@@ -164,10 +193,18 @@ function Layout({ children }) {
                                     onClick={() => setProfileOpen(!profileOpen)}
                                     aria-label="User profile"
                                 >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none" />
-                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
-                                    </svg>
+                                    {user?.profileImageUrl ? (
+                                        <img
+                                            src={user.profileImageUrl}
+                                            alt="Profile"
+                                            className="profile-trigger-avatar"
+                                        />
+                                    ) : (
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none" />
+                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
+                                        </svg>
+                                    )}
                                 </button>
 
                                 {profileOpen && (
@@ -175,10 +212,14 @@ function Layout({ children }) {
                                         <div className="profile-header">
                                             <div className="profile-info">
                                                 <div className="profile-avatar">
-                                                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                                        <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
-                                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                                    </svg>
+                                                    {user?.profileImageUrl ? (
+                                                        <img src={user.profileImageUrl} alt="" className="profile-avatar-img" />
+                                                    ) : (
+                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                                                            <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
+                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                                        </svg>
+                                                    )}
                                                 </div>
                                                 <div>
                                                     <div className="profile-name">{user?.name}</div>

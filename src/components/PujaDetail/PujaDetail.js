@@ -194,6 +194,7 @@ function PujaDetail() {
       addonsTotal: addonsTotalAmount,
       grandTotal: grandTotalVal,
       coupon: puja?.coupon ?? null,
+      coupons: puja?.coupons ?? (puja?.coupon ? [puja.coupon] : null),
       mode: puja?.mode,
       prasadam: false, // user selects on BillingPage
     };
@@ -731,20 +732,13 @@ function PujaDetail() {
         >
           <div className="pd-section-content">
             <h2 className="pd-temple-name">{puja.templeName}</h2>
-            <div className="pd-temple-grid">
-              <img
-                src={slides[0] || puja?.bannerUrls?.[0]?.url || "https://via.placeholder.com/800x600"}
-                alt={puja.templeName ? `${puja.templeName} temple` : "Temple"}
-                className="pd-temple-image"
+            <div className="pd-temple-text">
+              <div
+                dangerouslySetInnerHTML={{
+                  __html:
+                    puja.templeDescription || "Temple details loading...",
+                }}
               />
-              <div className="pd-temple-text">
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      puja.templeDescription || "Temple details loading...",
-                  }}
-                />
-              </div>
             </div>
           </div>
         </section>

@@ -58,10 +58,7 @@ function Faqs() {
         <h2 className="faq-heading">
           Benefits of Conducting Pujas With Shri AAUM
         </h2>
-        <p className="faq-subtitle">
-          Learn from trusted experts how a puja arranged from home with true devotion is as effective as one attended in-person at a temple.
-        </p>
-
+       
         <div className="faq-carousel">
           {/* <button
             type="button"
