@@ -154,12 +154,6 @@ function PujaDetail() {
       alert("This puja is SOLD OUT and cannot be booked.");
       return;
     }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      alert("Please login first to proceed");
-      navigate("/login");
-      return;
-    }
 
     const selectedAddons = (puja?.addOns || []).length
       ? Object.entries(addonQuantities)

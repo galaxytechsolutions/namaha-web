@@ -13,7 +13,6 @@ function Profile() {
     name: "",
     mobile: "",
     email: "",
-    dob: "",
     zodiacSign: "",
   });
   const [originalData, setOriginalData] = useState({});
@@ -37,7 +36,6 @@ function Profile() {
             name: user.name || "",
             mobile: user.mobile || "",
             email: user.email || "",
-            dob: user.dob ? new Date(user.dob).toISOString().split("T")[0] : "",
             zodiacSign: user.zodiacSign || "",
           };
 
@@ -53,8 +51,13 @@ function Profile() {
             lastLoginAt: user.lastLoginAt,
           });
 
-          // Avatar (if backend returns it)
-          if (user.profileImageUrl) setAvatarPreview(user.profileImageUrl);
+          // Avatar (support multiple possible backend field names)
+          const imageUrl =
+            user.profileImageUrl ||
+            user.profileImage ||
+            user.avatar ||
+            user.profilePic;
+          if (imageUrl) setAvatarPreview(imageUrl);
         }
       } catch (err) {
         console.error("Profile fetch error:", err);
@@ -103,7 +106,6 @@ function Profile() {
       if (formData.email) {
         updateData.append("email", formData.email);
       }
-      updateData.append("dob", formData.dob);
       updateData.append("zodiacSign", formData.zodiacSign);
 
       if (avatarFile) {
@@ -113,7 +115,6 @@ function Profile() {
       const res = await axiosInstance.put("/auth/profile", updateData, {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
         },
       });
 
@@ -123,13 +124,20 @@ function Profile() {
           setAvatarFile(null);
         }
         if (res.data.user) {
-          if (res.data.user.profileImageUrl) {
-            setAvatarPreview(res.data.user.profileImageUrl);
+          const updatedUser = res.data.user;
+          const imageUrl =
+            updatedUser.profileImageUrl ||
+            updatedUser.profileImage ||
+            updatedUser.avatar ||
+            updatedUser.profilePic;
+          if (imageUrl) {
+            setAvatarPreview(imageUrl);
           }
-          localStorage.setItem("user", JSON.stringify(res.data.user));
+          localStorage.setItem("user", JSON.stringify(updatedUser));
           window.dispatchEvent(new CustomEvent("profile-updated"));
         }
         alert("Profile updated successfully!");
+        navigate(-1);
       }
     } catch (err) {
       alert(err.response?.data?.message || "Update failed");
@@ -246,18 +254,8 @@ function Profile() {
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Date of Birth</label>
-              <input
-                type="date"
-                name="dob"
-                value={formData.dob}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className="form-group">
-              <label>Zodiac Sign</label>
+          <div className="form-group full-width">
+            <label>Zodiac Sign</label>
               <select
                 name="zodiacSign"
                 value={formData.zodiacSign}
@@ -276,7 +274,6 @@ function Profile() {
                 <option value="aquarius">Aquarius ♒</option>
                 <option value="pisces">Pisces ♓</option>
               </select>
-            </div>
           </div>
 
           {/* ✅ Read-only Account Info */}

@@ -165,6 +165,11 @@ function BillingPage() {
 
   // ================= PAYMENT =================
   const handlePayment = async () => {
+    if (!localStorage.getItem("token")) {
+      alert("Please login first to proceed");
+      navigate("/login");
+      return;
+    }
     // Validate required fields
     if (!form.name || !form.phone || !form.address) {
       alert("Please fill Name, Phone Number, and Address");

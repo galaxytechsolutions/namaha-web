@@ -174,10 +174,14 @@
   font-size: 1.2rem; color: #64748b;
 }
 
-/* ✅ PERFECT RESPONSIVE */
+/* ✅ Mobile-friendly responsive layout */
 @media (max-width: 768px) {
   .profile-page1 { padding: 0.5rem; margin-top: 70px; }
-  .profile-container1 { margin: 0; border-radius: 20px; }
+  .profile-container1 {
+    margin: 0.75rem auto 1.5rem;
+    border-radius: 20px;
+    width: 100%;
+  }
   
   .profile-header1, .avatar-section, .profile-form { padding-left: 1.5rem; padding-right: 1.5rem; }
   

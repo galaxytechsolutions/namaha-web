@@ -138,4 +138,66 @@
     color: #6b7280;
     margin: 0;
   }
+
+@media (max-width: 600px) {
+  .login-page {
+    padding: 12px;
+  }
+
+  .login-container {
+    padding: 24px 20px;
+    border-radius: 16px;
+    max-width: 360px;
+  }
+
+  .login-logo {
+    height: 60px;
+    margin-bottom: 12px;
+  }
+
+  .login-header h1 {
+    font-size: 22px;
+  }
+
+  .login-header p {
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+
+  .login-input-group {
+    margin-bottom: 18px;
+  }
+
+  .login-input-group label {
+    font-size: 13px;
+    margin-bottom: 6px;
+  }
+
+  .login-input-group input,
+  .login-input-group select {
+    padding: 10px 12px;
+    font-size: 14px;
+    border-radius: 10px;
+  }
+
+  .login-phone-input span {
+    padding: 10px 12px;
+    font-size: 14px;
+  }
+
+  .login-btn {
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+
+  .login-footer {
+    margin-top: 24px;
+    padding-top: 16px;
+  }
+
+  .login-footer p {
+    font-size: 12px;
+  }
+}
   

@@ -2,32 +2,27 @@ import React, { useState, useEffect } from 'react';
 import './Faqs.css';
 
 const benefits = [
+
   {
     id: 1,
-    title: 'Join Pujas From Anywhere',
-    description: 'Get access to Pujas in sacred temples and teerth kshetras from anywhere in the world. Distance should never limit your faith.',
-    icon: '🌍',
-  },
-  {
-    id: 2,
     title: 'Celebrate Important Festivals Round The Year',
     description: 'Be spiritually aligned with every major festival and sacred muhurat. Offer your devotion on the most powerful days of the year from the comfort of your homes.',
     icon: '🪔',
   },
   {
-    id: 3,
+    id: 2,
     title: 'Personalised Sankalpa and Sacred Prasad Delivery',
     description: 'Your names and Gotras are chanted in the Puja Sankalpa, get recorded Puja videos within 2-4 days and Prasad at your doorstep in 7-10 days.',
     icon: '📦',
   },
   {
-    id: 4,
+    id: 3,
     title: 'Qualified and Trusted Veda Pandits',
     description: 'All rituals performed by experienced and devoted Veda Pandits. Authentic procedures as per scriptures and tradition.',
     icon: '📿',
   },
   {
-    id: 5,
+    id: 4,
     title: 'Grand Pujas At Affordable Costs',
     description: 'Participate in grand pujas and rituals without financial burden. We offer divine pujas at affordable costs to make spiritual experiences accessible to all devotees.',
     icon: '💫',

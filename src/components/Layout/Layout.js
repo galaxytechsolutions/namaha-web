@@ -23,33 +23,35 @@ function Layout({ children }) {
             return;
         }
 
-        // Use stored user if available
+        // Use stored user as initial display (avoids flash) while we fetch latest profile
+        const getImageUrl = (u) =>
+            u?.profileImageUrl || u?.profileImage || u?.avatar || u?.profilePic || null;
         if (userStr) {
             try {
-                const userData = JSON.parse(userStr);
+                const parsed = JSON.parse(userStr);
                 setUser({
-                    name: userData.name,
-                    role: userData.role,
-                    mobile: userData.mobile,
-                    profileImageUrl: userData.profileImageUrl || null,
+                    name: parsed.name,
+                    role: parsed.role,
+                    mobile: parsed.mobile,
+                    profileImageUrl: getImageUrl(parsed),
                 });
-                return;
             } catch {
                 setUser(null);
             }
         }
 
-        // Fallback: fetch user from API when token exists but no user in localStorage
+        // Always fetch profile from API when token exists (login API may not return avatar)
         const fetchUser = async () => {
             try {
                 const res = await axiosInstance.get('/auth/profile');
                 if (res.data?.success && res.data?.user) {
                     const u = res.data.user;
+                    const imageUrl = getImageUrl(u);
                     const userData = {
                         name: u.name,
                         role: u.role,
                         mobile: u.mobile,
-                        profileImageUrl: u.profileImageUrl || null,
+                        profileImageUrl: imageUrl || null,
                     };
                     localStorage.setItem('user', JSON.stringify(u));
                     setUser(userData);
@@ -63,6 +65,8 @@ function Layout({ children }) {
 
     // Refetch profile when Profile page updates (e.g. avatar change)
     useEffect(() => {
+        const getImageUrl = (u) =>
+            u?.profileImageUrl || u?.profileImage || u?.avatar || u?.profilePic || null;
         const onProfileUpdated = () => {
             const token = localStorage.getItem('token');
             if (!token) return;
@@ -73,7 +77,7 @@ function Layout({ children }) {
                         name: u.name,
                         role: u.role,
                         mobile: u.mobile,
-                        profileImageUrl: u.profileImageUrl || null,
+                        profileImageUrl: getImageUrl(u) || null,
                     };
                     localStorage.setItem('user', JSON.stringify(u));
                     setUser(userData);
