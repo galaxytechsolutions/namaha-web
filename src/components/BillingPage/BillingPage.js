@@ -47,15 +47,16 @@ function BillingPage() {
   // Debug: confirm values arrived
   console.log("📦 BillingPage state received:", { pujaId: puja?.id, pujaTitle: puja?.title, selectedPackage });
 
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
-  const [discountAmount, setDiscountAmount] = useState(0);
-  const [finalAmount, setFinalAmount] = useState(subtotal);
+  const [appliedCoupon, setAppliedCoupon] = useState(location.state?.appliedCoupon ?? null);
+  const [discountAmount, setDiscountAmount] = useState(location.state?.discountAmount ?? 0);
+  const [finalAmount, setFinalAmount] = useState(location.state?.finalAmount ?? subtotal);
   const [couponError, setCouponError] = useState("");
-  const [couponInput, setCouponInput] = useState("");
+  const [couponInput, setCouponInput] = useState(location.state?.couponInput ?? "");
   const [couponLoading, setCouponLoading] = useState(false);
   const [prasadam, setPrasadam] = useState(location.state?.prasadam ?? false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const couponApplied = appliedCoupon != null;
   const finalPayable = couponApplied ? finalAmount : Math.max(subtotal, 0);
@@ -134,16 +135,19 @@ function BillingPage() {
   const participantCount = getParticipantCount();
 
   // ================= DEVOTEE FORM =================
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    gotra: "",
-    address: "",
-  });
+  const [form, setForm] = useState(
+    location.state?.form ?? {
+      name: "",
+      email: "",
+      phone: "",
+      gotra: "",
+      address: "",
+    }
+  );
 
   // ================= PARTICIPANTS =================
   const [participants, setParticipants] = useState(
+    location.state?.participants ??
     Array.from({ length: participantCount }, () => ({
       name: "",
       nakshatra: "",
@@ -157,6 +161,22 @@ function BillingPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleGoToLogin = () => {
+    const billingState = {
+      ...location.state,
+      form,
+      participants,
+      appliedCoupon,
+      couponInput,
+      discountAmount,
+      finalAmount,
+      prasadam,
+    };
+    sessionStorage.setItem("billingReturnState", JSON.stringify(billingState));
+    setShowLoginModal(false);
+    navigate("/login", { state: { returnTo: "/billing" } });
+  };
+
   const handleParticipantChange = (index, field, value) => {
     const updated = [...participants];
     updated[index][field] = value;
@@ -166,8 +186,7 @@ function BillingPage() {
   // ================= PAYMENT =================
   const handlePayment = async () => {
     if (!localStorage.getItem("token")) {
-      alert("Please login first to proceed");
-      navigate("/login");
+      setShowLoginModal(true);
       return;
     }
     // Validate required fields
@@ -567,25 +586,18 @@ function BillingPage() {
     }
 
     try {
-      const response = await fetch(
-        "https://api.shriaaum.com/api/send-pdf-whatsapp",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            countryCode: "+91",
-            phoneNumber: phone, // expected without country code
-            pdfUrl: pdfUrl,
-            fileName: "invoice.pdf",
-            name,
-            email,
-            amount: `₹${amount}`, // amount as number → formatted string
-            orderId,
-          }),
-        }
-      );
+      const res = await axiosInstance.post("/send-pdf-whatsapp", {
+        countryCode: "+91",
+        phoneNumber: phone,
+        pdfUrl: pdfUrl,
+        fileName: "invoice.pdf",
+        name,
+        email: email || "",
+        amount: amount != null ? `₹${amount}` : undefined,
+        orderId,
+      });
 
-      const data = await response.json();
+      const data = res.data;
 
       if (data.success) {
         console.log(
@@ -603,6 +615,29 @@ function BillingPage() {
 
   return (
     <>
+    {showLoginModal && (
+      <div
+        className="billing-login-modal-backdrop"
+        onClick={() => setShowLoginModal(false)}
+        onKeyDown={(e) => e.key === "Escape" && setShowLoginModal(false)}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-modal-title"
+      >
+        <div className="billing-login-modal" onClick={(e) => e.stopPropagation()}>
+          <h2 id="login-modal-title" className="billing-login-modal-title">Please login to proceed</h2>
+          <p className="billing-login-modal-text">You need to be logged in to complete your puja booking.</p>
+          <div className="billing-login-modal-actions">
+            <button type="button" className="billing-login-modal-btn secondary" onClick={() => setShowLoginModal(false)}>
+              Cancel
+            </button>
+            <button type="button" className="billing-login-modal-btn primary" onClick={handleGoToLogin}>
+              Login
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
     {showInvoiceModal && invoiceData && (
       <div className="billing-invoice-backdrop">
         <div className="billing-invoice-modal">
