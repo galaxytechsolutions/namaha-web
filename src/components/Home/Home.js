@@ -141,14 +141,13 @@ function Home() {
         </div>
       </main>
 
-      {/* Floating WhatsApp button */}
-      <button
-        type="button"
+      {/* Floating WhatsApp – direct link, opens in new tab, no popup */}
+      <a
+        href="https://wa.me/9059926363"
+        target="_blank"
+        rel="noopener noreferrer"
         className="wa-fab"
         aria-label="Chat on WhatsApp"
-        onClick={() => {
-          window.open("https://wa.me/9059926363", "_blank");
-        }}
       >
         <span className="wa-fab-icon" aria-hidden="true">
           <svg
@@ -170,7 +169,7 @@ function Home() {
             />
           </svg>
         </span>
-      </button>
+      </a>
     </div>
   );
 }
