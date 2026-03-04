@@ -257,6 +257,78 @@
   color: #111827;
 }
 
+/* ===== Login required modal ===== */
+.billing-login-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
+}
+
+.billing-login-modal {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+  font-family: var(--font-body);
+}
+
+.billing-login-modal-title {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.billing-login-modal-text {
+  margin: 0 0 20px;
+  font-size: 15px;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.billing-login-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.billing-login-modal-btn {
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.billing-login-modal-btn.secondary {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.billing-login-modal-btn.secondary:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.billing-login-modal-btn.primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.billing-login-modal-btn.primary:hover {
+  opacity: 0.95;
+}
+
 .billing-invoice-btn-secondary:hover {
   background: #d1d5db;
 }

@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
 import './LoginPage.css';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   
   const [step, setStep] = useState(1);
   const [mobile, setMobile] = useState('');
@@ -68,7 +69,18 @@ function LoginPage() {
         if (res.data.isNewUser) {
           setStep(3);
         } else {
-          navigate('/');
+          const returnTo = location.state?.returnTo;
+          if (returnTo === '/billing') {
+            try {
+              const saved = sessionStorage.getItem('billingReturnState');
+              sessionStorage.removeItem('billingReturnState');
+              navigate(returnTo, { state: saved ? JSON.parse(saved) : undefined });
+            } catch {
+              navigate(returnTo);
+            }
+          } else {
+            navigate('/');
+          }
         }
       }
     } catch (err) {
@@ -99,7 +111,18 @@ function LoginPage() {
       if (res.data?.user) {
         localStorage.setItem('user', JSON.stringify(res.data.user));
       }
-      navigate('/');
+      const returnTo = location.state?.returnTo;
+      if (returnTo === '/billing') {
+        try {
+          const saved = sessionStorage.getItem('billingReturnState');
+          sessionStorage.removeItem('billingReturnState');
+          navigate(returnTo, { state: saved ? JSON.parse(saved) : undefined });
+        } catch {
+          navigate(returnTo);
+        }
+      } else {
+        navigate('/');
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Profile update failed');
       console.error('❌ Error:', err.response?.data);
@@ -114,7 +137,11 @@ function LoginPage() {
         <div className="login-header">
           <img src="/logo.png" alt="Shri AAUM" className="login-logo" />
           <h1>Welcome Back</h1>
-          <p>Enter your mobile to receive OTP</p>
+          <p>
+            {location.state?.returnTo === '/billing'
+              ? 'Login to complete your puja booking'
+              : 'Enter your mobile to receive OTP'}
+          </p>
         </div>
 
         {error && (
