@@ -462,6 +462,7 @@
     opacity: 0.95;
     max-width: 100%;
     font-style: normal;
+    width: 100px;
   }
 
   .hero-text-stack {
