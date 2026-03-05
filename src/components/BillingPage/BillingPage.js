@@ -373,12 +373,12 @@ function BillingPage() {
             }
           );
 
-          // If backend generated an invoice PDF, ask Interakt service to send via WhatsApp
-          const pdfUrlFromBackend =
-            confirmRes?.data?.invoicePdfUrl || confirmRes?.data?.pdfUrl || null;
-          if (pdfUrlFromBackend) {
-            const finalOrderId =
-              confirmRes?.data?.bookingId || confirmRes?.data?.orderId || orderId;
+          // After booking is confirmed, ask Interakt service to send invoice via WhatsApp.
+          // Frontend now builds the invoice PDF URL instead of using a Cloudinary URL.
+          const finalOrderId =
+            confirmRes?.data?.bookingId || confirmRes?.data?.orderId || orderId;
+          if (finalOrderId) {
+            const invoicePdfUrl = `https://api.shriaaum.com/api/invoice-pdf/${finalOrderId}`;
 
             await sendInvoiceToBackend({
               phone: form.phone,
@@ -386,7 +386,7 @@ function BillingPage() {
               email: form.email || "",
               amount: finalPayable,
               orderId: finalOrderId,
-              pdfUrl: pdfUrlFromBackend,
+              pdfUrl: invoicePdfUrl,
             });
           }
 
@@ -881,7 +881,7 @@ function BillingPage() {
           disabled={loading}
           className="pay-button"
         >
-          {loading ? "Processing..." : `Pay ₹${finalPayable.toFixed(0)}`}
+          {loading ? "Processing..." : `Pay ₹${finalPayable}`}
         </button>
       </div>
     </div>
