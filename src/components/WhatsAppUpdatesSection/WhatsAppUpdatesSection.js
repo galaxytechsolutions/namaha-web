@@ -3,7 +3,7 @@ import React from "react";
 import "./WhatsAppUpdates.css";
 
 const WHATSAPP_UPDATES_URL =
-  "https://wa.me/9059926363?text=I%20want%20ritual%20updates%20on%20WhatsApp";
+  "https://whatsapp.com/channel/0029Vb7FYVR0G0Xmx8BIzM1m";
 
 const WhatsAppUpdates = () => {
   return (

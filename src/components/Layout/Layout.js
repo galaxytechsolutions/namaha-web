@@ -215,16 +215,6 @@ function Layout({ children }) {
                                     <div className="profile-dropdown">
                                         <div className="profile-header">
                                             <div className="profile-info">
-                                                <div className="profile-avatar">
-                                                    {user?.profileImageUrl ? (
-                                                        <img src={user.profileImageUrl} alt="" className="profile-avatar-img" />
-                                                    ) : (
-                                                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                                                            <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="2" />
-                                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                                                        </svg>
-                                                    )}
-                                                </div>
                                                 <div>
                                                     <div className="profile-name">{user?.name}</div>
                                                     <div className="profile-role">{user?.role}</div>
