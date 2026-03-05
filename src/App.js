@@ -17,7 +17,7 @@ import MyBookings from './components/MyBooking/MyBooking';
 import BookingDetailsModal from './components/BookingDetailsModal/BookingDetailsModal';
 import About from './components/About/About';
 import Contact from './components/Contact/Contact';
-
+import WhatsAppUpdates from './components/WhatsAppUpdatesSection/WhatsAppUpdatesSection';
 function App() {
   return (
     <BrowserRouter>
@@ -29,6 +29,7 @@ function App() {
           <Layout>
             <Home />
             <SpecialPuja />
+            <WhatsAppUpdates />
             <Faqs />
             {/* <Reviews /> */}
             {/* <AboutStats /> */}
