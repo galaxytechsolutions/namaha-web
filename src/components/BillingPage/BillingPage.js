@@ -143,9 +143,9 @@ function BillingPage() {
   const getParticipantCount = () => {
     const name = selectedPackage?.name?.toLowerCase() || "";
     if (name.includes("individual")) return 1;
-    if (name.includes("partner")) return 2;
-    if (name.includes("family") && !name.includes("joint")) return 4;
-    if (name.includes("joint")) return 6;
+    if (name.includes("Joint Family")) return 6;
+    if (name.includes("couple") || name.includes("partner") || name.includes("Two person")) return 2;
+    if (name.includes("Family")) return 4;
     return 1;
   };
 
@@ -174,7 +174,16 @@ function BillingPage() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+
+    // Enforce 10-digit numeric phone input live
+    if (name === "phone") {
+      const digitsOnly = value.replace(/\D/g, "");
+      setForm((prev) => ({ ...prev, phone: digitsOnly.slice(0, 10) }));
+      return;
+    }
+
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleGoToLogin = () => {
@@ -208,6 +217,18 @@ function BillingPage() {
     // Validate required fields
     if (!form.name || !form.phone || !form.address) {
       alert("Please fill Name, Phone Number, and Address");
+      return;
+    }
+
+    // Phone: must be exactly 10 digits
+    if (!/^\d{10}$/.test(form.phone)) {
+      alert("Please enter a valid 10-digit phone number.");
+      return;
+    }
+
+    // Email: if provided, must contain "@" in a basic valid pattern
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      alert("Please enter a valid email address.");
       return;
     }
     const missingParticipantNames = participants
@@ -823,16 +844,20 @@ function BillingPage() {
             onChange={handleChange}
           />
           <input
+            type="email"
             name="email"
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
           />
           <input
+            type="tel"
             name="phone"
             placeholder="Phone Number *"
             value={form.phone}
             onChange={handleChange}
+            maxLength={10}
+            pattern="\d{10}"
           />
           <input
             name="gotra"

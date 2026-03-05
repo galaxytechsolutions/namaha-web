@@ -232,7 +232,8 @@
 
   .footer-top {
     grid-template-columns: 1fr 1fr;
-    gap: 16px 12px;
+    column-gap: 12px;   /* small horizontal gap between Company & Services */
+    row-gap: 4px;       /* compact vertical spacing */
   }
 
   .footer-brand {
@@ -359,9 +360,9 @@
       padding: 24px 12px 20px;
     }
 
-    .footer-top {
+    /* .footer-top {
       gap: 16px 20px;
-    }
+    } */
 
     .footer-brand-name {
       font-size: 1rem;
@@ -381,7 +382,7 @@
     }
 
     .footer-links li {
-      margin-bottom: 4px;
+      margin-bottom: 2px;
     }
 
     .footer-address {

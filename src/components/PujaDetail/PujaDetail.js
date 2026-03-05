@@ -133,7 +133,8 @@ function PujaDetail() {
   const [isMobileView, setIsMobileView] = useState(typeof window !== "undefined" && window.innerWidth <= 768);
   const collapsedLines = isMobileView ? 2 : 7;
   const [howItWorksHoverIndex, setHowItWorksHoverIndex] = useState(null);
-  const [packageBulletsExpanded, setPackageBulletsExpanded] = useState(false);
+  // Track which package card's "Read more" is expanded by index (per-card)
+  const [expandedPackageIndex, setExpandedPackageIndex] = useState(null);
 
   const sectionRefs = useRef({});
   const sectionNavRef = useRef(null);
@@ -644,7 +645,7 @@ function PujaDetail() {
           <div className="pd-section-content">
             <h2 className="pd-section-title">Select your puja package</h2>
             <div className="pd-package-cards">
-              {getPackages(puja).map((pkg) => (
+            {getPackages(puja).map((pkg, index) => (
                 <div
                   key={pkg.id}
                   className={`pd-package-card ${
@@ -661,7 +662,7 @@ function PujaDetail() {
                   <div className="pd-package-body">
                     <h3 className="pd-package-name">{pkg.name}</h3>
                     <ul className="pd-package-bullets">
-                      {(packageBulletsExpanded
+                      {(expandedPackageIndex === index
                         ? PACKAGE_BULLETS
                         : PACKAGE_BULLETS.slice(0, 2)
                       ).map((bullet, i) => (
@@ -672,9 +673,13 @@ function PujaDetail() {
                       <button
                         type="button"
                         className="pd-package-read-more"
-                        onClick={() => setPackageBulletsExpanded((prev) => !prev)}
+                        onClick={() =>
+                          setExpandedPackageIndex((prev) =>
+                            prev === index ? null : index
+                          )
+                        }
                       >
-                        {packageBulletsExpanded ? "Read less" : "Read more"}
+                        {expandedPackageIndex === index ? "Read less" : "Read more"}
                       </button>
                     )}
                     <button

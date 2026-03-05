@@ -1082,12 +1082,11 @@
 
 /* ----- Package cards ----- */
 .pd-package-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 1.25rem;
   margin-bottom: 1.5rem;
-  grid-auto-rows: 1fr;
-  align-items: stretch;
+  align-items: flex-start; /* each card can have its own height */
 }
 
 .pd-package-card {
@@ -1100,10 +1099,11 @@
   cursor: pointer;
   text-align: left;
   transition: border-color 0.2s, box-shadow 0.2s;
-  height: 100%;
   border: 2px solid #e5e7eb;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   overflow: hidden;
+  flex: 1 1 calc(25% - 1rem); /* ~4 cards per row on desktop */
+  min-width: 220px;
 }
 
 .pd-package-card:hover {
@@ -1787,7 +1787,7 @@
   }
 
   .pd-package-cards {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .pd-section-title {

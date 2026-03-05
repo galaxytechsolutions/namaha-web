@@ -4,32 +4,28 @@ import "./Home.css";
 
 // 🔹 Static images
 const Images = [
-  { id: 1, url: "/hero-1.png" },
-  { id: 2, url: "/hero-2.png" },
-  { id: 3, url: "/hero-3.png" },
+  {
+    id: 1,
+    url: "https://shriaaum.s3.ap-south-1.amazonaws.com/images/shriaaum1.jpeg",
+  },
+  {
+    id: 2,
+    url: "https://shriaaum.s3.ap-south-1.amazonaws.com/images/shriaaum2.jpeg",
+  },
 ];
 
 // 🔹 Static hero text
 const HERO_CONTENT = [
+
   {
-    title: "Temples Teerth Tatva within your reach",
+    title: "Awaken Fierce Protection",
     subtitle:
-      "Connect to sacred teerth kshetras and perform pujas from anywhere. Get Prasad at your doorstep.",
-    twoButtons: false,
-    // singleButtonLabel: 'Explore Now',
+      "Powerful temple Mahapujas from sacred Ujjain kshetras to remove doshas, negativity and planetary obstacles.",
   },
   {
-    title: "Sacred Pujas, Performed at Holy Teerth Kshetras",
+    title: "Ram Lalla Returns to His Divine Abode, This Ram Navami is historic",
     subtitle:
-      "Perform Pujas and watch your names and gotras being chanted from the comfort of your homes",
-    twoButtons: false,
-  },
-  {
-    title: "Your Sankalpa, Performed Where It Truly Matters",
-    subtitle:
-      "Worship the divine deities and receive blessings with recorded videos and Prasad from your homes.",
-    twoButtons: false,
-    // singleButtonLabel: 'Book Now',
+      "Join the sacred Ram Janmotsav & Hanuman Sankat Mochan Mahapuja",
   },
 ];
 

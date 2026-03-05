@@ -2,11 +2,14 @@ import React from "react";
 import "./WhatsAppFAB.css";
 
 const WHATSAPP_NUMBER = "9059926363";
+const WHATSAPP_DEFAULT_MESSAGE = encodeURIComponent(
+  "Hello, I need more information"
+);
 
 function WhatsAppFAB() {
   return (
     <a
-      href={`https://wa.me/${WHATSAPP_NUMBER}`}
+      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_DEFAULT_MESSAGE}`}
       target="_blank"
       rel="noopener noreferrer"
       className="wa-fab"
