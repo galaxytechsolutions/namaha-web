@@ -1,36 +1,82 @@
-name: namaha-web deploy
+name: namaha-admin
 
 on:
   push:
     branches:
-      - main
+      - live
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REGISTRY: 651767347273.dkr.ecr.ap-south-1.amazonaws.com
+
     steps:
-      - name: Checkout code
+
+      # Checkout repository
+      - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup SSH Agent
+      # Configure AWS credentials
+      - name: Configure AWS
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # Login to AWS ECR
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION \
+          | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      # Generate image version
+      - name: Set Version
+        run: echo "VERSION=${GITHUB_SHA::7}" >> $GITHUB_ENV
+
+      # Build and push docker image
+      - name: Build and Push Admin Image
+        run: |
+          docker build -t namaha-web:$VERSION .
+          docker tag namaha-web:$VERSION $ECR_REGISTRY/namaha-web:$VERSION
+          docker push $ECR_REGISTRY/namaha-web:$VERSION
+          echo "WEB_VERSION=$VERSION" >> $GITHUB_ENV
+
+      # Create env file for server
+      - name: Create current.env
+        run: |
+          echo "WEB_VERSION=${WEB_VERSION}" > current.env
+
+      # Setup SSH agent
+      - name: Setup SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_LIVE }}
 
-      - name: Rsync files to server
+      # Upload env file to server
+      - name: Upload env file
         run: |
-          rsync -avz --delete \
-          --exclude=".git" \
-          --exclude="node_modules" \
+          rsync -avz \
           -e "ssh -o StrictHostKeyChecking=no" \
-          ./ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/var/lib/projects/namaha-web
+          current.env \
+          ${{ secrets.SSH_USER_LIVE }}@${{ secrets.SSH_HOST_LIVE }}:/var/lib/projects/namaha-web/current.env
 
-      - name: Build & Run Docker on Server
+      # Deploy container
+      - name: Deploy on Server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
-          cd /var/lib/projects/namaha-web
-          sudo docker system prune -af
-          sudo docker build -t namaha-web .
-          sudo docker compose up -d
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER_LIVE }}@${{ secrets.SSH_HOST_LIVE }} << EOF
+            set -e
+
+            cd /var/lib/projects/namaha-web
+
+            aws ecr get-login-password --region ap-south-1 \
+            | docker login --username AWS --password-stdin 651767347273.dkr.ecr.ap-south-1.amazonaws.com
+
+            docker compose --env-file current.env pull
+            docker compose --env-file current.env up -d
+
+            echo "Deployment completed successfully"
           EOF
