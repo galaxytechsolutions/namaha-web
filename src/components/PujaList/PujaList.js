@@ -4,6 +4,29 @@ import "./PujaList.css";
 import Footer from "../Footer/Footer";
 import { usePujaList } from "../../data/pujaList";
 
+const normalizeBenefitTitles = (benefits) => {
+  if (Array.isArray(benefits)) {
+    return benefits
+      .map((b) => {
+        if (!b) return null;
+        if (typeof b === "string") return b;
+        if (typeof b === "object") return b.title || b.name || b.benefitTitle || null;
+        return null;
+      })
+      .filter(Boolean)
+      .map((t) => String(t).replace(/<[^>]*>/g, "").trim())
+      .filter(Boolean);
+  }
+  if (typeof benefits === "string") {
+    return benefits
+      .replace(/<[^>]*>/g, "")
+      .split(/[\n,•]+/g)
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+};
+
 function PujaList() {
   const { pujas: pujaList, loading } = usePujaList();
 
@@ -69,9 +92,17 @@ function PujaList() {
               {/* category: puja type/classification */}
               {/* <p className="pl-card-category">{puja.category}</p> */}
               <h3 className="pl-card-title">{puja.title}</h3>
-              {puja.description && (
-                <p className="pl-card-desc">{puja.description}</p>
-              )}
+              {(() => {
+                const titles = normalizeBenefitTitles(puja.benefits).slice(0, 2);
+                if (titles.length === 0) return null;
+                return (
+                  <ul className="pl-card-benefits" aria-label="Benefits">
+                    {titles.map((t, idx) => (
+                      <li key={idx}>{t}</li>
+                    ))}
+                  </ul>
+                );
+              })()}
               {/* duration: estimated puja time */}
               {/* <p className="pl-card-meta">Duration: {puja.duration}</p> */}
               <p className="pl-card-meta">🏛 {puja.templeName}</p>

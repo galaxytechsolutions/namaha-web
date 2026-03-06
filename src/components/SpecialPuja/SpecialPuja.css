@@ -144,6 +144,20 @@
   overflow-wrap: break-word;
   min-width: 0;
 }
+
+/* Replace description with 2 benefit titles */
+.sp-cards .pl-card-benefits {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  color: #9ca3af;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  letter-spacing: 0.03em;
+}
+
+.sp-cards .pl-card-benefits li {
+  margin: 0 0 4px;
+}
 .sp-cards .pl-card-meta {
   font-size: 0.875rem;
   font-weight: 400;
@@ -229,6 +243,12 @@
   .sp-cards .pl-card-desc {
     font-size: 0.75rem;
     margin-bottom: 4px;
+  }
+
+  .sp-cards .pl-card-benefits {
+    font-size: 0.75rem;
+    margin-bottom: 4px;
+    padding-left: 16px;
   }
 
   .sp-cards .pl-card-meta {

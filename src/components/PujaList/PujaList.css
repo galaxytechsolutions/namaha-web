@@ -594,6 +594,37 @@
     min-width: 0;
 }
 
+/* Benefits list (2 lines) shown instead of description */
+.pl-card-benefits {
+    margin: 0 0 8px;
+    padding: 0 16px;
+    list-style: none;
+}
+
+.pl-card-benefits li {
+    position: relative;
+    padding-left: 18px;
+    font-size: 0.875rem;
+    color: #6b7280;
+    line-height: 1.45;
+    letter-spacing: 0.03em;
+    margin: 0 0 6px;
+    overflow-wrap: break-word;
+}
+
+.pl-card-benefits li:last-child {
+    margin-bottom: 0;
+}
+
+.pl-card-benefits li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #16a34a;
+    font-weight: 800;
+}
+
 .pl-card-purpose {
     font-size: 0.9rem;
     color: #6b7280;

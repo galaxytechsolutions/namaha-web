@@ -14,6 +14,13 @@ function SpecialPuja() {
   const [pujas, setPujas] = useState([]); // ✅ NEW: useState
   const [loading, setLoading] = useState(true);
 
+  const getBenefitTitle = (benefit) => {
+    if (!benefit) return null;
+    if (typeof benefit === "string") return benefit;
+    if (typeof benefit === "object") return benefit.title || benefit.name || null;
+    return null;
+  };
+
   // ✅ NEW: Fetch API data
   useEffect(() => {
     fetchPujaList()
@@ -98,8 +105,17 @@ function SpecialPuja() {
               {/* category: puja type/classification */}
               {/* <p className="pl-card-category">{puja.category}</p> */}
               <h3 className="pl-card-title">{puja.title}</h3>
-              {puja.description && (
-                <p className="pl-card-desc">{puja.description}</p>
+
+              {Array.isArray(puja.benefits) && puja.benefits.length > 0 && (
+                <ul className="pl-card-benefits" aria-label="Benefits">
+                  {puja.benefits
+                    .map(getBenefitTitle)
+                    .filter(Boolean)
+                    .slice(0, 2)
+                    .map((title, idx) => (
+                      <li key={idx}>{title}</li>
+                    ))}
+                </ul>
               )}
               {/* duration: estimated puja time */}
               {/* <p className="pl-card-purpose">Duration: {puja.duration}</p> */}

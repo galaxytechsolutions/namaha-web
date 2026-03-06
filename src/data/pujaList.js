@@ -128,6 +128,10 @@ export const PUJA_LIST = [
     category: "GANESHA PUJA",
     title: "Maha Ganapathi Homam",
     description: "Removes obstacles and brings prosperity.",
+    benefits: [
+      { title: "Removes obstacles from your path" },
+      { title: "Brings success and prosperity" },
+    ],
     purpose: "Removes obstacles and brings prosperity",
     location: "Tirupati Temple, India",
     templeName: "Tirupati Temple",
@@ -158,6 +162,10 @@ export const PUJA_LIST = [
     category: "LAKSHMI PUJA",
     title: "Lakshmi Kubera Homam",
     description: "Attract wealth and abundance through sacred offerings.",
+    benefits: [
+      { title: "Attracts wealth and abundance" },
+      { title: "Improves financial stability" },
+    ],
     purpose: "Financial growth and prosperity",
     location: "Chennai Temple, India",
     templeName: "Chennai Temple",

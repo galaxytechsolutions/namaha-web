@@ -125,6 +125,7 @@ function Layout({ children }) {
     // ⭐ 🔥 SIMPLIFIED: Direct token check
     const isLoggedIn = !!localStorage.getItem('token');
     console.log('🔐 isLoggedIn:', isLoggedIn, 'user:', user); // Debug
+    const SHOW_PROFILE_MENU = false; // Hide profile in all views (keep code)
 
     return (
         <div className="app-wrap">
@@ -190,6 +191,7 @@ function Layout({ children }) {
                         {/* ⭐ 🔥 PERFECT CONDITIONAL LOGIN/PROFILE */}
                         {isLoggedIn ? (
                             // ✅ LOGGED IN: Show Profile Dropdown
+                            SHOW_PROFILE_MENU ? (
                             <div className="profile-container">
                                 <button
                                     type="button"
@@ -287,6 +289,7 @@ function Layout({ children }) {
                                     </div>
                                 )}
                             </div>
+                            ) : null
                         ) : (
                             // ❌ NOT LOGGED IN: Show Login Button
                             <Link to="/login" className="login-btn-header">

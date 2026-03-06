@@ -56,7 +56,6 @@ function BillingPage() {
   const [prasadam, setPrasadam] = useState(location.state?.prasadam ?? false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
-  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const couponApplied = appliedCoupon != null;
   const finalPayable = couponApplied ? finalAmount : Math.max(subtotal, 0);
@@ -205,22 +204,6 @@ function BillingPage() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleGoToLogin = () => {
-    const billingState = {
-      ...location.state,
-      form,
-      participants,
-      appliedCoupon,
-      couponInput,
-      discountAmount,
-      finalAmount,
-      prasadam,
-    };
-    sessionStorage.setItem("billingReturnState", JSON.stringify(billingState));
-    setShowLoginModal(false);
-    navigate("/login", { state: { returnTo: "/billing" } });
-  };
-
   const handleParticipantChange = (index, field, value) => {
     const updated = [...participants];
     updated[index][field] = value;
@@ -229,10 +212,6 @@ function BillingPage() {
 
   // ================= PAYMENT =================
   const handlePayment = async () => {
-    if (!localStorage.getItem("token")) {
-      setShowLoginModal(true);
-      return;
-    }
     // Validate required fields
     if (!form.name || !form.phone || !form.address) {
       alert("Please fill Name, Phone Number, and Address");
@@ -675,29 +654,6 @@ function BillingPage() {
 
   return (
     <>
-    {showLoginModal && (
-      <div
-        className="billing-login-modal-backdrop"
-        onClick={() => setShowLoginModal(false)}
-        onKeyDown={(e) => e.key === "Escape" && setShowLoginModal(false)}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="login-modal-title"
-      >
-        <div className="billing-login-modal" onClick={(e) => e.stopPropagation()}>
-          <h2 id="login-modal-title" className="billing-login-modal-title">Please login to proceed</h2>
-          <p className="billing-login-modal-text">You need to be logged in to complete your puja booking.</p>
-          <div className="billing-login-modal-actions">
-            <button type="button" className="billing-login-modal-btn secondary" onClick={() => setShowLoginModal(false)}>
-              Cancel
-            </button>
-            <button type="button" className="billing-login-modal-btn primary" onClick={handleGoToLogin}>
-              Login
-            </button>
-          </div>
-        </div>
-      </div>
-    )}
     {showInvoiceModal && invoiceData && (
       <div className="billing-invoice-backdrop">
         <div className="billing-invoice-modal">
