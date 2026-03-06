@@ -7,6 +7,7 @@ function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
   
+  const countryCode = '+91';
   const [step, setStep] = useState(1);
   const [mobile, setMobile] = useState('');
   const [otp, setOtp] = useState('');
@@ -27,7 +28,7 @@ function LoginPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await axiosInstance.post('/auth/send-otp', { mobile });
+      const res = await axiosInstance.post('/auth/send-otp', { mobile, countryCode });
       console.log('✅ OTP Response:', res.data);
       
       if (res.data.success) {
@@ -53,7 +54,8 @@ function LoginPage() {
     try {
       const res = await axiosInstance.post('/auth/verify-otp', { 
         mobile, 
-        otp 
+        otp,
+        countryCode,
       });
       
       console.log('✅ Verify Response:', res.data);
@@ -154,7 +156,7 @@ function LoginPage() {
             <div className="login-input-group">
               <label>Mobile Number</label>
               <div className="login-phone-input">
-                <span>+91</span>
+                <span>{countryCode}</span>
                 <input
                   type="tel"
                   value={mobile}

@@ -140,12 +140,16 @@ function BillingPage() {
   };
 
   // ================= PARTICIPANT COUNT =================
+  // Family = 4 forms, Joint Family = 6; use package.persons when available
   const getParticipantCount = () => {
-    const name = selectedPackage?.name?.toLowerCase() || "";
+    const pkg = selectedPackage;
+    const persons = pkg?.persons;
+    if (typeof persons === "number" && persons >= 1 && persons <= 20) return persons;
+    const name = (pkg?.name ?? "").toLowerCase();
     if (name.includes("individual")) return 1;
-    if (name.includes("Joint Family")) return 6;
-    if (name.includes("couple") || name.includes("partner") || name.includes("Two person")) return 2;
-    if (name.includes("Family")) return 4;
+    if (name.includes("joint")) return 6;
+    if (name.includes("couple") || name.includes("partner") || name.includes("two person")) return 2;
+    if (name.includes("family")) return 4;
     return 1;
   };
 
@@ -170,6 +174,21 @@ function BillingPage() {
       gotra: "",
     }))
   );
+
+  // When participant count from package changes, resize participants array to match
+  useEffect(() => {
+    if (participants.length === participantCount) return;
+    setParticipants((prev) => {
+      if (prev.length === participantCount) return prev;
+      if (prev.length < participantCount) {
+        return [
+          ...prev,
+          ...Array.from({ length: participantCount - prev.length }, () => ({ name: "", gotra: "" })),
+        ];
+      }
+      return prev.slice(0, participantCount);
+    });
+  }, [participantCount, participants.length]);
 
   const [loading, setLoading] = useState(false);
 

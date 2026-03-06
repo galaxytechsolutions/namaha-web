@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import './Contact.css';
 import Footer from '../Footer/Footer';
 
+const WHATSAPP_NUMBER = "9059926363";
+
 function Contact() {
   const [formData, setFormData] = useState({
     name: '',
@@ -18,7 +20,23 @@ function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Placeholder - you can wire this to an API later
+
+    // Build a WhatsApp message from the form fields
+    const { name, email, subject, message } = formData;
+    const lines = [
+      "New contact enquiry from website:",
+      name && `Name: ${name}`,
+      email && `Email: ${email}`,
+      subject && `Subject: ${subject}`,
+      message && `Message: ${message}`,
+    ].filter(Boolean);
+
+    const text = encodeURIComponent(lines.join("\n"));
+    const waUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
+
+    // Open WhatsApp chat with pre-filled text
+    window.open(waUrl, "_blank");
+
     setSubmitted(true);
   };
 
