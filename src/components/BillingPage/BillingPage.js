@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../lib/instance";
 import Footer from "../Footer/Footer";
@@ -190,6 +190,120 @@ function BillingPage() {
   }, [participantCount, participants.length]);
 
   const [loading, setLoading] = useState(false);
+  const [pendingBookingId, setPendingBookingId] = useState(() => {
+    try {
+      return sessionStorage.getItem("pendingBookingId") || null;
+    } catch {
+      return null;
+    }
+  });
+  const pendingSaveTimeoutRef = useRef(null);
+  const pendingSaveInFlightRef = useRef(false);
+  const pendingSavePromiseRef = useRef(null);
+  const lastAutoSaveKeyRef = useRef(null);
+  const paymentStartedRef = useRef(false);
+
+  const isFormValidForPending = useCallback(() => {
+    if (!form.name?.trim() || !form.phone || !form.address?.trim()) return false;
+    if (!/^\d{10}$/.test(form.phone)) return false;
+    if (!puja?.id && !puja?._id) return false;
+    const allNamesFilled = participants.every((p) => (p.name || "").trim());
+    return allNamesFilled;
+  }, [form.name, form.phone, form.address, puja?.id, puja?._id, participants]);
+
+  useEffect(() => {
+    if (!isFormValidForPending() || loading) return;
+    if (paymentStartedRef.current) return;
+    if (pendingSaveInFlightRef.current) return;
+
+    const autoSaveKey = JSON.stringify({
+      name: form.name,
+      phone: form.phone,
+      email: form.email,
+      gotra: form.gotra,
+      address: form.address,
+      participants,
+      prasadam,
+      couponCode: appliedCoupon?.code || coupon?.code || null,
+      discountAmount: couponApplied ? discountAmount : 0,
+      selectedPackageId: selectedPackage?.id || selectedPackage?._id || null,
+      addonsTotal,
+      grandTotal: finalPayable,
+    });
+    // If we already auto-saved this exact data and we have an ID, don't spam backend.
+    if (pendingBookingId && lastAutoSaveKeyRef.current === autoSaveKey) return;
+
+    if (pendingSaveTimeoutRef.current) clearTimeout(pendingSaveTimeoutRef.current);
+    pendingSaveTimeoutRef.current = setTimeout(() => {
+      pendingSaveTimeoutRef.current = null;
+      const payload = {
+        poojaId: puja._id || puja.id,
+        mode: pujaMode || "online",
+        status: "pending",
+        createOrder: false,
+        ...(pendingBookingId && { bookingId: pendingBookingId }),
+        coupon: appliedCoupon ?? coupon ?? null,
+        couponCode: appliedCoupon?.code || coupon?.code || null,
+        isCouponApplied: couponApplied,
+        discountAmount: couponApplied ? discountAmount : 0,
+        devoteeDetails: form,
+        participants,
+        appliedCoupon: couponApplied && appliedCoupon ? appliedCoupon : null,
+        grandTotal: finalPayable,
+        selectedPackage,
+        addonsTotal,
+        ...(prasadam && { prasadam: true }),
+      };
+      pendingSaveInFlightRef.current = true;
+      const req = axiosInstance
+        .post("/bookings/guest/booking", payload)
+        .then((res) => {
+          if (res.data?.success) {
+            const id =
+              res.data.bookingId ||
+              res.data.booking?._id ||
+              res.data.orderId ||
+              res.data._id;
+            if (id) {
+              setPendingBookingId(id);
+              try {
+                sessionStorage.setItem("pendingBookingId", id);
+              } catch {}
+            }
+            lastAutoSaveKeyRef.current = autoSaveKey;
+            console.log("✅ Pending booking saved:", res.data);
+          }
+        })
+        .catch((err) => {
+          console.warn("⚠️ Pending save failed:", err.response?.data || err.message);
+        })
+        .finally(() => {
+          pendingSaveInFlightRef.current = false;
+          pendingSavePromiseRef.current = null;
+        });
+      pendingSavePromiseRef.current = req;
+    }, 1500);
+
+    return () => {
+      if (pendingSaveTimeoutRef.current) clearTimeout(pendingSaveTimeoutRef.current);
+    };
+  }, [
+    isFormValidForPending,
+    pendingBookingId,
+    loading,
+    puja,
+    pujaMode,
+    appliedCoupon,
+    coupon,
+    couponApplied,
+    discountAmount,
+    form,
+    participants,
+    finalPayable,
+    selectedPackage,
+    addonsTotal,
+    prasadam,
+  ]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -212,21 +326,38 @@ function BillingPage() {
 
   // ================= PAYMENT =================
   const handlePayment = async () => {
+    paymentStartedRef.current = true;
+    if (pendingSaveTimeoutRef.current) {
+      clearTimeout(pendingSaveTimeoutRef.current);
+      pendingSaveTimeoutRef.current = null;
+    }
+    // If an auto-save is in-flight and we don't yet have bookingId, wait for it (best-effort)
+    if (!pendingBookingId && pendingSavePromiseRef.current) {
+      try {
+        await pendingSavePromiseRef.current;
+      } catch {
+        // ignore; Pay click can still create a pending booking + order
+      }
+    }
+
     // Validate required fields
     if (!form.name || !form.phone || !form.address) {
       alert("Please fill Name, Phone Number, and Address");
+      paymentStartedRef.current = false;
       return;
     }
 
     // Phone: must be exactly 10 digits
     if (!/^\d{10}$/.test(form.phone)) {
       alert("Please enter a valid 10-digit phone number.");
+      paymentStartedRef.current = false;
       return;
     }
 
     // Email: if provided, must contain "@" in a basic valid pattern
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       alert("Please enter a valid email address.");
+      paymentStartedRef.current = false;
       return;
     }
     const missingParticipantNames = participants
@@ -234,12 +365,14 @@ function BillingPage() {
       .filter(Boolean);
     if (missingParticipantNames.length > 0) {
       alert(`Please enter Name for Participant ${missingParticipantNames.join(", ")}`);
+      paymentStartedRef.current = false;
       return;
     }
 
     if (!puja?.id) {
       alert("Puja details missing. Please go back and try again.");
       navigate(-1);
+      paymentStartedRef.current = false;
       return;
     }
 
@@ -249,6 +382,9 @@ function BillingPage() {
       const payload = {
         poojaId: puja._id || puja.id,
         mode: pujaMode || "online",
+        status: "pending",
+        createOrder: true,
+        ...(pendingBookingId && { bookingId: pendingBookingId }),
 
         coupon: appliedCoupon ?? coupon ?? null,
         couponCode: appliedCoupon?.code || coupon?.code || null,
@@ -351,6 +487,8 @@ function BillingPage() {
           razorpay_order_id: orderId,
           razorpay_payment_id: response.razorpay_payment_id,
           razorpay_signature: response.razorpay_signature,
+          status: "success",
+          ...(pendingBookingId && { bookingId: pendingBookingId }),
           devoteeDetails: {
             name: form.name,
             email: form.email || "",
@@ -424,6 +562,7 @@ function BillingPage() {
           };
           setInvoiceData(invoice);
           setShowInvoiceModal(true);
+          setPendingBookingId(null);
         } catch (err) {
           console.error("Confirm payment error:", err);
           alert(err.response?.data?.message || "Failed to confirm booking. Please contact support.");
