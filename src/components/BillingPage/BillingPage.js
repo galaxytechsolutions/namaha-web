@@ -950,6 +950,33 @@ function BillingPage() {
           </div>
         </div>
 
+        {/* PARTICIPANTS */}
+        <div className="participants-section">
+          <h3>Participant Details</h3>
+
+          {participants.map((p, index) => (
+            <div key={index} className="participant-card">
+              <h4>Participant {index + 1}</h4>
+
+              <input
+                placeholder="Name *"
+                value={p.name}
+                onChange={(e) =>
+                  handleParticipantChange(index, "name", e.target.value)
+                }
+                required
+              />
+              <input
+                placeholder="Gotra"
+                value={p.gotra}
+                onChange={(e) =>
+                  handleParticipantChange(index, "gotra", e.target.value)
+                }
+              />
+            </div>
+          ))}
+        </div>
+
         {/* DEVOTEE FORM */}
         <div className="billing-form">
           <input
@@ -981,33 +1008,6 @@ function BillingPage() {
             onChange={handleChange}
             required
           />
-        </div>
-
-        {/* PARTICIPANTS */}
-        <div className="participants-section">
-          <h3>Participant Details</h3>
-
-          {participants.map((p, index) => (
-            <div key={index} className="participant-card">
-              <h4>Participant {index + 1}</h4>
-
-              <input
-                placeholder="Name *"
-                value={p.name}
-                onChange={(e) =>
-                  handleParticipantChange(index, "name", e.target.value)
-                }
-                required
-              />
-              <input
-                placeholder="Gotra"
-                value={p.gotra}
-                onChange={(e) =>
-                  handleParticipantChange(index, "gotra", e.target.value)
-                }
-              />
-            </div>
-          ))}
         </div>
 
         <button

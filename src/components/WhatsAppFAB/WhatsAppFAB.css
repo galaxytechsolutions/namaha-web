@@ -3,8 +3,8 @@
   position: fixed;
   right: 16px;
   bottom: 16px;
-  width: clamp(52px, 12vw, 64px);
-  height: clamp(52px, 12vw, 64px);
+  width: clamp(44px, 10vw, 52px);
+  height: clamp(44px, 10vw, 52px);
   border-radius: 50%;
   border: none;
   background: #25d366;
@@ -27,8 +27,8 @@
 
 .wa-fab-icon {
   display: inline-flex;
-  width: clamp(24px, 6vw, 28px);
-  height: clamp(24px, 6vw, 28px);
+  width: clamp(28px, 7vw, 36px);
+  height: clamp(28px, 7vw, 36px);
 }
 
 .wa-fab-svg {
