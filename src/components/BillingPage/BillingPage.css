@@ -46,10 +46,11 @@
 
   .billing-left-message {
     padding: 20px;
-    background: linear-gradient(135deg, #fff9f5 0%, #fff5ee 100%);
-    border: 1px solid #f96b26;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border: 1px solid #e2e8f0;
     border-radius: 10px;
-    border-left: 4px solid #f96b26;
+    border-left: 4px solid #d9af06;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   }
 
   .billing-left-message-title {
@@ -57,14 +58,14 @@
     margin: 0 0 8px 0;
     font-size: 18px;
     font-weight: 700;
-    color: #c2410c;
+    color: #0f172a;
   }
 
   .billing-left-message-text {
     margin: 0;
     font-size: 14px;
     line-height: 1.5;
-    color: #5c4a3d;
+    color: #475569;
   }
   
   /* RIGHT CONTENT */

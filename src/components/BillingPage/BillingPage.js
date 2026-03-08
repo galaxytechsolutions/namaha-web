@@ -739,12 +739,11 @@ function BillingPage() {
     );
   }
 
-  // ================= SEND INVOICE PDF VIA WHATSAPP (backend helper) =================
-  // Mirrors the onBillingSuccess snippet provided (Interakt PDF send)
+  // ================= SEND INVOICE PDF VIA WHATSAPP (Twilio backend) =================
+  // Uses POST /api/send-pdf-whatsapp – sends existing PDF URL via Twilio
   const sendInvoiceToBackend = async ({
     phone,
     name,
-    email,
     amount,
     orderId,
     pdfUrl,
@@ -758,16 +757,23 @@ function BillingPage() {
       return;
     }
 
+    // Format phone for Twilio: 91xxxxxxxxxx
+    const phoneNumber = /^91\d{10}$/.test(phone) ? phone : `91${phone}`;
+
+    const message = [
+      `Namaste ${name || ""}!`,
+      `Your puja invoice (Order: ${orderId})`,
+      amount != null ? `Amount: ₹${amount}` : null,
+    ]
+      .filter(Boolean)
+      .join(". ");
+
     try {
       const res = await axiosInstance.post("/send-pdf-whatsapp", {
-        countryCode: "+91",
-        phoneNumber: phone,
-        pdfUrl: pdfUrl,
-        fileName: "invoice.pdf",
-        name,
-        email: email || "",
-        amount: amount != null ? `₹${amount}` : undefined,
+        phoneNumber,
+        pdfUrl,
         orderId,
+        message,
       });
 
       const data = res.data;
@@ -841,9 +847,9 @@ function BillingPage() {
             />
           </div>
           <div className="billing-left-message">
-            <p className="billing-left-message-title">You're almost there!</p>
+            <p className="billing-left-message-title">Complete Your Sacred Booking</p>
             <p className="billing-left-message-text">
-              Complete your details on the right and proceed to payment to confirm your sacred puja booking.
+              Please fill in your details and complete the payment here. Just a few quick steps and your puja will be confirmed — we'll take care of the rest so you can focus on blessings.
             </p>
           </div>
         </div>
