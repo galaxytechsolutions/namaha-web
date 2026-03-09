@@ -8,13 +8,14 @@ const WHATSAPP_DEFAULT_MESSAGE = encodeURIComponent(
 
 function WhatsAppFAB() {
   return (
-    <a
-      href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_DEFAULT_MESSAGE}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="wa-fab"
-      aria-label="Chat on WhatsApp"
-    >
+    <div className="wa-fab-wrap">
+      <a
+        href={`https://wa.me/${WHATSAPP_NUMBER}?text=${WHATSAPP_DEFAULT_MESSAGE}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="wa-fab"
+        aria-label="Chat on WhatsApp"
+      >
       <span className="wa-fab-icon" aria-hidden="true">
         <svg
           viewBox="0 0 24 24"
@@ -27,6 +28,7 @@ function WhatsAppFAB() {
       </span>
       <span className="wa-fab-text">Chat</span>
     </a>
+    </div>
   );
 }
 

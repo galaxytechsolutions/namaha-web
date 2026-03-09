@@ -383,8 +383,8 @@ function PujaDetail() {
               {/* <span className="pd-badge">{puja.specialTag}</span> */}
             </div>
 
-            {/* Add-ons section hidden */}
-            {false && (
+            {/* Add-ons section: show only when add-on data is available from API */}
+            {puja?.addOns?.length > 0 && (
               <div className="pd-addons-card">
                 <div className="pd-addons-header">
                   <span className="pd-addons-icon">＋</span>
