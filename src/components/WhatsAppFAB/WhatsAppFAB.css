@@ -1,8 +1,43 @@
-/* WhatsApp floating button - pill-shaped with border effects */
-.wa-fab {
+/* Wrapper for animated border */
+.wa-fab-wrap {
   position: fixed;
   right: 16px;
   bottom: 16px;
+  z-index: 9999;
+  padding: 3px;
+  border-radius: 9999px;
+  overflow: hidden;
+}
+
+.wa-fab-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -50%;
+  width: 200%;
+  height: 200%;
+  left: -50%;
+  top: -50%;
+  background: conic-gradient(
+    from 0deg,
+    #25d366,
+    #128C7E,
+    #25d366,
+    #128C7E
+  );
+  animation: wa-fab-border-spin 2.5s linear infinite;
+  z-index: 0;
+}
+
+@keyframes wa-fab-border-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* WhatsApp floating button - pill-shaped with border effects */
+.wa-fab {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +53,6 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.2),
     0 4px 14px rgba(37, 211, 102, 0.4);
   cursor: pointer;
-  z-index: 9999;
   transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease,
     border-color 0.2s ease;
   text-decoration: none;
@@ -62,9 +96,12 @@
 }
 
 @media (max-width: 480px) {
-  .wa-fab {
+  .wa-fab-wrap {
     right: 12px;
     bottom: 12px;
+  }
+
+  .wa-fab {
     padding: 8px 14px;
     gap: 6px;
   }

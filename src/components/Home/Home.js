@@ -2,20 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./Home.css";
 
-// 🔹 Static images
+// 🔹 Static images (banners in public/)
 const Images = [
-  {
-    id: 1,
-    url: "https://shriaaum.s3.ap-south-1.amazonaws.com/images/shriaaum1.jpeg",
-  },
-  {
-    id: 2,
-    url: "https://shriaaum.s3.ap-south-1.amazonaws.com/images/shriaaum2.jpeg",
-  },
-  {
-    id: 3,
-    url: "https://shriaaum.s3.ap-south-1.amazonaws.com/images/durga.jpeg",
-  },
+  { id: 1, url: "/banner-fierce-protection.png" },
+  { id: 2, url: "/banner-ram-navami.png" },
+  { id: 3, url: "/SHRI AAUM WEB BANNER NEW - 4.jpg.jpeg" },
 ];
 
 // 🔹 Static hero text

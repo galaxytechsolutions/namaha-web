@@ -47,8 +47,9 @@
   }
 
   .sp-cards .pl-card-participate {
-    font-size: 0.85rem;
-    padding: 10px;
+    font-size: 0.9rem;
+    padding: 12px 20px;
+    min-height: 44px;
   }
 
   .sp-view-all {
@@ -276,8 +277,9 @@
   }
 
   .sp-cards .pl-card-participate {
-    font-size: 0.8rem;
-    padding: 8px;
+    font-size: 0.85rem;
+    padding: 12px 20px;
+    min-height: 44px;
   }
 
   .sp-view-all {

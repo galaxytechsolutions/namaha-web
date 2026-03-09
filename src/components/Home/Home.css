@@ -340,7 +340,7 @@
 /* Tablet: left-aligned, above space, centered vertically with offset */
 @media (max-width: 1024px) {
   .hero-section1 {
-    height: 85vh;
+    height: 90vh;
     min-height: 380px;
     padding-top: 75px;
     background: #000; /* unify background with dark hero artwork */

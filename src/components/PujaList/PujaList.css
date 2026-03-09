@@ -655,26 +655,33 @@
 }
 
 .pl-card-participate {
-    width: calc(100% - 32px);
+    align-self: stretch;
+    width: auto;
     margin: 16px;
     margin-top: auto;
+    padding: 12px 20px;
+    min-height: 44px;
     background: #ea580c;
     color: #fff;
     border: none;
-    padding: 12px;
     border-radius: 8px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
-    display: block;
-    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     box-sizing: border-box;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, transform 0.15s ease;
   }
 
   .pl-card-participate:hover {
     background: #c2410c;
+  }
+
+  .pl-card-participate:active {
+    transform: scale(0.98);
   }
 
 @media (max-width: 768px) {
@@ -823,8 +830,9 @@
   }
 
   .pl-card-participate {
-    margin: 12px 1.25rem 1.25rem;
-    padding: 7px;
+    margin: 12px 16px 16px;
+    padding: 12px 20px;
+    min-height: 44px;
     font-size: 0.95rem;
   }
 }
@@ -864,7 +872,7 @@
   }
 
   .pl-card-participate {
-    min-height: 28px;
+    min-height: 44px;
   }
 }
 
