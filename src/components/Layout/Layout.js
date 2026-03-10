@@ -205,10 +205,12 @@ function Layout({ children }) {
                                         className="profile-trigger-avatar"
                                     />
                                 ) : (
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                        <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none" />
-                                        <path d="M20 21v-2a 4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
-                                    </svg>
+                                    <div className="profile-trigger-default">
+                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="7" r="4" stroke="#fff" strokeWidth="2" fill="none" />
+                                            <path d="M20 21v-2a 4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#fff" strokeWidth="2" strokeLinecap="round" />
+                                        </svg>
+                                    </div>
                                 )}
                             </button>
 
