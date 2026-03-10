@@ -466,7 +466,7 @@ function BillingPage() {
       amount: amount * 100, // ✅ paise
       currency: "INR",
       order_id: orderId,
-      name: "Shri aaum Puja",
+      name: "SHRI AAUM",
       description: `${puja.title} - ${selectedPackage.name}`,
 
       prefill: {
@@ -545,6 +545,9 @@ function BillingPage() {
           }
 
           const invoice = {
+            orderId: finalOrderId,
+            invoiceNo: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}${String(new Date().getDate()).padStart(2, "0")}-${String(finalOrderId).replace(/[^a-zA-Z0-9]/g, "").slice(-4) || "001"}`,
+            invoiceDate: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" }),
             devoteeDetails: payload.devoteeDetails,
             participants: payload.participants,
             pujaName: puja.title,
@@ -593,129 +596,132 @@ function BillingPage() {
     if (!invoiceData) return;
 
     const {
+      orderId,
+      invoiceNo,
+      invoiceDate,
       devoteeDetails,
-      participants,
       pujaName,
       pujaDate,
       packageName,
       packagePrice,
       addons,
-      addonsTotal,
       coupon,
       couponCode,
       discountAmount,
       grandTotal,
     } = invoiceData;
 
-    const participantRows =
-      participants && participants.length
-        ? participants
-            .map(
-              (p, index) =>
-                `<tr>
-                  <td style="padding:4px 8px;">${index + 1}</td>
-                  <td style="padding:4px 8px;">${p.name || "-"}</td>
-                  <td style="padding:4px 8px;">${p.gotra || "-"}</td>
-                </tr>`
-            )
-            .join("")
-        : `<tr><td colspan="3" style="padding:4px 8px;">No participants listed</td></tr>`;
+    // Payment Summary rows: Puja package + addons
+    const packagePriceVal = String(packagePrice || 0).replace(/[₹,\s]/g, "") || "0";
+    const pkgRow = `<tr><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb;">${pujaName} (${packageName || "-"})</td><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:center;">1</td><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:right;">₹${packagePriceVal}</td></tr>`;
 
     const addonsRows =
       addons && addons.length
         ? addons
             .map(
-              (a, index) =>
-                `<tr>
-                  <td style="padding:4px 8px;">${index + 1}</td>
-                  <td style="padding:4px 8px;">${a.name || "-"}</td>
-                  <td style="padding:4px 8px; text-align:right;">${a.quantity || 1}</td>
-                  <td style="padding:4px 8px; text-align:right;">${a.total || a.price || "-"}</td>
-                </tr>`
+              (a) =>
+                `<tr><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb;">${a.name || "-"}</td><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:center;">${a.quantity || 1}</td><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:right;">₹${a.total || a.price || 0}</td></tr>`
             )
             .join("")
-        : `<tr><td colspan="4" style="padding:4px 8px;">No add-ons selected</td></tr>`;
+        : "";
 
     const couponRow =
-      coupon && couponCode
-        ? `<p style="margin:4px 0;">Coupon: <strong>${couponCode}</strong> (Discount: ₹${discountAmount || 0})</p>`
-        : `<p style="margin:4px 0;">Coupon: <strong>Not applied</strong></p>`;
+      coupon && couponCode && (discountAmount || 0) > 0
+        ? `<tr><td colspan="2" style="padding:8px 12px; border-bottom:1px solid #e5e7eb;">Discount (${couponCode})</td><td style="padding:8px 12px; border-bottom:1px solid #e5e7eb; text-align:right;">-₹${discountAmount || 0}</td></tr>`
+        : "";
 
     const win = window.open("", "_blank");
     if (!win) return;
 
     win.document.write(`
+      <!DOCTYPE html>
       <html>
         <head>
-          <title>Invoice - ${pujaName}</title>
+          <title>Invoice - ${invoiceNo || orderId || "Puja Booking"}</title>
           <meta charset="UTF-8" />
           <style>
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 24px; color: #111827; }
-            h1, h2, h3 { margin: 0 0 8px; }
-            .section { margin-bottom: 16px; }
-            .section-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
-            table { border-collapse: collapse; width: 100%; font-size: 13px; }
-            th, td { border: 1px solid #e5e7eb; padding: 6px 8px; text-align: left; }
-            th { background: #f3f4f6; }
+            * { box-sizing: border-box; }
+            body { font-family: "Segoe UI", system-ui, -apple-system, sans-serif; margin: 0; padding: 32px; color: #1f2937; font-size: 13px; line-height: 1.5; }
+            .invoice { max-width: 700px; margin: 0 auto; }
+            .header { text-align: center; border-bottom: 2px solid #ea580c; padding-bottom: 16px; margin-bottom: 24px; }
+            .brand { font-size: 22px; font-weight: 700; color: #1f2937; margin: 0 0 4px; letter-spacing: 0.5px; }
+            .tagline { font-size: 12px; color: #6b7280; margin: 0 0 8px; }
+            .contact { font-size: 11px; color: #6b7280; }
+            .invoice-title { font-size: 20px; font-weight: 700; text-align: center; margin: 20px 0; color: #1f2937; }
+            .meta-row { display: flex; flex-wrap: wrap; gap: 24px 32px; margin-bottom: 20px; font-size: 12px; }
+            .meta-row span { display: block; }
+            .meta-row strong { color: #374151; }
+            .section { margin-bottom: 20px; }
+            .section-title { font-size: 12px; font-weight: 700; color: #374151; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; padding-bottom: 4px; }
+            .section-content { font-size: 13px; }
+            .section-content p { margin: 4px 0; }
+            table { width: 100%; border-collapse: collapse; font-size: 13px; }
+            th { text-align: left; padding: 10px 12px; background: #f9fafb; font-weight: 600; color: #374151; border: 1px solid #e5e7eb; }
+            td { padding: 8px 12px; border: 1px solid #e5e7eb; }
+            .total-row { font-weight: 700; background: #fef3c7; }
+            .notes { margin-top: 24px; padding: 12px; background: #f9fafb; border-radius: 8px; font-size: 12px; color: #4b5563; }
+            .footer { margin-top: 28px; padding-top: 16px; border-top: 1px solid #e5e7eb; font-size: 12px; color: #6b7280; text-align: center; }
+            @media print { body { padding: 16px; } .invoice { max-width: 100%; } }
           </style>
         </head>
         <body>
-          <h1>Invoice</h1>
-          <p style="margin:4px 0;">Puja: <strong>${pujaName}</strong></p>
-          <p style="margin:4px 0;">Date: <strong>${pujaDate || "-"}</strong></p>
+          <div class="invoice">
+            <div class="header">
+              <h1 class="brand">SHRI AAUM</h1>
+              <p class="tagline">Sacred Ritual Booking Platform</p>
+              <p class="contact">Website: www.shriaaum.com | Email: bhakta@shriaaum.com</p>
+            </div>
 
-          <div class="section">
-            <div class="section-title">Devotee Details</div>
-            <p style="margin:4px 0;">Name: <strong>${devoteeDetails?.name || "-"}</strong></p>
-            <p style="margin:4px 0;">Phone: <strong>${devoteeDetails?.phone || "-"}</strong></p>
-            <p style="margin:4px 0;">Email: <strong>${devoteeDetails?.email || "-"}</strong></p>
-            <p style="margin:4px 0;">Address: <strong>${devoteeDetails?.address || "-"}</strong></p>
-          </div>
+            <h2 class="invoice-title">INVOICE</h2>
 
-          <div class="section">
-            <div class="section-title">Participants</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Gotra</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${participantRows}
-              </tbody>
-            </table>
-          </div>
+            <div class="meta-row">
+              <span><strong>Invoice No:</strong> ${invoiceNo || orderId || "-"}</span>
+              <span><strong>Invoice Date:</strong> ${invoiceDate || new Date().toLocaleDateString("en-IN")}</span>
+              <span><strong>Payment Status:</strong> Paid</span>
+            </div>
 
-          <div class="section">
-            <div class="section-title">Puja Package</div>
-            <p style="margin:4px 0;">Package: <strong>${packageName || "-"}</strong></p>
-            <p style="margin:4px 0;">Price: <strong>${packagePrice || "-"}</strong></p>
-          </div>
+            <div class="section">
+              <div class="section-title">Devotee Details</div>
+              <div class="section-content">
+                <p><strong>Name:</strong> ${devoteeDetails?.name || "-"}</p>
+                <p><strong>Phone:</strong> ${devoteeDetails?.phone || "-"}</p>
+                <p><strong>Email:</strong> ${devoteeDetails?.email || "N/A"}</p>
+              </div>
+            </div>
 
-          <div class="section">
-            <div class="section-title">Add-ons</div>
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th style="text-align:right;">Qty</th>
-                  <th style="text-align:right;">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${addonsRows}
-              </tbody>
-            </table>
-            <p style="margin:6px 0; text-align:right;"><strong>Add-ons Total: ${addonsTotal || 0}</strong></p>
-          </div>
+            <div class="section">
+              <div class="section-title">Booking Details</div>
+              <div class="section-content">
+                <p><strong>Booking ID:</strong> ${orderId || "-"}</p>
+                <p><strong>Service:</strong> Temple Ritual / Pooja</p>
+                <p><strong>Temple Date:</strong> ${pujaDate || "-"}</p>
+                <p><strong>Booking Mode:</strong> Online</p>
+              </div>
+            </div>
 
-          <div class="section">
-            <div class="section-title">Coupon & Total</div>
-            ${couponRow}
-            <p style="margin:4px 0;">Grand Total: <strong>₹${grandTotal}</strong></p>
+            <div class="section">
+              <div class="section-title">Payment Summary</div>
+              <table>
+                <thead>
+                  <tr><th>Description</th><th style="text-align:center;">Qty</th><th style="text-align:right;">Price</th></tr>
+                </thead>
+                <tbody>
+                  ${pkgRow}
+                  ${addonsRows}
+                  ${couponRow}
+                </tbody>
+              </table>
+              <p style="margin-top:12px; text-align:right; font-weight:700; font-size:14px;">Total Paid: ₹${grandTotal}</p>
+            </div>
+
+            <div class="notes">
+              <strong>Notes:</strong><br/>
+              This invoice confirms your booking for the selected ritual service. Prasadam dispatch and ritual updates will be shared via WhatsApp or email.
+            </div>
+
+            <div class="footer">
+              Thank you for booking with Shri AAUM. May divine blessings be with you.
+            </div>
           </div>
         </body>
       </html>
