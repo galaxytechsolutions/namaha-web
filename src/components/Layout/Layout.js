@@ -10,6 +10,7 @@ function Layout({ children }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [user, setUser] = useState(null);
+    const [showLoginModal, setShowLoginModal] = useState(false);
     const closeMenu = () => setMenuOpen(false);
 
     // ⭐ 🔥 FIXED: Check auth on EVERY route change + mount
@@ -119,14 +120,13 @@ function Layout({ children }) {
         localStorage.removeItem('user');
         setUser(null);
         setProfileOpen(false);
-        navigate('/login');
+        navigate('/');
     };
 
     // ⭐ 🔥 SIMPLIFIED: Direct token check
     const isLoggedIn = !!localStorage.getItem('token');
     console.log('🔐 isLoggedIn:', isLoggedIn, 'user:', user); // Debug
-    const SHOW_PROFILE_MENU = false; // Hide profile in all views (keep code)
-    const SHOW_LOGIN_BUTTON = false; // Hide login button in header/layout
+    const SHOW_PROFILE_MENU = true; // Show profile dropdown when logged in
 
     return (
         <div className="app-wrap">
@@ -184,38 +184,36 @@ function Layout({ children }) {
                         {/* <li><a href="#library" onClick={closeMenu}>Library</a></li> */}
                     </ul>
                     <div className="nav-right">
-                        {/* <select className="language-selector">
-                            <option>English</option>
-                            <option>Hindi</option>
-                        </select> */}
+                        {/* Profile icon always visible; dropdown only when logged in */}
+                        <div className="profile-container">
+                            <button
+                                type="button"
+                                className="profile-trigger"
+                                onClick={() => {
+                                    if (!isLoggedIn) {
+                                        setShowLoginModal(true);
+                                    } else {
+                                        setProfileOpen(!profileOpen);
+                                    }
+                                }}
+                                aria-label="User profile"
+                            >
+                                {user?.profileImageUrl ? (
+                                    <img
+                                        src={user.profileImageUrl}
+                                        alt="Profile"
+                                        className="profile-trigger-avatar"
+                                    />
+                                ) : (
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                        <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none" />
+                                        <path d="M20 21v-2a 4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
+                                    </svg>
+                                )}
+                            </button>
 
-                        {/* ⭐ 🔥 PERFECT CONDITIONAL LOGIN/PROFILE */}
-                        {isLoggedIn ? (
-                            // ✅ LOGGED IN: Show Profile Dropdown
-                            SHOW_PROFILE_MENU ? (
-                            <div className="profile-container">
-                                <button
-                                    type="button"
-                                    className="profile-trigger"
-                                    onClick={() => setProfileOpen(!profileOpen)}
-                                    aria-label="User profile"
-                                >
-                                    {user?.profileImageUrl ? (
-                                        <img
-                                            src={user.profileImageUrl}
-                                            alt="Profile"
-                                            className="profile-trigger-avatar"
-                                        />
-                                    ) : (
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                                            <circle cx="12" cy="7" r="4" stroke="#0d0d0d" strokeWidth="2" fill="none" />
-                                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="#0d0d0d" strokeWidth="2" strokeLinecap="round" />
-                                        </svg>
-                                    )}
-                                </button>
-
-                                {profileOpen && (
-                                    <div className="profile-dropdown">
+                            {isLoggedIn && SHOW_PROFILE_MENU && profileOpen && (
+                                <div className="profile-dropdown">
                                         <div className="profile-header">
                                             <div className="profile-info">
                                                 <div>
@@ -227,13 +225,7 @@ function Layout({ children }) {
                                         </div>
 
                                         <div className="profile-menu">
-                                            <Link to="/Profile" className="profile-item" onClick={() => setProfileOpen(false)}>
-                                                <div className="profile-icon">👤</div>
-                                                <span>My Profile</span>
-                                                <div className="profile-chevron">›</div>
-                                            </Link>
-
-                                            <Link to="/mybookings" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                            <Link to="/my-bookings" className="profile-item" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🕉</div>
                                                 <span>My Puja Bookings</span>
                                                 <div className="profile-chevron">›</div>
@@ -289,16 +281,7 @@ function Layout({ children }) {
                                         </div> */}
                                     </div>
                                 )}
-                            </div>
-                            ) : null
-                        ) : (
-                            // ❌ NOT LOGGED IN: Show Login Button
-                            SHOW_LOGIN_BUTTON ? (
-                                <Link to="/login" className="login-btn-header">
-                                    Login
-                                </Link>
-                            ) : null
-                        )}
+                        </div>
 
                         <button
                             type="button"
@@ -312,6 +295,33 @@ function Layout({ children }) {
                 </nav>
             </header>
             {children}
+
+            {showLoginModal && (
+                <div className="layout-login-modal-backdrop" onClick={() => setShowLoginModal(false)}>
+                    <div className="layout-login-modal" onClick={(e) => e.stopPropagation()}>
+                        <p className="layout-login-modal-message">Please login first</p>
+                        <div className="layout-login-modal-actions">
+                            <button
+                                type="button"
+                                className="layout-login-modal-btn layout-login-modal-btn-cancel"
+                                onClick={() => setShowLoginModal(false)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                className="layout-login-modal-btn layout-login-modal-btn-login"
+                                onClick={() => {
+                                    setShowLoginModal(false);
+                                    navigate('/login');
+                                }}
+                            >
+                                Login
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

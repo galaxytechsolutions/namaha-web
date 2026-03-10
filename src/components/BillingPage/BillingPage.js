@@ -68,6 +68,23 @@ function BillingPage() {
   const [prasadam, setPrasadam] = useState(location.state?.prasadam ?? false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [invoiceData, setInvoiceData] = useState(null);
+  const [toast, setToast] = useState({ show: false, message: "", type: "error" });
+  const toastTimeoutRef = useRef(null);
+
+  const showToast = useCallback((message, type = "error") => {
+    if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    setToast({ show: true, message, type });
+    toastTimeoutRef.current = setTimeout(() => {
+      setToast((t) => ({ ...t, show: false }));
+      toastTimeoutRef.current = null;
+    }, 3500);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+    };
+  }, []);
 
   const couponApplied = appliedCoupon != null;
   const finalPayable = couponApplied ? finalAmount : Math.max(subtotal, 0);
@@ -353,21 +370,21 @@ function BillingPage() {
 
     // Validate required fields
     if (!form.name || !form.phone || !form.address) {
-      alert("Please fill Name, Phone Number, and Address");
+      showToast("Please fill Name, Phone Number, and Address");
       paymentStartedRef.current = false;
       return;
     }
 
     // Phone: must be exactly 10 digits
     if (!/^\d{10}$/.test(form.phone)) {
-      alert("Please enter a valid 10-digit phone number.");
+      showToast("Please enter a valid 10-digit phone number.");
       paymentStartedRef.current = false;
       return;
     }
 
     // Email: if provided, must contain "@" in a basic valid pattern
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      alert("Please enter a valid email address.");
+      showToast("Please enter a valid email address.");
       paymentStartedRef.current = false;
       return;
     }
@@ -375,13 +392,13 @@ function BillingPage() {
       .map((p, i) => (p.name?.trim() ? null : i + 1))
       .filter(Boolean);
     if (missingParticipantNames.length > 0) {
-      alert(`Please enter Name for Participant ${missingParticipantNames.join(", ")}`);
+      showToast(`Please enter Name for Participant ${missingParticipantNames.join(", ")}`);
       paymentStartedRef.current = false;
       return;
     }
 
     if (!puja?.id) {
-      alert("Puja details missing. Please go back and try again.");
+      showToast("Puja details missing. Please go back and try again.");
       navigate(-1);
       paymentStartedRef.current = false;
       return;
@@ -424,7 +441,7 @@ function BillingPage() {
       if (res.data.success && orderId) {
         loadRazorpay(orderId, finalPayable);
       } else {
-        alert(res.data.message || "Failed to create order. Please try again.");
+        showToast(res.data.message || "Failed to create order. Please try again.");
       }
     } catch (err) {
       const status = err.response?.status;
@@ -442,12 +459,12 @@ function BillingPage() {
       }
 
       if (status === 409) {
-        alert("Booking conflict. Please go back and try again.");
+        showToast("Booking conflict. Please go back and try again.");
         navigate(-1);
         return;
       }
 
-      alert(message);
+      showToast(message);
     } finally {
       setLoading(false);
     }
@@ -456,7 +473,7 @@ function BillingPage() {
   // ================= RAZORPAY =================
   const loadRazorpay = (orderId, amount) => {
     if (!window.Razorpay) {
-      alert("Razorpay SDK not loaded. Please refresh and try again.");
+      showToast("Razorpay SDK not loaded. Please refresh and try again.");
       return;
     }
 
@@ -464,12 +481,12 @@ function BillingPage() {
     console.log("🔑 Razorpay key:", razorpayKey, "| order_id:", orderId);
 
     if (!razorpayKey) {
-      alert("Razorpay key missing. Check your .env file.");
+      showToast("Razorpay key missing. Check your .env file.");
       return;
     }
     if (!orderId || typeof orderId !== "string" || !orderId.startsWith("order_")) {
       console.error("Invalid order_id from backend:", orderId);
-      alert("Invalid order from server. Please try again.");
+      showToast("Invalid order from server. Please try again.");
       return;
     }
 
@@ -498,9 +515,20 @@ function BillingPage() {
       // POST /api/bookings/guest/booking/confirm-razorpay — call after user completes Razorpay.
       // Full URL = baseURL + "/bookings/guest/booking/confirm-razorpay"
       handler: async function (response) {
-        console.log("✅ Razorpay payment success:", response);
-        // Show post-payment loader while confirming booking and sending invoice
+        // ✅ STRICT guard — exit immediately if payment data is missing
+        if (
+          !response?.razorpay_payment_id ||
+          !response?.razorpay_signature ||
+          !response?.razorpay_order_id
+        ) {
+          console.warn("⚠️ Incomplete Razorpay response, ignoring:", response);
+          paymentStartedRef.current = false;
+          setLoading(false);
+          setPostPaymentLoading(false);
+          return;
+        }
         setPostPaymentLoading(true);
+        console.log("✅ Razorpay payment success:", response);
         const token = localStorage.getItem("token");
         const payload = {
           razorpay_order_id: orderId,
@@ -599,7 +627,7 @@ function BillingPage() {
           setPendingBookingId(null);
         } catch (err) {
           console.error("Confirm payment error:", err);
-          alert(err.response?.data?.message || "Failed to confirm booking. Please contact support.");
+          showToast(err.response?.data?.message || "Failed to confirm booking. Please contact support.");
         } finally {
           setPostPaymentLoading(false);
         }
@@ -607,7 +635,10 @@ function BillingPage() {
 
       modal: {
         ondismiss: function () {
-          console.log("Payment modal closed by user");
+          paymentStartedRef.current = false;
+          setLoading(false);
+          setPostPaymentLoading(false);
+          console.log("Payment modal dismissed");
         },
       },
     };
@@ -617,7 +648,7 @@ function BillingPage() {
       console.error("❌ Razorpay payment failed:", response.error);
       const msg = response.error?.description || response.error?.reason || "Payment failed.";
       if (response.error?.code === "BAD_REQUEST_ERROR" && msg.includes("id") && msg.includes("not exist")) {
-        alert("Payment error: Razorpay key mismatch. Ensure REACT_APP_RAZORPAY_KEY_ID in .env matches your backend Razorpay key exactly. Restart the dev server after changing .env.");
+        showToast("Payment error: Razorpay key mismatch. Check .env and restart.");
       } else {
         alert(`Payment failed: ${msg}`);
       }
@@ -825,7 +856,7 @@ function BillingPage() {
           "✅ Invoice sent to WhatsApp! Message ID:",
           data.messageId
         );
-        alert("Invoice sent to your WhatsApp! 📄");
+        showToast("Invoice sent to your WhatsApp! 📄", "success");
       } else {
         console.error("❌ Failed sending WhatsApp PDF:", data.message);
       }
@@ -836,10 +867,15 @@ function BillingPage() {
 
   return (
     <>
+    {toast.show && (
+      <div className={`billing-toast billing-toast-${toast.type}`} role="alert">
+        {toast.message}
+      </div>
+    )}
     {postPaymentLoading && (
       <div className="billing-post-payment-overlay" role="status" aria-live="polite">
         <div className="billing-post-payment-spinner" aria-hidden="true" />
-        <p className="billing-post-payment-text">Payment confirmed successfully…</p>
+        <p className="billing-post-payment-text">Processing payment…</p>
       </div>
     )}
     {showInvoiceModal && invoiceData && (

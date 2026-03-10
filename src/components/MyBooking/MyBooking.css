@@ -472,14 +472,74 @@
 /* Responsive Breakpoints */
 @media (max-width: 768px) {
   .bookings-header h1 {
-    font-size: 18px;
+    font-size: 1.5rem;
   }
   
   .bookings-grid {
     grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .booking-card {
+    padding: 16px;
+  }
+
+  .status-badge {
+    top: 12px;
+    right: 12px;
+    padding: 5px 10px;
+    font-size: 0.7rem;
+  }
+
+  .booking-content {
+    padding-right: 0;
+  }
+
+  .puja-name {
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+    padding-right: 80px;
+    line-height: 1.35;
+  }
+
+  .puja-deity {
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+  }
+
+  .booking-datetime {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 12px;
+  }
+
+  .datetime-item {
+    font-size: 0.8rem;
+  }
+
+  .mode-badge {
+    margin-bottom: 12px;
+    font-size: 0.8rem;
+    padding: 5px 10px;
+  }
+
+  .booking-price {
+    font-size: 1rem;
+    margin-bottom: 12px;
+  }
+
+  .view-btn {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  .bookings-count,
+  .datetime-item,
+  .mode-badge {
+    font-size: 0.8rem;
   }
   
-  /* MOBILE: Hide desktop filters, show mobile toggle */
   .desktop-filters {
     display: none;
   }
@@ -491,7 +551,63 @@
 
 @media (max-width: 480px) {
   .bookings-container {
-    padding: 60px 15px 40px;
+    padding: 60px 12px 40px;
+  }
+
+  .bookings-header h1 {
+    font-size: 1.25rem;
+  }
+
+  .bookings-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .booking-card {
+    padding: 14px;
+  }
+
+  .status-badge {
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .booking-content {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .puja-name {
+    font-size: 0.9rem;
+    padding-right: 88px;
+  }
+
+  .puja-deity {
+    font-size: 0.8rem;
+  }
+
+  .booking-datetime {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 12px 16px;
+    padding: 10px;
+  }
+
+  .datetime-item {
+    flex-direction: row;
+    gap: 6px;
+    font-size: 0.8rem;
+  }
+
+  .booking-price {
+    font-size: 0.95rem;
+  }
+
+  .view-btn {
+    padding: 12px;
   }
   
   .mobile-filter-btn {
@@ -504,14 +620,5 @@
     max-width: 95vw;
     left: 5%;
     transform: none;
-  }
-
-  .bookings-grid {
-    grid-template-columns: 1fr ;
-  }
-  
-  .filter-option {
-    padding: 12px 16px;
-    font-size: 0.9rem;
   }
 }

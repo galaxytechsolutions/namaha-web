@@ -84,13 +84,11 @@ function App() {
             </Layout>
           } />
           }
-          {
-          <Route path="/mybookings" element={
+          <Route path="/my-bookings" element={
             <Layout>
               <MyBookings/>
             </Layout>
           } />
-          }
           {
           <Route path="/booking/:id" element={
             <Layout>

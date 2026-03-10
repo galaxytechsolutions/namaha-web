@@ -7,26 +7,22 @@ function MyBookings() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeFilter, setActiveFilter] = useState("all");
   
   // Modal state
   const [selectedBookingId, setSelectedBookingId] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  
-  // Mobile filter dropdown state
-  const [showMobileFilters, setShowMobileFilters] = useState(false);
 
   useEffect(() => {
-    fetchBookings(activeFilter);
-  }, [activeFilter]);
+    fetchBookings();
+  }, []);
 
-  const fetchBookings = async (filter = "all") => {
+  const fetchBookings = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      const response = await axiosInstance.get("/bookings", {
-        params: { filter }
+      const response = await axiosInstance.get("/bookings/my-bookings", {
+        params: {}
       });
 
       const data = response.data;
@@ -74,8 +70,6 @@ function MyBookings() {
       expired: "Expired",
       cancelled: "Cancelled",
       panditRejected: "Rejected",
-      all: "All",
-      upcoming: "Upcoming"
     };
     return textMap[status] || status;
   };
@@ -102,16 +96,17 @@ function MyBookings() {
   const getBookingDisplayData = (b) => {
     const pooja = b.poojaId ?? b.pooja;
     const pujaObj = typeof pooja === "object" ? pooja : null;
-    const selectedPkg = b.selectedPackage ?? b.package;
+    const selectedPkg = b.bookingSnapshot?.selectedPackage ?? b.selectedPackage ?? b.package;
+    const category = pujaObj?.category;
+    const categoryName = typeof category === "object" ? category?.category ?? category?.name : null;
     return {
       id: b._id ?? b.id,
       name: pujaObj?.title ?? pujaObj?.name ?? "Puja Booking",
-      deity: pujaObj?.category ?? pujaObj?.section ?? selectedPkg?.name ?? "N/A",
-      pandit: b.panditId ?? b.pandit,
+      packageName: selectedPkg?.name ?? categoryName ?? "N/A",
       date: b.date,
       slotStart: b.slots?.[0]?.start,
       duration: b.duration ?? selectedPkg?.duration ?? "—",
-      price: b.price ?? b.grandTotal ?? b.payment?.amount ?? 0,
+      price: b.price ?? b.bookingSnapshot?.grandTotal ?? b.grandTotal ?? b.payment?.amount ?? 0,
       mode: b.mode ?? "online",
     };
   };
@@ -132,7 +127,7 @@ function MyBookings() {
       <div className="bookings-container">
         <div className="error-message">
           <p>❌ {error}</p>
-          <button onClick={() => fetchBookings(activeFilter)}>Try Again</button>
+          <button onClick={fetchBookings}>Try Again</button>
         </div>
       </div>
     );
@@ -145,108 +140,6 @@ function MyBookings() {
         <p className="bookings-count">
           {bookings.length} {bookings.length === 1 ? 'booking' : 'bookings'}
         </p>
-      </div>
-
-      {/* Filters */}
-      <div className="bookings-filters">
-        {/* Desktop/Tablet Filters */}
-        <div className="desktop-filters">
-          <button
-            className={`filter-btn ${activeFilter === "all" ? "active" : ""}`}
-            onClick={() => setActiveFilter("all")}
-          >
-            All
-          </button>
-          <button
-            className={`filter-btn ${activeFilter === "upcoming" ? "active" : ""}`}
-            onClick={() => setActiveFilter("upcoming")}
-          >
-            Upcoming
-          </button>
-          <button
-            className={`filter-btn ${activeFilter === "completed" ? "active" : ""}`}
-            onClick={() => setActiveFilter("completed")}
-          >
-            Completed
-          </button>
-          <button
-            className={`filter-btn ${activeFilter === "pending" ? "active" : ""}`}
-            onClick={() => setActiveFilter("pending")}
-          >
-            Pending
-          </button>
-          <button
-            className={`filter-btn ${activeFilter === "cancelled" ? "active" : ""}`}
-            onClick={() => setActiveFilter("cancelled")}
-          >
-            Cancelled
-          </button>
-        </div>
-
-        {/* Mobile Filter Toggle */}
-        <div className="mobile-filter-toggle">
-          <button 
-            className={`mobile-filter-btn ${showMobileFilters ? 'active' : ''}`}
-            onClick={() => setShowMobileFilters(!showMobileFilters)}
-          >
-            <span className="filter-icon">⟐</span>
-            <span className="filter-text">
-              {getStatusText(activeFilter)}
-            </span>
-            <span className="filter-chevron">▼</span>
-          </button>
-        </div>
-
-        {/* Mobile Filter Dropdown */}
-        {showMobileFilters && (
-          <div className="mobile-filter-dropdown">
-            <div 
-              className={`filter-option ${activeFilter === "all" ? "active" : ""}`} 
-              onClick={() => {
-                setActiveFilter("all");
-                setShowMobileFilters(false);
-              }}
-            >
-              All
-            </div>
-            <div 
-              className={`filter-option ${activeFilter === "upcoming" ? "active" : ""}`} 
-              onClick={() => {
-                setActiveFilter("upcoming");
-                setShowMobileFilters(false);
-              }}
-            >
-              Upcoming
-            </div>
-            <div 
-              className={`filter-option ${activeFilter === "completed" ? "active" : ""}`} 
-              onClick={() => {
-                setActiveFilter("completed");
-                setShowMobileFilters(false);
-              }}
-            >
-              Completed
-            </div>
-            <div 
-              className={`filter-option ${activeFilter === "pending" ? "active" : ""}`} 
-              onClick={() => {
-                setActiveFilter("pending");
-                setShowMobileFilters(false);
-              }}
-            >
-              Pending
-            </div>
-            <div 
-              className={`filter-option ${activeFilter === "cancelled" ? "active" : ""}`} 
-              onClick={() => {
-                setActiveFilter("cancelled");
-                setShowMobileFilters(false);
-              }}
-            >
-              Cancelled
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Bookings List */}
@@ -266,8 +159,6 @@ function MyBookings() {
         <div className="bookings-grid">
           {bookings.map((booking) => {
             const d = getBookingDisplayData(booking);
-            const pandit = d.pandit && typeof d.pandit === "object" ? d.pandit : null;
-            const imgUrl = pandit?.profileImage?.url ?? pandit?.profileImage;
             return (
               <div key={d.id || booking._id} className="booking-card">
                 <div className={`status-badge ${getStatusBadgeClass(booking.status)}`}>
@@ -276,27 +167,7 @@ function MyBookings() {
 
                 <div className="booking-content">
                   <h3 className="puja-name">{d.name}</h3>
-                  <p className="puja-deity">Package: {d.deity}</p>
-
-                  <div className="pandit-info">
-                    <div className="pandit-avatar">
-                      {imgUrl ? (
-                        <img src={imgUrl} alt={pandit?.name ?? "Pandit"} />
-                      ) : (
-                        <div className="avatar-placeholder">
-                          {pandit?.name?.charAt(0) ?? "P"}
-                        </div>
-                      )}
-                    </div>
-                    <div className="pandit-details">
-                      <span className="pandit-name">
-                        👤 {pandit?.name ?? "To be assigned"}
-                      </span>
-                      {pandit?.rating && (
-                        <span className="pandit-rating">⭐ {pandit.rating}</span>
-                      )}
-                    </div>
-                  </div>
+                  <p className="puja-deity">Package: {d.packageName}</p>
 
                   <div className="booking-datetime">
                     <div className="datetime-item">

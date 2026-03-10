@@ -6,6 +6,7 @@ function BookingDetailsModal({ bookingId, onClose }) {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [invoiceUrl, setInvoiceUrl] = useState(null);
 
   const fetchBookingDetails = useCallback(async () => {
     try {
@@ -13,9 +14,19 @@ function BookingDetailsModal({ bookingId, onClose }) {
       setError(null);
 
       const response = await axiosInstance.get(`/bookings/booking-details/${bookingId}`);
-      
       console.log("📄 Booking details:", response.data);
-      setBooking(response.data.bookingDetails);
+
+      const apiBooking = response.data.booking;
+      const apiDetails = response.data.bookingDetails;
+      const details = apiDetails || apiBooking || response.data;
+
+      setBooking(details);
+      setInvoiceUrl(
+        apiBooking?.invoicePdfUrl ||
+          apiDetails?.invoicePdfUrl ||
+          details?.invoicePdfUrl ||
+          null
+      );
     } catch (err) {
       console.error("Error fetching booking details:", err);
       setError(err.response?.data?.message || "Failed to load booking details");
@@ -75,6 +86,24 @@ function BookingDetailsModal({ bookingId, onClose }) {
 
   if (!bookingId) return null;
 
+  const normalizedStatus =
+    booking?.status?.charAt(0).toUpperCase() + booking?.status?.slice(1) || "";
+
+  const displayOrderId =
+    booking?.razorpayOrderId ||
+    booking?.payment?.orderId ||
+    booking?.payment?.order_id ||
+    "-";
+
+  const displayPaymentId =
+    booking?.razorpayPaymentId ||
+    booking?.payment?.transactionId ||
+    booking?.payment?.paymentId ||
+    "-";
+
+  const displayPaymentStatus =
+    booking?.paymentStatus || booking?.payment?.status || "-";
+
   return (
     <div className="modal-backdrop" onClick={handleBackdropClick}>
       <div className="modal-content">
@@ -100,13 +129,14 @@ function BookingDetailsModal({ bookingId, onClose }) {
               <h2>
                 {booking.bookingSnapshot?.puja?.title ||
                   booking.pooja?.name ||
+                  booking.pooja?.title ||
                   "Puja Booking"}
               </h2>
               <span 
                 className="modal-status-badge"
                 style={{ backgroundColor: getStatusColor(booking.status) }}
               >
-                {booking.status}
+                {normalizedStatus}
               </span>
             </div>
 
@@ -162,7 +192,7 @@ function BookingDetailsModal({ bookingId, onClose }) {
                   )}
                 </p>
                 <p className="info-label">
-                  Payment status: {booking.paymentStatus || "-"}
+                  Payment status: {displayPaymentStatus}
                 </p>
               </div>
 
@@ -171,20 +201,19 @@ function BookingDetailsModal({ bookingId, onClose }) {
                 <h3>💳 Payment</h3>
                 <p className="info-label">
                   Order ID:{" "}
-                  {booking.razorpayOrderId
-                    ? `${booking.razorpayOrderId}`
-                    : "-"}
+                  {displayOrderId}
                 </p>
                 <p className="info-label">
                   Payment ID:{" "}
-                  {booking.razorpayPaymentId
-                    ? `${booking.razorpayPaymentId}`
-                    : "-"}
+                  {displayPaymentId}
                 </p>
-                {booking.invoicePdfUrl && (
+                <p className="info-label">
+                  Status: {displayPaymentStatus}
+                </p>
+                {invoiceUrl && (
                   <p className="info-label">
                     <a
-                      href={booking.invoicePdfUrl}
+                      href={invoiceUrl}
                       target="_blank"
                       rel="noreferrer"
                     >
