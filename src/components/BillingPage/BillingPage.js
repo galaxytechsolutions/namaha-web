@@ -13,6 +13,18 @@ function BillingPage() {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
+  // Helper: safely send Meta Pixel standard events
+  const trackMetaPixelEvent = (eventName, params = {}) => {
+    if (typeof window !== "undefined" && window.fbq) {
+      try {
+        window.fbq("track", eventName, params);
+      } catch (e) {
+        // Avoid breaking checkout if pixel fails
+        console.warn("Meta Pixel track error", eventName, e);
+      }
+    }
+  };
+
   // ✅ Destructure values passed from PujaDetail navigate state (no pandit/slot/location)
   const {
     puja,
@@ -461,6 +473,12 @@ function BillingPage() {
       return;
     }
 
+    // Meta Pixel: user is starting checkout
+    trackMetaPixelEvent("InitiateCheckout", {
+      value: amount,
+      currency: "INR",
+    });
+
     const options = {
       key: process.env.REACT_APP_RAZORPAY_KEY_ID,
       amount: amount * 100, // ✅ paise
@@ -543,6 +561,19 @@ function BillingPage() {
               pdfUrl: invoicePdfUrl,
             });
           }
+
+          // Meta Pixel: successful purchase
+          trackMetaPixelEvent("Purchase", {
+            value: finalPayable,
+            currency: "INR",
+            contents: [
+              {
+                id: puja?._id || puja?.id || String(finalOrderId || ""),
+                quantity: 1,
+              },
+            ],
+            content_type: "product",
+          });
 
           const invoice = {
             orderId: finalOrderId,
