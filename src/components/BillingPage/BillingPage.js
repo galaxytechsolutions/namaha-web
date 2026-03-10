@@ -484,7 +484,7 @@ function BillingPage() {
       amount: amount * 100, // ✅ paise
       currency: "INR",
       order_id: orderId,
-      name: "SHRI AAUM",
+      name: "Shri Aaum",
       description: `${puja.title} - ${selectedPackage.name}`,
 
       prefill: {
@@ -499,6 +499,8 @@ function BillingPage() {
       // Full URL = baseURL + "/bookings/guest/booking/confirm-razorpay"
       handler: async function (response) {
         console.log("✅ Razorpay payment success:", response);
+        // Show post-payment loader while confirming booking and sending invoice
+        setPostPaymentLoading(true);
         const token = localStorage.getItem("token");
         const payload = {
           razorpay_order_id: orderId,
@@ -837,7 +839,7 @@ function BillingPage() {
     {postPaymentLoading && (
       <div className="billing-post-payment-overlay" role="status" aria-live="polite">
         <div className="billing-post-payment-spinner" aria-hidden="true" />
-        <p className="billing-post-payment-text">Confirming your booking…</p>
+        <p className="billing-post-payment-text">Payment confirmed successfully…</p>
       </div>
     )}
     {showInvoiceModal && invoiceData && (
