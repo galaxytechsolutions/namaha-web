@@ -10,7 +10,6 @@ function Layout({ children }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
     const [user, setUser] = useState(null);
-    const [showLoginModal, setShowLoginModal] = useState(false);
     const closeMenu = () => setMenuOpen(false);
 
     // ⭐ 🔥 FIXED: Check auth on EVERY route change + mount
@@ -191,7 +190,7 @@ function Layout({ children }) {
                                 className="profile-trigger"
                                 onClick={() => {
                                     if (!isLoggedIn) {
-                                        setShowLoginModal(true);
+                                        navigate('/login');
                                     } else {
                                         setProfileOpen(!profileOpen);
                                     }
@@ -298,32 +297,6 @@ function Layout({ children }) {
             </header>
             {children}
 
-            {showLoginModal && (
-                <div className="layout-login-modal-backdrop" onClick={() => setShowLoginModal(false)}>
-                    <div className="layout-login-modal" onClick={(e) => e.stopPropagation()}>
-                        <p className="layout-login-modal-message">Please login first</p>
-                        <div className="layout-login-modal-actions">
-                            <button
-                                type="button"
-                                className="layout-login-modal-btn layout-login-modal-btn-cancel"
-                                onClick={() => setShowLoginModal(false)}
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="button"
-                                className="layout-login-modal-btn layout-login-modal-btn-login"
-                                onClick={() => {
-                                    setShowLoginModal(false);
-                                    navigate('/login');
-                                }}
-                            >
-                                Login
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 }
