@@ -14,6 +14,12 @@ function SpecialPuja() {
   const [pujas, setPujas] = useState([]); // ✅ NEW: useState
   const [loading, setLoading] = useState(true);
 
+  const isEventDatePassed = (p) => {
+    const eventTimeMs = p?.eventDateRaw;
+    if (!eventTimeMs) return false;
+    return eventTimeMs <= Date.now();
+  };
+
   const getBenefitTitle = (benefit) => {
     if (!benefit) return null;
     if (typeof benefit === "string") return benefit;
@@ -101,7 +107,7 @@ function SpecialPuja() {
                 {/* <span className={`pl-card-tag ${puja.tagColor}`}>
                   {puja.specialTag}
                 </span> */}
-                {puja.soldTag ? (
+                {(puja.soldTag || isEventDatePassed(puja)) ? (
                   <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
                 ) : (
                   puja.topChoice && (

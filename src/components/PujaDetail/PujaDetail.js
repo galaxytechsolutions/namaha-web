@@ -391,6 +391,9 @@ function PujaDetail() {
                 ))}
               </div>
               {/* <span className="pd-badge">{puja.specialTag}</span> */}
+              {isEventDatePassed && (
+                <span className="pd-soldout-tag" aria-hidden="true">SOLD OUT</span>
+              )}
             </div>
 
             {/* Add-ons section: show only when add-on data is available from API */}

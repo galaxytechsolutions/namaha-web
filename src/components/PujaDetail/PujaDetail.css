@@ -140,6 +140,21 @@
   z-index: 3;
 }
 
+.pd-soldout-tag {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  background: #991b1b;
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  z-index: 3;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .pd-overlay-text {
   position: absolute;
   left: 24px;
