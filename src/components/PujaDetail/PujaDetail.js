@@ -119,8 +119,9 @@ function PujaDetail() {
     days: 0,
     hours: 0,
     minutes: 0,
-    seconds: 0, // ✅ Changed from 'min', 'secs'
+    seconds: 0,
   });
+  const [isEventDatePassed, setIsEventDatePassed] = useState(false);
 
   const [activeTab, setActiveTab] = useState("packages");
   const [openFaq, setOpenFaq] = useState(null);
@@ -153,6 +154,10 @@ function PujaDetail() {
   const handleBookPujaClick = (pkg) => {
     if (puja?.soldTag) {
       alert("This puja is SOLD OUT and cannot be booked.");
+      return;
+    }
+    if (isEventDatePassed) {
+      alert("Puja booking has closed. The event date has passed.");
       return;
     }
 
@@ -291,7 +296,10 @@ function PujaDetail() {
           const d = new Date(puja.date);
           return isNaN(d.getTime()) ? 0 : d.setHours(23, 59, 59, 999);
         })();
-    if (!eventTimeMs) return;
+    if (!eventTimeMs) {
+      setIsEventDatePassed(false);
+      return;
+    }
 
     let intervalId;
 
@@ -301,9 +309,11 @@ function PujaDetail() {
 
       if (diff <= 0) {
         setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setIsEventDatePassed(true);
         clearInterval(intervalId);
         return;
       }
+      setIsEventDatePassed(false);
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
@@ -511,6 +521,12 @@ function PujaDetail() {
                 <span className="pd-countdown-label-sm">Secs</span>
               </div>
             </div>
+            {isEventDatePassed && (
+              <div className="pd-booking-closed" role="alert">
+                <span className="pd-booking-closed-icon">🔒</span>
+                <strong>Booking closed.</strong> The event date has passed. Payment is no longer available.
+              </div>
+            )}
 
             {/* <div className="pd-participants">
               <div className="pd-avatars">
@@ -528,10 +544,11 @@ function PujaDetail() {
             </p> */}
             <button
               type="button"
-              className="pd-cta"
-              onClick={() => scrollToSection("packages")}
+              className={`pd-cta ${isEventDatePassed ? "pd-cta--disabled" : ""}`}
+              onClick={() => !isEventDatePassed && scrollToSection("packages")}
+              disabled={isEventDatePassed}
             >
-              Select puja package →
+              {isEventDatePassed ? "Booking closed" : "Select puja package →"}
             </button>
           </div>
         </div>
@@ -661,10 +678,11 @@ function PujaDetail() {
                     )}
                     <button
                       type="button"
-                      className="pd-package-btn"
+                      className={`pd-package-btn ${isEventDatePassed ? "pd-package-btn--disabled" : ""}`}
                       onClick={() => handleBookPujaClick(pkg)}
+                      disabled={isEventDatePassed}
                     >
-                      BOOK PUJA
+                      {isEventDatePassed ? "BOOKING CLOSED" : "BOOK PUJA"}
                     </button>
                   </div>
                 </div>

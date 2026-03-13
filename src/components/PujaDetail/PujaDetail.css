@@ -1,9 +1,9 @@
 /* Puja Detail Page - two column layout: carousel left, details right */
 .puja-detail-page {
-  /* Extra top padding so content is never hidden under fixed header */
-  padding-top: 100px;
+  padding-top: calc(100px + var(--safe-top));
   background: #fff;
   min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   box-sizing: border-box;
 }
@@ -356,6 +356,23 @@
   color: #6b7280;
 }
 
+.pd-booking-closed {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #991b1b;
+}
+
+.pd-booking-closed-icon {
+  font-size: 1.1rem;
+}
+
 .pd-participants {
   display: flex;
   align-items: center;
@@ -420,6 +437,18 @@
 
 .pd-cta:hover {
   background: #c2410c;
+}
+
+.pd-cta:disabled,
+.pd-cta.pd-cta--disabled {
+  background: #9ca3af;
+  color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.pd-cta:disabled:hover,
+.pd-cta.pd-cta--disabled:hover {
+  background: #9ca3af;
 }
 
 /* About Puja in pd-details (right side) - below date */
@@ -1211,11 +1240,27 @@
   text-transform: uppercase;
   letter-spacing: 0.5px;
   margin-top: 0.5rem;
-  transition: background 0.2s;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.pd-package-btn:active {
+  transform: scale(0.97);
 }
 
 .pd-package-btn:hover {
   background: #c2410c;
+}
+
+.pd-package-btn:disabled,
+.pd-package-btn.pd-package-btn--disabled {
+  background: #9ca3af;
+  color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.pd-package-btn:disabled:hover,
+.pd-package-btn.pd-package-btn--disabled:hover {
+  background: #9ca3af;
 }
 
 .pd-trust-badges {
