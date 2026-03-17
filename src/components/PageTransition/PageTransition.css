@@ -1,0 +1,55 @@
+.pt-wrap {
+  position: relative;
+  min-height: 60vh;
+}
+
+/* ── Loading overlay ── */
+.pt-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.92);
+  animation: ptFadeIn 150ms ease-out;
+}
+
+.pt-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-top-color: var(--color-primary, #ea580c);
+  border-radius: 50%;
+  animation: ptSpin 0.6s linear infinite;
+}
+
+@keyframes ptSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes ptFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Page content states ── */
+.pt-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.pt-visible {
+  animation: ptSlideIn 300ms var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+@keyframes ptSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -360,6 +360,28 @@ function Profile() {
             </div>
           </div>
 
+          <div className="profile-quick-links-section">
+            <h3>Quick Links</h3>
+            <div className="profile-quick-links-grid">
+              <button
+                type="button"
+                className="profile-quick-link-btn"
+                onClick={() => navigate("/contact")}
+              >
+                <span className="pql-icon">📞</span>
+                <span>Contact</span>
+              </button>
+              <button
+                type="button"
+                className="profile-quick-link-btn"
+                onClick={() => navigate("/about")}
+              >
+                <span className="pql-icon">ℹ️</span>
+                <span>About</span>
+              </button>
+            </div>
+          </div>
+
           <div className="form-actions">
             <button
               className="btn secondary"
@@ -376,6 +398,7 @@ function Profile() {
               {saving ? "Saving..." : "Update Profile"}
             </button>
           </div>
+
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 .about-page {
   background: #fff;
-  padding-top: 80px;
+  padding-top: calc(80px + var(--safe-top));
   min-height: 100vh;
 }
 

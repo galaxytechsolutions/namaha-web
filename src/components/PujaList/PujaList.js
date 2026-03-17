@@ -4,6 +4,12 @@ import "./PujaList.css";
 import Footer from "../Footer/Footer";
 import { usePujaList } from "../../data/pujaList";
 
+const isEventDatePassed = (puja) => {
+  const eventTimeMs = puja?.eventDateRaw;
+  if (!eventTimeMs) return false;
+  return eventTimeMs <= Date.now();
+};
+
 const normalizeBenefitTitles = (benefits) => {
   if (Array.isArray(benefits)) {
     return benefits
@@ -87,7 +93,7 @@ function PujaList() {
                 {/* <span className={`pl-card-tag ${puja.tagColor}`}>
                   {puja.specialTag}
                 </span> */}
-                {puja.soldTag ? (
+                {(puja.soldTag || isEventDatePassed(puja)) ? (
                   <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
                 ) : (
                   puja.topChoice && <span className="pl-top-choice-tag">TOP CHOICE</span>

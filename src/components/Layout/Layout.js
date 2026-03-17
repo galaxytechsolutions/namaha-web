@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate,  NavLink} from 'react-router-dom';
+import { Link, useLocation, useNavigate, NavLink } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
+import MobileBottomNav from '../MobileBottomNav/MobileBottomNav';
+import PageTransition from '../PageTransition/PageTransition';
 import './Layout.css';
 
 function Layout({ children }) {
@@ -129,9 +131,9 @@ function Layout({ children }) {
 
     return (
         <div className="app-wrap">
-            <header className={`header ${isScrolled ? 'scrolled' : ''} ${menuOpen ? 'open' : ''}`}>
+            <header className={`header safe-top ${isScrolled ? 'scrolled' : ''} ${menuOpen ? 'open' : ''}`}>
                 <nav className="nav-container">
-                    <Link to="/" className="logo">
+                    <Link to="/" className="logo tap-feedback">
                         <img src="/logo.png" alt="Shri AAUM" className="logo-img" />
                     </Link>
                     <ul className="nav-links">
@@ -232,6 +234,24 @@ function Layout({ children }) {
                                                 <div className="profile-chevron">›</div>
                                             </Link>
 
+                                            <Link to="/Profile" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">👤</div>
+                                                <span>My Profile</span>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                            <Link to="/about" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">ℹ️</div>
+                                                <span>About</span>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
+                                            <Link to="/contact" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                                <div className="profile-icon">📞</div>
+                                                <span>Contact</span>
+                                                <div className="profile-chevron">›</div>
+                                            </Link>
+
                                             {/* <Link to="/my-chadhava" className="profile-item" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🙏</div>
                                                 <span>My Chadhava Bookings</span>
@@ -295,8 +315,10 @@ function Layout({ children }) {
                     </div>
                 </nav>
             </header>
-            {children}
-
+            <PageTransition>
+                {children}
+            </PageTransition>
+            <MobileBottomNav />
         </div>
     );
 }

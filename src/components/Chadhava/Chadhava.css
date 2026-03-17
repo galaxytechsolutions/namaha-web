@@ -1,5 +1,5 @@
 .chadhava-page {
-  padding-top: 80px;
+  padding-top: calc(80px + var(--safe-top));
   background: #fff;
 }
 

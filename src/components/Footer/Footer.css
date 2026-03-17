@@ -362,7 +362,7 @@
   
   @media (max-width: 480px) {
     .footer {
-      padding: 24px 12px 20px;
+      padding: 24px 12px calc(20px + var(--bottom-nav-height) + var(--safe-bottom));
     }
 
     /* .footer-top {

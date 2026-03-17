@@ -95,18 +95,12 @@
   letter-spacing: 0.02em;
 }
 
-/* Raise FAB slightly on 375px-432px so trust strip is visible */
-@media (min-width: 375px) and (max-width: 432px) {
+/* Mobile: position FAB above the bottom nav */
+@media (max-width: 768px) {
   .wa-fab-wrap {
     right: 12px;
-    bottom: 56px;
-  }
-}
-
-@media (max-width: 480px) {
-  .wa-fab-wrap {
-    right: 12px;
-    bottom: 12px;
+    bottom: calc(var(--bottom-nav-height) + var(--safe-bottom) + 12px);
+    transition: bottom var(--transition-normal);
   }
 
   .wa-fab {

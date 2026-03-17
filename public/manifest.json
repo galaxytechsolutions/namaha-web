@@ -1,16 +1,40 @@
 {
   "short_name": "Shri Aaum",
-  "name": "Shri Aaum",
+  "name": "Shri Aaum - Sacred Pujas & Temple Rituals",
   "icons": [
     {
       "src": "logo.png",
       "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.png",
+      "type": "image/png",
       "sizes": "512x512",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
-  "start_url": ".",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait",
+  "theme_color": "#ea580c",
+  "background_color": "#ffffff",
+  "categories": ["lifestyle", "education"],
+  "description": "Book sacred pujas at India's most revered temples. Qualified Veda Pandits. Prasad delivery.",
+  "shortcuts": [
+    {
+      "name": "Book Puja",
+      "short_name": "Pujas",
+      "url": "/puja",
+      "icons": [{ "src": "logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Bookings",
+      "short_name": "Bookings",
+      "url": "/my-bookings",
+      "icons": [{ "src": "logo.png", "sizes": "192x192" }]
+    }
+  ]
 }

@@ -2,7 +2,7 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #f0f1f3 100%);
   padding: 1rem;
-  margin-top: 80px;
+  margin-top: calc(80px + var(--safe-top));
 }
 
 .profile-container1 {
@@ -209,6 +209,48 @@
   box-shadow: 0 0 0 4px rgba(102,126,234,0.1);
 }
 
+.profile-quick-links-section {
+  margin: 2rem 0;
+}
+
+.profile-quick-links-section h3 {
+  font-family: var(--font-heading);
+  margin: 0 0 1rem 0;
+  color: #1e293b;
+  font-size: 1.1rem;
+}
+
+.profile-quick-links-grid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-quick-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #374151;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.profile-quick-link-btn:hover {
+  border-color: #ea580c;
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.profile-quick-link-btn .pql-icon {
+  font-size: 1.1rem;
+}
+
 .info-section {
   background: linear-gradient(135deg, #f8fafc, #f1f5f9);
   padding: 2rem; border-radius: 16px; margin: 2rem 0;
@@ -283,4 +325,72 @@
 @media (max-width: 480px) {
   .profile-title1 { font-size: 18px; }
   .avatar-container { width: 80px; height: 80px; }
+}
+
+/* ── Quick links (My Bookings, Logout) ── */
+.profile-quick-links {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .profile-quick-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 24px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .profile-quick-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid #f1f5f9;
+    cursor: pointer;
+    transition: background 0.15s;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+  }
+
+  .profile-quick-link:last-child {
+    border-bottom: none;
+  }
+
+  .profile-quick-link:active {
+    background: #f8fafc;
+  }
+
+  .pql-icon {
+    font-size: 20px;
+    width: 28px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .pql-text {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 500;
+    color: #1e293b;
+  }
+
+  .pql-chevron {
+    font-size: 18px;
+    color: #94a3b8;
+    flex-shrink: 0;
+  }
+
+  .profile-logout-btn .pql-text {
+    color: #dc2626;
+  }
+
+  .profile-logout-btn:active {
+    background: #fef2f2;
+  }
 }

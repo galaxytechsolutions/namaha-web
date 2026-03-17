@@ -1,7 +1,7 @@
 .bookings-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 20px 40px;
+  padding: calc(80px + var(--safe-top)) 20px 40px;
   min-height: 100vh;
   background: linear-gradient(135deg, #fef9f3 0%, #fff5eb 100%);
 }

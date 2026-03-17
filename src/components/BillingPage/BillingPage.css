@@ -2,7 +2,7 @@
     display: flex;
     min-height: 100vh;
     font-family: var(--font-body);
-    padding-top: 80px; /* Clear fixed header */
+    padding-top: calc(80px + var(--safe-top));
     box-sizing: border-box;
   }
   
@@ -88,9 +88,17 @@
     margin-bottom: 20px;
   }
   
-  /* FORM */
-  .billing-form input,
-  .billing-form textarea {
+/* FORM */
+.billing-form h3 {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+  color: #1e293b;
+}
+
+.billing-form input,
+.billing-form textarea {
     width: 100%;
     padding: 10px;
     margin-bottom: 12px;
@@ -553,6 +561,93 @@
   height: 18px;
   accent-color: #f96b26;
   cursor: pointer;
+}
+
+/* ===== Shipping Form (Prasadam) ===== */
+.shipping-form-section {
+  margin-top: 16px;
+  padding: 18px;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-radius: 12px;
+  animation: shipping-slide-in 0.3s ease;
+}
+
+@keyframes shipping-slide-in {
+  from { opacity: 0; max-height: 0; transform: translateY(-8px); }
+  to { opacity: 1; max-height: 600px; transform: translateY(0); }
+}
+
+.shipping-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.shipping-form-header h4 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  color: #92400e;
+}
+
+.shipping-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.shipping-form-grid input,
+.shipping-form-grid textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: var(--font-body);
+  box-sizing: border-box;
+  background: #fff;
+  transition: border-color 0.2s;
+}
+
+.shipping-form-grid input:focus,
+.shipping-form-grid textarea:focus {
+  outline: none;
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+.shipping-form-grid textarea {
+  grid-column: 1 / -1;
+  resize: vertical;
+}
+
+.shipping-form-grid input[name="email"],
+.shipping-form-grid .shipping-address2 {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 600px) {
+  .shipping-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shipping-form-section {
+    padding: 14px;
+  }
+
+  .shipping-form-header h4 {
+    font-size: 13px;
+  }
+
+  .shipping-form-grid input,
+  .shipping-form-grid textarea {
+    font-size: 16px; /* prevent iOS zoom */
+  }
 }
 
 .grand-total-row {

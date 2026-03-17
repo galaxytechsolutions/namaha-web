@@ -10,12 +10,48 @@
 :root {
   --font-heading: 'Touche Bold', 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
+
+  /* Spacing system */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  /* Safe areas for notched devices */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  /* Bottom nav height for mobile */
+  --bottom-nav-height: 64px;
+
+  /* Brand colors */
+  --color-primary: #ea580c;
+  --color-primary-dark: #c2410c;
+  --color-accent: #16a34a;
+  --color-accent-dark: #15803d;
+
+  /* Transition presets */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --transition-fast: 150ms var(--ease-out-expo);
+  --transition-normal: 250ms var(--ease-out-expo);
+  --transition-slow: 400ms var(--ease-out-expo);
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 html, body {
@@ -36,4 +72,82 @@ h1, h2, h3, h4, h5, h6 {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* ── Native-like touch behavior ── */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Prevent zoom on input focus (iOS) */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="number"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* ── Tap feedback: scale-down on press ── */
+.tap-feedback {
+  transition: transform var(--transition-fast);
+  will-change: transform;
+}
+
+.tap-feedback:active {
+  transform: scale(0.97);
+}
+
+/* ── Page transition animation ── */
+.page-enter {
+  animation: pageSlideIn var(--transition-slow) forwards;
+}
+
+@keyframes pageSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Bottom spacing on mobile for bottom nav ── */
+@media (max-width: 768px) {
+  .app-wrap {
+    padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom));
+  }
+}
+
+/* ── Overscroll containment: prevents pull-to-refresh jank in standalone PWA ── */
+@media (display-mode: standalone) {
+  body {
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* ── Smooth image rendering ── */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ── Safe area padding utility classes ── */
+.safe-top {
+  padding-top: var(--safe-top);
+}
+
+.safe-bottom {
+  padding-bottom: var(--safe-bottom);
 }
