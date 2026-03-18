@@ -107,7 +107,7 @@ function SpecialPuja() {
                 {/* <span className={`pl-card-tag ${puja.tagColor}`}>
                   {puja.specialTag}
                 </span> */}
-                {(puja.soldTag || isEventDatePassed(puja)) ? (
+                {isEventDatePassed(puja) ? (
                   <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
                 ) : (
                   puja.topChoice && (
@@ -136,9 +136,15 @@ function SpecialPuja() {
               <p className="pl-card-meta">🏛 {puja.templeName}</p>
               {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta pl-card-date">📅 {puja.date}</p>
-              <Link to={`/puja/${puja.id}`} className="pl-card-participate">
-                Book Puja →
-              </Link>
+              {isEventDatePassed(puja) ? (
+                <div className="pl-card-participate pl-card-participate-disabled">
+                  Booking closed
+                </div>
+              ) : (
+                <Link to={`/puja/${puja.id}`} className="pl-card-participate">
+                  Book Puja →
+                </Link>
+              )}
             </div>
           ))}
         </div>

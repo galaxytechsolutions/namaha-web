@@ -4,7 +4,27 @@ import  { useState, useEffect } from "react";
 /* =====================================================
    MAP API RESPONSE → UI FORMAT
 ===================================================== */
-const mapApiPujaToPUJA_LIST = (apiPuja) => ({
+const mapApiPujaToPUJA_LIST = (apiPuja) => {
+  const ev = apiPuja.eventDate ? new Date(apiPuja.eventDate) : null;
+  const fallback = apiPuja.createdAt ? new Date(apiPuja.createdAt) : null;
+  const d =
+    ev && !isNaN(ev.getTime())
+      ? ev
+      : fallback && !isNaN(fallback.getTime())
+      ? fallback
+      : null;
+
+  const eventPieces = (() => {
+    if (!d) return { eventDate: null, eventDateRaw: 0, date: "—" };
+    const formatted = d.toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    });
+    return { eventDate: formatted, eventDateRaw: d.getTime(), date: formatted };
+  })();
+
+  return {
   id: apiPuja._id,
   rank: apiPuja.rank ?? 9999,
   specialTag: apiPuja.category?.category || `${apiPuja.section} Special`,
@@ -26,14 +46,7 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
     `${
       apiPuja.section?.charAt(0).toUpperCase() + apiPuja.section?.slice(1)
     } Temple, India`,
-  ...(() => {
-    const ev = apiPuja.eventDate ? new Date(apiPuja.eventDate) : null;
-    const fallback = apiPuja.createdAt ? new Date(apiPuja.createdAt) : null;
-    const d = ev && !isNaN(ev.getTime()) ? ev : fallback && !isNaN(fallback.getTime()) ? fallback : null;
-    if (!d) return { eventDate: null, eventDateRaw: 0, date: "—" };
-    const formatted = d.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
-    return { eventDate: formatted, eventDateRaw: d.getTime(), date: formatted };
-  })(),
+  ...eventPieces,
   addOns:
     apiPuja.addOns?.map((addon) => ({
       name: addon.name,
@@ -70,7 +83,8 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
   section: apiPuja.section,
   // occasion: auspicious event/festival when puja is performed (e.g. Ram Navami, Diwali)
   occasion: apiPuja.occasion || apiPuja.eventOccasion || apiPuja.specialTag || null,
-  soldTag: apiPuja.soldTag,
+  // SOLD OUT purely from event date — if event date/time has passed, mark as sold
+  soldTag: !!(eventPieces.eventDateRaw && eventPieces.eventDateRaw <= Date.now()),
   coupon: apiPuja.coupon
     ? {
         code: apiPuja.coupon.code,
@@ -110,7 +124,8 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => ({
             },
           ]
         : [],
-});
+  };
+};
 
 /* =====================================================
    🔥 DUMMY DATA (USED IF API FAILS)

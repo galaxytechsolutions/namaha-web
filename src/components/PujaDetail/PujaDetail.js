@@ -152,10 +152,7 @@ function PujaDetail() {
   };
 
   const handleBookPujaClick = (pkg) => {
-    if (puja?.soldTag) {
-      alert("This puja is SOLD OUT and cannot be booked.");
-      return;
-    }
+    // Block booking strictly based on event date
     if (isEventDatePassed) {
       alert("Puja booking has closed. The event date has passed.");
       return;
