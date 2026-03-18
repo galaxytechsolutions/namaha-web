@@ -1,6 +1,7 @@
 /* Puja Detail Page - two column layout: carousel left, details right */
 .puja-detail-page {
-  padding-top: calc(100px + var(--safe-top));
+  /* Top spacing is handled by `Layout.css` via `.layout-main` */
+  padding-top: 0;
   background: #fff;
   min-height: 100vh;
   min-height: 100dvh;
@@ -23,12 +24,28 @@
   box-sizing: border-box;
 }
 
+/* Add breathing room below fixed header for the top grid (image + title) */
+.puja-detail-page .pd-container {
+  padding-top: 18px;
+}
+
+@media (max-width: 768px) {
+  .puja-detail-page .pd-container {
+    padding-top: 14px;
+  }
+}
+
 .pd-grid {
   display: grid;
   grid-template-columns: minmax(280px, 1fr) minmax(280px, 1.2fr);
   gap: clamp(1.5rem, 4vw, 2.5rem);
   align-items: stretch;
   width: 100%;
+}
+
+/* Extra separation from fixed header for the top hero grid */
+.puja-detail-page .pd-section-content.pd-grid {
+  margin-top: 80px;
 }
 
 /* Laptop L (1440px) - use full available space */
@@ -107,8 +124,9 @@
   height: 100%;
   min-width: 100%;
   min-height: 100%;
-  object-fit: cover;
-  object-position: center;
+  /* Use contain so banner text/top area isn't cropped */
+  object-fit: contain;
+  object-position: center top;
   display: block;
   background-size: cover;
   background-position: center;
@@ -862,7 +880,7 @@
 
 .pd-section-nav--fixed {
   position: fixed;
-  top: 80px;
+  top: var(--header-offset, 104px);
   left: 0;
   right: 0;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -2111,8 +2129,8 @@
 .pd-carousel-slide img.pd-carousel-image {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center;
+  object-fit: contain;
+  object-position: center top;
   display: block;
   margin: 0;
   padding: 0;

@@ -110,6 +110,24 @@
     min-height: 100vh;
     overflow-x: hidden;
     width: 100%;
+    /* Centralized header offset for all pages */
+    --header-offset: 140px;
+  }
+
+  /* Page content wrapper used by `Layout.js` */
+  .layout-main {
+    padding-top: var(--header-offset);
+  }
+
+  @media (max-width: 768px) {
+    .app-wrap {
+      --header-offset: 100px;
+    }
+
+    .layout-main {
+      padding-top: var(--header-offset);
+      padding-bottom: 70px; /* space for mobile bottom nav */
+    }
   }
   
   .nav-links a.active {
