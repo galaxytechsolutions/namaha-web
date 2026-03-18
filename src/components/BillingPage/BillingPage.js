@@ -232,21 +232,23 @@ function BillingPage() {
   const lastAutoSaveKeyRef = useRef(null);
   const paymentStartedRef = useRef(false);
 
-  // Autosave when devotee form is filled (name, phone, address). Participants not required.
+  // Autosave when devotee form is filled. Name from form or Participant 1 (name field is hidden).
   const isFormValidForPending = useCallback(() => {
-    if (!form.name?.trim() || !form.phone || !form.address?.trim()) return false;
+    const devoteeName = form.name?.trim() || participants[0]?.name?.trim();
+    if (!devoteeName || !form.phone || !form.address?.trim()) return false;
     if (!/^\d{10}$/.test(form.phone)) return false;
     if (!puja?.id && !puja?._id) return false;
     return true;
-  }, [form.name, form.phone, form.address, puja?.id, puja?._id]);
+  }, [form.name, form.phone, form.address, participants, puja?.id, puja?._id]);
 
   useEffect(() => {
     if (!isFormValidForPending() || loading) return;
     if (paymentStartedRef.current) return;
     if (pendingSaveInFlightRef.current) return;
 
+    const devoteeName = form.name?.trim() || participants[0]?.name?.trim();
     const autoSaveKey = JSON.stringify({
-      name: form.name,
+      name: devoteeName,
       phone: form.phone,
       email: form.email,
       address: form.address,
@@ -368,9 +370,9 @@ function BillingPage() {
       }
     }
 
-    // Validate required fields
-    if (!form.name || !form.phone || !form.address) {
-      showToast("Please fill Name, Phone Number, and Address");
+    // Validate required fields (Name is hidden; Phone and Address required)
+    if (!form.phone || !form.address) {
+      showToast("Please fill Phone Number and Address");
       paymentStartedRef.current = false;
       return;
     }
@@ -419,7 +421,10 @@ function BillingPage() {
         isCouponApplied: couponApplied,
         discountAmount: couponApplied ? discountAmount : 0,
 
-        devoteeDetails: form,
+        devoteeDetails: {
+          ...form,
+          name: form.name?.trim() || participants[0]?.name?.trim() || "",
+        },
         participants: participants,
         appliedCoupon: couponApplied && appliedCoupon ? appliedCoupon : null,
 
@@ -537,7 +542,7 @@ function BillingPage() {
           status: "success",
           ...(pendingBookingId && { bookingId: pendingBookingId }),
           devoteeDetails: {
-            name: form.name,
+            name: form.name?.trim() || participants[0]?.name?.trim() || "",
             email: form.email || "",
             phone: form.phone,
             address: form.address || "",
@@ -1068,6 +1073,8 @@ function BillingPage() {
             placeholder="Full Name *"
             value={form.name}
             onChange={handleChange}
+            style={{ display: "none" }}
+            aria-hidden="true"
           />
           <input
             type="email"

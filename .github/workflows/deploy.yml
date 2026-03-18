@@ -1,4 +1,4 @@
-name: namaha-web deploy
+name: namaha-web
 
 on:
   push:
