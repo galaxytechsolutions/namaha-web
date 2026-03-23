@@ -1,37 +1,81 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import StatsEventUi from '../StatsEventUi/StatsEventUi';
+import axiosInstance from '../../lib/instance';
 import './Chadhava.css';
 import Footer from '../Footer/Footer';
 
-const CHADHAVA_CARDS = [
-  {
-    id: 1,
-    title: 'Pashupatinath “Gana-Tirpti” Pashu SHRI AAUM',
-    date: '9 February to 15 February, 2026',
-    description:
-      'From Kalashtami till Maha Shivratri, the purohit ji will perform Gana-Tirpti SHRI AAUM on your name at the respective site on the specific tithi. The video of the SHRI AAUM will be shared on the Shri aaum app in 24–48 hours of offering.',
-    cta: 'Perform Pashu SHRI AAUM →',
-  },
-  {
-    id: 2,
-    title: 'Mahashivratri: 4 Prahars, 4 Jyotirlingas Maha Abhishek',
-    date: '16 February 2026, Sunday, Phalguna Krishna Trayodashi',
-    description:
-      'On the sacred night of Maha Shivratri, each Jyotirlinga will perform the special Abhishek in your name during every prahar. Video proof of each prahar Abhishek will be shared within 24–48 hours.',
-    cta: 'Perform 4 Prahar Mahabhishek →',
-  },
-  {
-    id: 3,
-    title: 'Triyuginarayan Shiva–Parvati Vivah Mahotsav Path',
-    date: '15 February 2026, Sunday, Phalguna Krishna Trayodashi',
-    description:
-      'Celebrate the divine union of Shiva–Shakti at the very site of their marriage. The path and rituals will be performed in your name at Triyuginarayan Temple and shared on the Shri aaum app in 24–48 hours.',
-    cta: 'Book Vivah Path →',
-  },
-];
+const getItemsFromResponse = (data) => {
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.data?.items)) return data.data.items;
+  if (Array.isArray(data?.result?.items)) return data.result.items;
+  if (Array.isArray(data)) return data;
+  return [];
+};
+
+const normalizeCard = (item = {}) => {
+  const rawId = item.id || item._id || item.shortTitle || item.slug || item.title;
+  const idOrShortTitle = item.id || item._id || item.shortTitle || item.slug;
+  return {
+    id: String(rawId || Math.random()),
+    idOrShortTitle,
+    title: item.title || 'Untitled Chadhava',
+    eventdate: item.eventdate || item.eventDate || item.dateText || 'Date will be announced',
+    description: item.description || 'Details will be updated soon.',
+    bannerImage: item.bannerImage || item.image || item.thumbnail || '',
+    buttonText: item.buttonText || item.ctaText || 'View Details',
+  };
+};
 
 function Chadhava() {
+  const [cards, setCards] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [expandedCards, setExpandedCards] = useState({});
+  const offeringsRef = useRef(null);
+
+  const formatEventDate = (value) => {
+    if (!value) return 'Date will be announced';
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+    return String(value);
+  };
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadChadhavaCards = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const res = await axiosInstance.get('/chadhava');
+        console.log('Chadhava API response (/chadhava):', res?.data);
+        const items = getItemsFromResponse(res?.data);
+        if (!mounted) return;
+        const mapped = items
+          .map(normalizeCard)
+          .filter((card) => card.idOrShortTitle || card.id);
+        setCards(mapped);
+      } catch (err) {
+        if (!mounted) return;
+        setError(err?.response?.data?.message || 'Unable to load Chadhava offerings right now.');
+        setCards([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    loadChadhavaCards();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <main className="chadhava-page">
       {/* Hero */}
@@ -49,20 +93,29 @@ function Chadhava() {
               <li>Receive Chadhava Video in 2–3 days.</li>
             </ul>
             <div className="ch-hero-actions">
-              <button type="button" className="ch-btn ch-btn-primary">
+              <button
+                type="button"
+                className="ch-btn ch-btn-primary"
+                onClick={() => offeringsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+              >
                 View Now
-              </button>
-              <button type="button" className="ch-btn ch-btn-outline">
-                How it works?
               </button>
             </div>
           </div>
-          <div className="ch-hero-illustration" aria-hidden="true" />
+          <div className="ch-hero-illustration">
+            <img
+              src="/images/chad1.webp"
+              alt="Handcrafted Ganesha idol with modaks and flowers representing traditional Hindu Chadhava offerings"
+              className="ch-hero-image"
+              loading="eager"
+              fetchPriority="high"
+            />
+          </div>
         </div>
       </section>
 
       {/* Upcoming Chadhava offerings */}
-      <section className="ch-offerings">
+      <section className="ch-offerings" ref={offeringsRef}>
         <div className="ch-offerings-header">
           <h2 className="ch-offerings-title">Upcoming Chadhava Offerings on SHRI AAUM.</h2>
           <p className="ch-offerings-subtitle">
@@ -72,23 +125,70 @@ function Chadhava() {
           </p>
         </div>
 
-        <div className="ch-card-grid">
-          {CHADHAVA_CARDS.map((card) => (
-            <article key={card.id} className="ch-card">
-              <div className="ch-card-banner" />
-              <div className="ch-card-body">
-                <h3 className="ch-card-title">{card.title}</h3>
-                <p className="ch-card-date">{card.date}</p>
-                <p className="ch-card-text">{card.description}</p>
-                <Link to={`/chadhava/${card.id}`} className="ch-card-cta">
-                  {card.cta}
-                </Link>
-              </div>
-            </article>
-          ))}
-        </div>
+        {loading ? (
+          <div className="ch-card-grid">
+            {[1, 2, 3].map((n) => (
+              <article key={n} className="ch-card">
+                <div className="ch-card-banner" />
+                <div className="ch-card-body">
+                  <h3 className="ch-card-title">Loading...</h3>
+                  <p className="ch-card-date">Please wait</p>
+                  <p className="ch-card-text">Fetching latest chadhava offerings.</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        ) : error ? (
+          <p className="ch-offerings-subtitle">{error}</p>
+        ) : cards.length === 0 ? (
+          <p className="ch-offerings-subtitle">No chadhava offerings available currently.</p>
+        ) : (
+          <div className={`ch-card-grid${cards.length === 1 ? ' ch-card-grid--single' : ''}`}>
+            {cards.map((card) => (
+              <article key={card.id} className="ch-card">
+                <div
+                  className="ch-card-banner"
+                  style={
+                    card.bannerImage
+                      ? {
+                          backgroundImage: `url(${card.bannerImage})`,
+                          backgroundSize: 'contain',
+                          backgroundPosition: 'center',
+                          backgroundRepeat: 'no-repeat',
+                          backgroundColor: '#1a1a1a',
+                        }
+                      : undefined
+                  }
+                />
+                <div className="ch-card-body">
+                  <h3 className="ch-card-title">{card.title}</h3>
+                  <p className="ch-card-date">{formatEventDate(card.eventdate)}</p>
+                  <p className={`ch-card-text ${expandedCards[card.id] ? 'is-expanded' : ''}`}>
+                    {card.description}
+                  </p>
+                  {card.description && card.description.length > 140 && (
+                    <button
+                      type="button"
+                      className="ch-card-readmore"
+                      onClick={() =>
+                        setExpandedCards((prev) => ({
+                          ...prev,
+                          [card.id]: !prev[card.id],
+                        }))
+                      }
+                    >
+                      {expandedCards[card.id] ? 'Read less' : 'Read more'}
+                    </button>
+                  )}
+                  <Link to={`/chadhava/${encodeURIComponent(card.idOrShortTitle || card.id)}`} className="ch-card-cta">
+                    {card.buttonText}
+                  </Link>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
-      <StatsEventUi />
       <Footer />
     </main>
   );

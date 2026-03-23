@@ -1,73 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import axiosInstance from '../../lib/instance';
 import './ChadhavaDetail.css';
 import Footer from '../Footer/Footer';
-
-const CHADHAVA_DETAILS = {
-  1: {
-    id: 1,
-    title: 'Maha Shivratri Pashupatinath "Gana-Tirpti" Pashu SHRI AAUM Maha Sankalp',
-    subtitle:
-      "Win the Heart of Mahadev! According to scriptures, Shiva is 'Pashupatinath' (Lord of Animals). Before reaching the Shivling in the inner sanctum, one must first seek permission from Shiva's Ganas.",
-    dateRange: '9 February to 15 February, 2026',
-    heroImageClass: 'cd-hero-1',
-    devoteesCount: '1,50,000+',
-  },
-  2: {
-    id: 2,
-    title: 'Mahashivratri: 4 Prahars, 4 Jyotirlingas Maha Abhishek Sankalp',
-    subtitle:
-      'On the sacred night of Mahashivratri, each Jyotirlinga performs special Abhishek in every prahar so that devotees may receive the supreme blessings of Mahadev.',
-    dateRange: '16 February 2026, Sunday, Phalguna Krishna Trayodashi',
-    heroImageClass: 'cd-hero-2',
-    devoteesCount: '75,000+',
-  },
-  3: {
-    id: 3,
-    title: 'Triyuginarayan Shiva–Parvati Vivah Mahotsav Chadhava Sankalp',
-    subtitle:
-      'Celebrate the divine union of Shiva–Shakti at the sacred Triyuginarayan Temple where their celestial marriage took place.',
-    dateRange: '15 February 2026, Sunday, Phalguna Krishna Trayodashi',
-    heroImageClass: 'cd-hero-3',
-    devoteesCount: '50,000+',
-  },
-};
-
-const OFFERINGS = [
-  {
-    id: 1,
-    label: 'Special Combo Chadhava',
-    title: 'Contribution to Bhairav-Gan (Vahan) Shwaan SHRI AAUM (Kalashatmi)',
-    meta1:
-      'Milk (Bhatuk Bhairav) • Kalashtami Monday Shwaan SHRI AAUM Shri Batuk Bhairav Temple • 9 February, Monday',
-    meta2:
-      'Roti (Bhatuk Bhairav) • Kalashtami Monday Shwaan SHRI AAUM Shri Batuk Bhairav Temple • 9 February, Monday',
-    price: 91,
-    priceDisplay: '₹91',
-  },
-  {
-    id: 2,
-    label: 'Special Combo Chadhava',
-    title: 'Contribution to Ekadashi Complete Gau Mata SHRI AAUM',
-    meta1:
-      '1-Cow-hara-chara-sukha-chara (Shri dham gaushala) • Ekadashi Thursday Gau SHRI AAUM Shri Dham Gaushala • 13 February, Friday',
-    meta2:
-      '1-Cow-Roti (Shri dham gaushala) • Ekadashi Thursday Gau SHRI AAUM Shri Dham Gaushala • 13 February, Friday',
-    price: 161,
-    priceDisplay: '₹161',
-  },
-  {
-    id: 3,
-    label: 'Special Combo Chadhava',
-    title: "Contribution to Ultimate 'Gan-Tript' Pashupatinath MahaSHRI AAUM",
-    meta1:
-      'Pavroti-Milk (Bhatuk Bhairav) • Kalashtami Monday Shwaan SHRI AAUM Shri Batuk Bhairav Temple • 9 February, Monday',
-    meta2:
-      '1-Cow-Roti (Shri dham gaushala) • Ekadashi Thursday Gau SHRI AAUM Shri Dham Gaushala • 13 February, Friday',
-    price: 343,
-    priceDisplay: '₹343',
-  },
-];
 
 const FAQS = [
   'What is MahaSHRI AAUM?',
@@ -84,12 +19,64 @@ function ChadhavaDetail() {
   const navigate = useNavigate();
   const [activeFaq, setActiveFaq] = useState(null);
   const [cart, setCart] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [detail, setDetail] = useState(null);
+  const [offerings, setOfferings] = useState([]);
 
-  const detail = CHADHAVA_DETAILS[Number(id)];
+  const formatEventDate = (value) => {
+    if (!value) return 'Date will be announced';
+    const d = new Date(value);
+    if (!Number.isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      });
+    }
+    return String(value);
+  };
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
   }, []);
+
+  useEffect(() => {
+    document.body.classList.add('hide-whatsapp-fab');
+    return () => {
+      document.body.classList.remove('hide-whatsapp-fab');
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const getDetail = async () => {
+      try {
+        setLoading(true);
+        const res = await axiosInstance.get(`/chadhava/${encodeURIComponent(id)}`);
+        const item = res?.data?.item || res?.data?.data?.item || res?.data?.data || res?.data;
+        if (!mounted) return;
+        if (!item || typeof item !== 'object') {
+          setDetail(null);
+          setOfferings([]);
+          return;
+        }
+        setDetail(item);
+        setOfferings(Array.isArray(item.offerings) ? item.offerings : []);
+      } catch (e) {
+        if (!mounted) return;
+        setDetail(null);
+        setOfferings([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    if (id) getDetail();
+    return () => {
+      mounted = false;
+    };
+  }, [id]);
 
   const updateCart = (offeringId, change) => {
     setCart(prev => {
@@ -112,9 +99,70 @@ function ChadhavaDetail() {
   const getTotalItems = () => Object.values(cart).reduce((sum, count) => sum + count, 0);
   const getTotalPrice = () => 
     Object.entries(cart).reduce((total, [offeringId, count]) => {
-      const offering = OFFERINGS.find(o => o.id === Number(offeringId));
-      return total + (offering?.price * count || 0);
+      const offering = offerings.find((o, i) => String(o._id || o.id || i) === String(offeringId));
+      return total + ((Number(offering?.price) || 0) * count || 0);
     }, 0);
+
+  const handleBuyNow = () => {
+    const selectedOfferings = Object.entries(cart)
+      .filter(([_, qty]) => qty > 0)
+      .map(([offeringId, qty]) => {
+        const offering = offerings.find((o, i) => String(o._id || o.id || i) === String(offeringId));
+        if (!offering) return null;
+        const price = Number(offering.price || 0);
+        return {
+          id: offering._id || offering.id || offeringId,
+          name: offering.title || 'Offering',
+          price,
+          quantity: qty,
+          total: price * qty,
+        };
+      })
+      .filter(Boolean);
+
+    const total = selectedOfferings.reduce((sum, item) => sum + item.total, 0);
+
+    const billingState = {
+      puja: {
+        id: detail?._id || detail?.id || id,
+        title: detail?.title || 'Chadhava',
+        date: formatEventDate(detail?.eventdate || detail?.eventDate || detail?.dateRange),
+      },
+      selectedChadhava: {
+        id: detail?._id || detail?.id || id,
+        title: detail?.title || 'Chadhava',
+        date: formatEventDate(detail?.eventdate || detail?.eventDate || detail?.dateRange),
+        bannerImage: detail?.bannerImage || null,
+        description: detail?.description || '',
+      },
+      image: detail?.bannerImage || null,
+      selectedPackage: {
+        id: 'chadhava-offerings',
+        name: detail?.title || 'Chadhava',
+        price: total,
+      },
+      addons: selectedOfferings,
+      addonsTotal: 0,
+      grandTotal: total,
+      mode: 'chadhava',
+    };
+
+    console.log('Chadhava -> Billing fields being passed:', billingState);
+
+    navigate('/billing', {
+      state: billingState,
+    });
+  };
+
+  if (loading) {
+    return (
+      <main className="chd-page">
+        <div className="chd-not-found">
+          <p>Loading chadhava details...</p>
+        </div>
+      </main>
+    );
+  }
 
   if (!detail) {
     return (
@@ -137,7 +185,15 @@ function ChadhavaDetail() {
           <section className="chd-hero">
             <div className="chd-hero-grid">
               <div className="chd-hero-banner">
-                <div className={`chd-hero-image ${detail.heroImageClass}`} />
+                {detail.bannerImage ? (
+                  <img
+                    src={detail.bannerImage}
+                    alt={detail.title || 'Chadhava'}
+                    className="chd-hero-image"
+                  />
+                ) : (
+                  <div className="chd-hero-image chd-hero-image-fallback" />
+                )}
                 <div className="chd-hero-dots">
                   {[0, 1, 2, 3, 4].map((dot) => (
                     <span
@@ -150,11 +206,11 @@ function ChadhavaDetail() {
               <div className="chd-hero-text">
                 <h1 className="chd-title">{detail.title}</h1>
                 <p className="chd-subtitle">
-                  🕉 {detail.subtitle}
+                  🕉 {detail.description || detail.subtitle || 'Offer this sacred chadhava for divine blessings.'}
                 </p>
-                <p className="chd-date">{detail.dateRange}</p>
+                <p className="chd-date">{formatEventDate(detail.eventdate || detail.eventDate || detail.dateRange)}</p>
                 <p className="chd-devotees">
-                  Till now <strong>{detail.devoteesCount} Devotees</strong> have participated in
+                  Till now <strong>{detail.devoteesCount || 'many'} Devotees</strong> have participated in
                   Chadhava conducted by Shri aaum Chadhava SHRI AAUM.
                 </p>
               </div>
@@ -165,28 +221,31 @@ function ChadhavaDetail() {
           <section className="chd-offerings">
             <h2 className="chd-section-title">Choose an offering</h2>
             <div className="chd-offering-list">
-              {OFFERINGS.map((offering) => {
-                const count = cart[offering.id] || 0;
+              {offerings.map((offering, index) => {
+                const offeringId = offering._id || offering.id || index;
+                const count = cart[offeringId] || 0;
                 return (
-                  <div key={offering.id} className="chd-offering-row">
+                  <div key={offeringId} className="chd-offering-row">
                     <div className="chd-offering-main">
-                      <p className="chd-offering-label">{offering.label}</p>
+                      <p className="chd-offering-label">{offering.special ? 'Special Offering' : 'Offering'}</p>
                       <h3 className="chd-offering-title">{offering.title}</h3>
-                      <p className="chd-offering-meta">{offering.meta1}</p>
-                      <p className="chd-offering-meta">{offering.meta2}</p>
-                      <p className="chd-offering-price">{offering.priceDisplay}</p>
+                      {offering.description && <p className="chd-offering-meta">{offering.description}</p>}
+                      <p className="chd-offering-price">₹{Number(offering.price || 0).toLocaleString('en-IN')}</p>
                      
                      
                     </div>
                     <div className="chd-offering-side">
-                      <div className="chd-offering-thumb" />
+                      <div
+                        className="chd-offering-thumb"
+                        style={offering.image ? { backgroundImage: `url(${offering.image})` } : undefined}
+                      />
                       <div className="chd-offering-controls">
                         {count > 0 ? (
                           <div className="chd-quantity-controls">
                             <button 
                               type="button"
                               className="chd-qty-btn chd-qty-minus"
-                              onClick={() => updateCart(offering.id, -1)}
+                              onClick={() => updateCart(offeringId, -1)}
                             >
                               -
                             </button>
@@ -194,7 +253,7 @@ function ChadhavaDetail() {
                             <button 
                               type="button"
                               className="chd-qty-btn chd-qty-plus"
-                              onClick={() => updateCart(offering.id, 1)}
+                              onClick={() => updateCart(offeringId, 1)}
                             >
                               +
                             </button>
@@ -203,7 +262,7 @@ function ChadhavaDetail() {
                           <button 
                             type="button" 
                             className="chd-offering-add"
-                            onClick={() => updateCart(offering.id, 1)}
+                            onClick={() => updateCart(offeringId, 1)}
                           >
                             + Add
                           </button>
@@ -214,6 +273,9 @@ function ChadhavaDetail() {
                 );
               })}
             </div>
+            {offerings.length === 0 && (
+              <p className="chd-faq-answer">No offerings available for this chadhava yet.</p>
+            )}
           </section>
 
           {/* FAQs */}
@@ -253,7 +315,7 @@ function ChadhavaDetail() {
             <span className="chd-cart-items">{getTotalItems()} items</span>
             <span className="chd-cart-total">₹{getTotalPrice().toLocaleString()}</span>
           </div>
-          <button className="chd-cart-cta">View Cart</button>
+          <button className="chd-cart-cta" onClick={handleBuyNow}>Buy Now</button>
         </div>
       )}
     </>

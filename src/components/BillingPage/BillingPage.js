@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axiosInstance from "../../lib/instance";
 import Footer from "../Footer/Footer";
@@ -28,6 +28,7 @@ function BillingPage() {
   // ✅ Destructure values passed from PujaDetail navigate state (no pandit/slot/location)
   const {
     puja,
+    selectedChadhava,
     selectedPackage,
     image,
     addons = [],
@@ -37,6 +38,10 @@ function BillingPage() {
     coupons: stateCoupons,
     mode: pujaMode,
   } = location.state || {};
+
+  const isChadhavaFlow =
+    String(pujaMode || "").toLowerCase() === "chadhava" ||
+    String(selectedPackage?.id || "").toLowerCase() === "chadhava-offerings";
 
   // Support multiple coupons (array) and legacy single coupon
   const hasCoupons =
@@ -51,13 +56,37 @@ function BillingPage() {
 
   const packagePrice = parseAmount(selectedPackage?.price);
   const addonsPrice = parseAmount(addonsTotal);
+  const computedAddonsTotal = addonsPrice > 0
+    ? addonsPrice
+    : (addons || []).reduce((sum, addon) => {
+        const qty = Number(addon?.quantity || 0);
+        const unitPrice = parseAmount(addon?.price);
+        const lineTotal = parseAmount(addon?.total);
+        return sum + (lineTotal > 0 ? lineTotal : unitPrice * qty);
+      }, 0);
   const passedGrandTotal = parseAmount(grandTotal);
 
   const subtotal =
-    passedGrandTotal > 0 ? passedGrandTotal : packagePrice + addonsPrice;
+    passedGrandTotal > 0 ? passedGrandTotal : packagePrice + computedAddonsTotal;
+  const resolvedSelectedPackage = useMemo(
+    () =>
+      isChadhavaFlow
+        ? {
+            ...selectedPackage,
+            name: selectedChadhava?.title || puja?.title || selectedPackage?.name,
+          }
+        : selectedPackage,
+    [isChadhavaFlow, selectedPackage, selectedChadhava?.title, puja?.title]
+  );
 
   // Debug: confirm values arrived
-  console.log("📦 BillingPage state received:", { pujaId: puja?.id, pujaTitle: puja?.title, selectedPackage });
+  console.log("📦 BillingPage state received:", {
+    pujaId: puja?.id,
+    pujaTitle: puja?.title,
+    selectedChadhava,
+    selectedPackage,
+    resolvedSelectedPackage,
+  });
 
   const [appliedCoupon, setAppliedCoupon] = useState(location.state?.appliedCoupon ?? null);
   const [discountAmount, setDiscountAmount] = useState(location.state?.discountAmount ?? 0);
@@ -79,6 +108,11 @@ function BillingPage() {
       toastTimeoutRef.current = null;
     }, 3500);
   }, []);
+
+  useEffect(() => {
+    // Chadhava flow: no prasadam option in billing
+    if (isChadhavaFlow && prasadam) setPrasadam(false);
+  }, [isChadhavaFlow, prasadam]);
 
   useEffect(() => {
     return () => {
@@ -280,7 +314,8 @@ function BillingPage() {
         participants,
         appliedCoupon: couponApplied && appliedCoupon ? appliedCoupon : null,
         grandTotal: finalPayable,
-        selectedPackage,
+        selectedPackage: resolvedSelectedPackage,
+        selectedChadhava: selectedChadhava || null,
         addonsTotal,
         ...(prasadam && { prasadam: true }),
       };
@@ -331,6 +366,8 @@ function BillingPage() {
     participants,
     finalPayable,
     selectedPackage,
+    resolvedSelectedPackage,
+    selectedChadhava,
     addonsTotal,
     prasadam,
   ]);
@@ -429,12 +466,25 @@ function BillingPage() {
         appliedCoupon: couponApplied && appliedCoupon ? appliedCoupon : null,
 
         grandTotal: finalPayable,
-        selectedPackage,
+        selectedPackage: resolvedSelectedPackage,
+        selectedChadhava: selectedChadhava || null,
         addonsTotal,
 
         ...(prasadam && { prasadam: true }),
       };
 
+      console.log("Billing fields being passed:", {
+        devoteeDetails: payload.devoteeDetails,
+        participants: payload.participants,
+        selectedPackage: payload.selectedPackage,
+        selectedChadhava: payload.selectedChadhava,
+        grandTotal: payload.grandTotal,
+        couponCode: payload.couponCode,
+        isCouponApplied: payload.isCouponApplied,
+        discountAmount: payload.discountAmount,
+        addonsTotal: payload.addonsTotal,
+        prasadam: payload.prasadam || false,
+      });
       console.log("🚀 Booking payload:", payload);
 
       const res = await axiosInstance.post("/bookings/guest/booking", payload);
@@ -952,11 +1002,26 @@ function BillingPage() {
         {/* SUMMARY */}
         <div className="billing-summary">
           <h3>{puja.title}</h3>
+          {isChadhavaFlow && selectedChadhava && (
+            <div className="billing-selected-chadhava">
+              <p>
+                <b>Selected Chadhava:</b> {selectedChadhava.title || puja.title}
+              </p>
+              {selectedChadhava.date && (
+                <p>
+                  <b>Chadhava Date:</b> {selectedChadhava.date}
+                </p>
+              )}
+            </div>
+          )}
           <p>
-            <b>Package:</b> {selectedPackage.name}
+            <b>{isChadhavaFlow ? "Type" : "Package"}:</b>{" "}
+            {isChadhavaFlow
+              ? (selectedChadhava?.title || puja?.title || selectedPackage?.name)
+              : selectedPackage?.name}
           </p>
           <p>
-            <b>Package Amount:</b> {selectedPackage.price}
+            <b>{isChadhavaFlow ? "Offerings Amount" : "Package Amount"}:</b> {selectedPackage.price}
           </p>
 
           {/* ✅ ADDONS SUMMARY */}
@@ -966,14 +1031,16 @@ function BillingPage() {
               {addons.map((addon, index) => (
                 <div key={addon.id || index} className="addon-row">
                   <span>
-                    {addon.name} × {addon.quantity}
+                    {addon.name} × {addon.quantity} (₹{parseAmount(addon.price)})
                   </span>
-                  <span className="addon-price">{addon.total}</span>
+                  {!isChadhavaFlow && (
+                    <span className="addon-price">{addon.total}</span>
+                  )}
                 </div>
               ))}
               <div className="addons-total-row">
                 <span className="addons-total-label">Addons Total:</span>
-                <span className="addons-total-price">{addonsTotal}</span>
+                <span className="addons-total-price">₹{computedAddonsTotal}</span>
               </div>
             </div>
           )}
@@ -1023,14 +1090,16 @@ function BillingPage() {
           )}
 
           {/* Prasadam option */}
-          <label className="billing-prasadam-option">
-            <input
-              type="checkbox"
-              checked={prasadam}
-              onChange={(e) => setPrasadam(e.target.checked)}
-            />
-            <span>Prasadam (complimentary)</span>
-          </label>
+          {!isChadhavaFlow && (
+            <label className="billing-prasadam-option">
+              <input
+                type="checkbox"
+                checked={prasadam}
+                onChange={(e) => setPrasadam(e.target.checked)}
+              />
+              <span>Prasadam (complimentary)</span>
+            </label>
+          )}
 
           {/* ✅ GRAND TOTAL */}
           <div className="grand-total-row">

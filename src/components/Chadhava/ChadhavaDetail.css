@@ -1,5 +1,4 @@
 .chd-page {
-  padding-top: 80px;
   padding-bottom: 3rem;
   background: #fff;
 }
@@ -20,34 +19,39 @@
   display: grid;
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
   gap: 2rem;
-  align-items: center;
+  align-items: stretch;
 }
 
 .chd-hero-banner {
   background: #111827;
   border-radius: 16px;
-  padding: 0.75rem;
+  padding: 0.45rem;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 470px;
+  margin: 0 auto;
+  overflow: hidden;
+  height: 100%;
 }
 
 .chd-hero-image {
   border-radius: 12px;
-  height: 220px;
-  background-size: cover;
-  background-position: center;
+  width: 100%;
+  height: 100%;
+  min-height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  background-color: #1a1a1a;
 }
 
-.chd-hero-image.cd-hero-1 {
-  background: url('https://dummyimage.com/800x400/1e3a8a/ffffff') center/cover no-repeat;
-}
-
-.chd-hero-image.cd-hero-2 {
-  background: url('https://dummyimage.com/800x400/0f766e/ffffff') center/cover no-repeat;
-}
-
-.chd-hero-image.cd-hero-3 {
-  background: url('https://dummyimage.com/800x400/7c2d12/ffffff') center/cover no-repeat;
+.chd-hero-image-fallback {
+  background: linear-gradient(120deg, #1d4ed8, #7c3aed);
 }
 
 .chd-hero-dots {
@@ -74,15 +78,18 @@
 .chd-hero-text {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  height: 100%;
+  justify-content: flex-start;
 }
 
 .chd-title {
   font-family: var(--font-heading);
-  font-size: 1.5rem;
+  font-size: clamp(1.9rem, 2.2vw, 2.3rem);
   font-weight: 800;
   color: #111827;
   margin: 0;
+  line-height: 1.2;
 }
 
 .chd-subtitle {
@@ -95,13 +102,13 @@
 .chd-date {
   font-size: 0.9rem;
   color: #6b7280;
-  margin: 0;
+  margin: 0.2rem 0 0;
 }
 
 .chd-devotees {
   font-size: 0.92rem;
   color: #4b5563;
-  margin: 0.4rem 0 0;
+  margin: 0.25rem 0 0;
 }
 
 .chd-devotees strong {
@@ -129,70 +136,85 @@
 
 .chd-offering-row {
   display: flex;
-  align-items: stretch;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 1.25rem;
-  background: #fff7fb;
-  border-radius: 12px;
-  border: 1px solid #fce7f3;
-  padding: 1rem 1.25rem;
+  gap: 1rem;
+  background: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 0.9rem 1rem;
+  min-width: 0;
 }
 
 .chd-offering-main {
   flex: 1;
+  min-width: 0;
 }
 
 .chd-offering-label {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 700;
   color: #be185d;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.2rem;
 }
 
 .chd-offering-title {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 0.4rem;
+  margin: 0 0 0.3rem;
+  line-height: 1.35;
+  overflow-wrap: break-word;
 }
 
 .chd-offering-meta {
   font-size: 0.9rem;
   color: #6b7280;
-  margin: 0 0 0.15rem;
+  margin: 0 0 0.2rem;
+  overflow-wrap: break-word;
+  line-height: 1.45;
 }
 
 .chd-offering-price {
-  font-size: 1rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: #16a34a;
-  margin: 0.5rem 0 0;
+  color: #ea580c;
+  margin: 0.45rem 0 0;
 }
 
 .chd-offering-side {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
+  min-width: 84px;
 }
 
 .chd-offering-thumb {
   width: 72px;
   height: 72px;
   border-radius: 12px;
-  background: url('https://dummyimage.com/120x120/facc15/ffffff') center/cover no-repeat;
+  background: url('https://dummyimage.com/120x120/facc15/ffffff') center/contain no-repeat;
+  background-color: #1a1a1a;
 }
 
 .chd-offering-add {
   border-radius: 999px;
-  padding: 0.4rem 0.9rem;
-  border: 1px solid #16a34a;
-  background: #ecfdf3;
-  color: #16a34a;
+  min-height: 38px;
+  padding: 0.45rem 0.95rem;
+  border: 1px solid #ea580c;
+  background: #fff7ed;
+  color: #ea580c;
   font-size: 0.9rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+}
+
+.chd-offering-add:hover {
+  background: #ffedd5;
+  border-color: #c2410c;
+  color: #c2410c;
 }
 
 /* FAQs */
@@ -262,7 +284,10 @@
 
   .chd-hero-banner {
     order: -1;
+    max-width: 100%;
+    padding: 0.4rem;
   }
+
 }
 
 @media (max-width: 640px) {
@@ -270,39 +295,78 @@
     padding: 1.5rem 1.25rem 0;
   }
 
+  .chd-title {
+    font-size: 1.5rem;
+    line-height: 1.24;
+  }
+
+  .chd-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .chd-date {
+    font-size: 0.85rem;
+  }
+
+  .chd-devotees {
+    font-size: 0.88rem;
+    line-height: 1.45;
+  }
+
   .chd-offering-row {
     flex-direction: column;
     align-items: flex-start;
+    padding: 0.85rem 0.9rem;
   }
 
   .chd-offering-side {
     flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .chd-offering-title {
+    font-size: 0.95rem;
+  }
+
+  .chd-offering-meta {
+    font-size: 0.85rem;
+    line-height: 1.45;
+  }
+
+  .chd-offering-price {
+    font-size: 0.95rem;
+  }
+
+  .chd-offering-label {
+    font-size: 0.75rem;
   }
 }
 
 .chd-offering-controls {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
 }
 
 .chd-quantity-controls {
   display: flex;
   align-items: center;
-  background: #f8fafc;
-  border: 2px solid #e2e8f0;
+  background: #fff7ed;
+  border: 2px solid #fed7aa;
   border-radius: 12px;
   padding: 4px;
   gap: 8px;
 }
 
 .chd-qty-btn {
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   border: none;
   border-radius: 8px;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -312,22 +376,23 @@
 }
 
 .chd-qty-btn:hover {
-  background: #f1f5f9;
+  background: #ffedd5;
   transform: scale(1.05);
 }
 
 .chd-qty-minus {
-  color: #ef4444;
+  color: #ea580c;
+  background: #fff;
 }
 
 .chd-qty-plus {
-  color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
+  color: #ea580c;
+  background: #fff;
 }
 
 .chd-qty-display {
   font-weight: 700;
-  font-size: 16px;
+  font-size: 17px;
   min-width: 24px;
   text-align: center;
   color: #1e293b;
@@ -348,11 +413,11 @@
   position: fixed;
   bottom: 24px;
   right: 24px;
-  background: linear-gradient(135deg, #0caa36 0%, #08a24e 100%);
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
   color: white;
   border-radius: 20px;
   padding: 16px 20px;
-  box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 12px 30px rgba(234, 88, 12, 0.35);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.2);
   display: flex;
@@ -395,13 +460,13 @@
 }
 
 .chd-cart-cta {
-  background: rgba(255,255,255,0.2);
-  border: 1px solid rgba(255,255,255,0.3);
-  color: white;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.35);
+  color: #fff;
   padding: 8px 16px;
   border-radius: 12px;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -409,6 +474,11 @@
 .chd-cart-cta:hover {
   background: rgba(255,255,255,0.3);
   transform: scale(1.05);
+}
+
+/* Hide global WhatsApp FAB only on Chadhava detail page */
+body.hide-whatsapp-fab .wa-fab-wrap {
+  display: none !important;
 }
 
 @keyframes cartSlideIn {
@@ -428,5 +498,72 @@
     right: 20px;
     left: 20px;
     max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .chd-container {
+    padding: 1.25rem 0.9rem 0;
+  }
+
+  .chd-title {
+    font-size: 1.32rem;
+    line-height: 1.22;
+  }
+
+  .chd-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .chd-date {
+    font-size: 0.8rem;
+  }
+
+  .chd-devotees {
+    font-size: 0.84rem;
+  }
+
+  .chd-section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .chd-offering-title {
+    font-size: 0.9rem;
+  }
+
+  .chd-offering-meta {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+
+  .chd-offering-price {
+    font-size: 0.9rem;
+  }
+
+  .chd-offering-thumb {
+    width: 64px;
+    height: 64px;
+  }
+
+  .chd-offering-add {
+    min-height: 34px;
+    font-size: 0.8rem;
+    padding: 0.28rem 0.62rem;
+  }
+
+  .chd-quantity-controls {
+    gap: 6px;
+    padding: 3px;
+  }
+
+  .chd-qty-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 18px;
+  }
+
+  .chd-qty-display {
+    font-size: 15px;
   }
 }

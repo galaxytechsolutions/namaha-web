@@ -3,7 +3,7 @@
   position: relative;
   height: 100vh;
   min-height: 400px;
-  padding-top: 100px; /* Clear fixed header */
+  padding-top: 0; /* layout-main clears header */
   box-sizing: border-box;
   display: flex;
   align-items: stretch;
@@ -71,7 +71,7 @@
   position: relative;
   height: 100vh;
   min-height: 400px;
-  padding-top: 100px; /* Clear fixed header so content is not cut off */
+  padding-top: 0; /* layout-main clears header */
   box-sizing: border-box;
   display: flex;
   align-items: stretch;
@@ -299,10 +299,10 @@
   }
 }
 
-/* Desktop only: hero like reference image + trust strip, no scroll */
+/* Desktop only: hero + trust strip fit in viewport, trust strip visible on load */
 @media (min-width: 1025px) {
   .home-hero-viewport {
-    height: 100vh;
+    height: calc(100vh - var(--header-offset, 104px));
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -311,6 +311,7 @@
     flex: 1;
     min-height: 0;
     height: auto;
+    padding-top: 0; /* No extra gap - layout-main clears header */
   }
   .home-hero-viewport .hero-slide1::after {
     background: linear-gradient(90deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.25) 40%, transparent 65%);
@@ -342,7 +343,7 @@
   .hero-section1 {
     height: 90vh;
     min-height: 380px;
-    padding-top: 75px;
+    padding-top: 0;
     background: #000; /* unify background with dark hero artwork */
     margin-bottom: -4px; /* remove gap above strip (tablet/mobile only) */
   }
@@ -387,7 +388,7 @@
   .hero-section1 {
     height: auto;
     min-height: 280px;
-    padding-top: 60px;
+    padding-top: 0;
     padding-bottom: 0;
   }
   .hero-content1 {
@@ -438,7 +439,7 @@
   .hero-section1 {
     height: auto;
     min-height: 0;
-    padding-top: 54px;
+    padding-top: 0;
     padding-bottom: 0;
   }
 

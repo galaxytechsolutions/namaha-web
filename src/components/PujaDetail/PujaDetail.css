@@ -24,14 +24,14 @@
   box-sizing: border-box;
 }
 
-/* Add breathing room below fixed header for the top grid (image + title) */
+/* Minimal top padding - layout-main provides header offset */
 .puja-detail-page .pd-container {
-  padding-top: 18px;
+  padding-top: 12px;
 }
 
 @media (max-width: 768px) {
   .puja-detail-page .pd-container {
-    padding-top: 14px;
+    padding-top: 8px;
   }
 }
 
@@ -43,9 +43,9 @@
   width: 100%;
 }
 
-/* Extra separation from fixed header for the top hero grid */
+/* layout-main provides header offset - no extra margin needed */
 .puja-detail-page .pd-section-content.pd-grid {
-  margin-top: 80px;
+  margin-top: 0;
 }
 
 /* Laptop L (1440px) - use full available space */
