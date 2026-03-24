@@ -1,6 +1,25 @@
 import axiosInstance from "../lib/instance";
 import  { useState, useEffect } from "react";
 
+const sortByAvailabilityThenDate = (a, b) => {
+  const now = Date.now();
+  const dateA = Number(a?.eventDateRaw || 0);
+  const dateB = Number(b?.eventDateRaw || 0);
+  const isSoldOutA = dateA > 0 && dateA <= now;
+  const isSoldOutB = dateB > 0 && dateB <= now;
+
+  // Upcoming (not sold out) first so bookable pujas are visible first.
+  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
+
+  // Upcoming group: nearest event first.
+  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
+
+  // Sold-out group: most recently ended first.
+  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+
+  return (a.rank ?? 9999) - (b.rank ?? 9999);
+};
+
 /* =====================================================
    MAP API RESPONSE → UI FORMAT
 ===================================================== */
@@ -221,7 +240,9 @@ export const fetchPujaList = async () => {
       return PUJA_LIST;
     }
 
-    const mapped = poojasArray.map(mapApiPujaToPUJA_LIST);
+    const mapped = poojasArray
+      .map(mapApiPujaToPUJA_LIST)
+      .sort(sortByAvailabilityThenDate);
 
     if (!mapped.length) {
       console.warn("⚠️ API returned empty — using dummy data");
@@ -232,7 +253,7 @@ export const fetchPujaList = async () => {
     return mapped;
   } catch (error) {
     console.error("❌ API failed — using dummy data");
-    return PUJA_LIST;
+    return [...PUJA_LIST].sort(sortByAvailabilityThenDate);
   }
 };
 

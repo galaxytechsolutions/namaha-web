@@ -10,6 +10,25 @@ const SP_IMAGE_MAP = {
   3: "sp-banner-3",
 };
 
+const sortByAvailabilityThenDate = (a, b) => {
+  const now = Date.now();
+  const dateA = Number(a?.eventDateRaw || 0);
+  const dateB = Number(b?.eventDateRaw || 0);
+  const isSoldOutA = dateA > 0 && dateA <= now;
+  const isSoldOutB = dateB > 0 && dateB <= now;
+
+  // Upcoming (not sold out) first.
+  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
+
+  // Upcoming group: nearest event first.
+  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
+
+  // Sold-out group: most recently ended first.
+  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+
+  return (a.rank ?? 9999) - (b.rank ?? 9999);
+};
+
 function SpecialPuja() {
   const [pujas, setPujas] = useState([]); // ✅ NEW: useState
   const [loading, setLoading] = useState(true);
@@ -40,12 +59,7 @@ function SpecialPuja() {
               p.imageClass ||
               `sp-banner-${Math.floor(Math.random() * 3) + 1}`,
           }))
-          .sort((a, b) => {
-            const dateA = a.eventDateRaw || 0;
-            const dateB = b.eventDateRaw || 0;
-            if (dateA !== dateB) return dateA - dateB;
-            return (a.rank ?? 9999) - (b.rank ?? 9999);
-          });
+          .sort(sortByAvailabilityThenDate);
         console.log("✅ SpecialPuja mapped (sorted by date):", specialPujas);
         setPujas(specialPujas.slice(0, 4));
       })
