@@ -30,11 +30,23 @@ const normalizeBenefitTitles = (benefits) => {
 function PujaList() {
   const { pujas: pujaList, loading } = usePujaList();
 
-  // Sort by eventDate first (earlier dates first), then by rank (for ties)
+  // Upcoming first, then sold-out; keep date-wise order within each group.
   const sortedPujas = [...pujaList].sort((a, b) => {
-    const dateA = a.eventDateRaw || 0;
-    const dateB = b.eventDateRaw || 0;
-    if (dateA !== dateB) return dateA - dateB;
+    const now = Date.now();
+    const dateA = Number(a.eventDateRaw || 0);
+    const dateB = Number(b.eventDateRaw || 0);
+    const isSoldOutA = dateA > 0 && dateA <= now;
+    const isSoldOutB = dateB > 0 && dateB <= now;
+
+    // Upcoming items first (bookable pujas on top).
+    if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
+
+    // Upcoming group: nearest date first.
+    if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
+
+    // Sold-out group: most recently ended first.
+    if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+
     return (a.rank ?? 9999) - (b.rank ?? 9999);
   });
 
