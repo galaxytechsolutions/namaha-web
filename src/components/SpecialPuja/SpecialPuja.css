@@ -90,12 +90,12 @@
   min-width: 0;
 }
 
-/* Card banner: 1524x1524 square (responsive, max 1524px) */
+/* Card banner: 1080x540 (2:1) - responsive */
 .sp-cards .pl-card-banner {
   width: 100%;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 2 / 1;
   max-width: 1524px;
-  max-height: 1524px;
+  max-height: 762px;
   flex-shrink: 0;
   background-size: cover;
   background-position: center;

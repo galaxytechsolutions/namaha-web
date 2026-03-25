@@ -6,6 +6,7 @@
   min-height: 100vh;
   min-height: 100dvh;
   width: 100%;
+  overflow-x: hidden;
   box-sizing: border-box;
 }
 
@@ -41,6 +42,7 @@
   gap: clamp(1.5rem, 4vw, 2.5rem);
   align-items: stretch;
   width: 100%;
+  overflow-x: hidden;
 }
 
 /* Extra separation from fixed header for the top hero grid */
@@ -74,6 +76,7 @@
   flex-direction: column;
   min-height: 100%;
   width: 100%;
+  min-width: 0;
 }
 
 .pd-carousel-frame {
@@ -82,6 +85,8 @@
   border-radius: 12px;
   padding: 12px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  min-width: 0;
   /* Scalloped / wavy golden border effect */
   border: 4px solid #d4a017;
   outline: 2px solid rgba(212, 160, 23, 0.5);
@@ -91,10 +96,10 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  aspect-ratio: 1 / 1;
-  min-height: 320px;
+  /* aspect-ratio: 2 / 1; */
+  min-height: 240px;
   max-width: 1524px;
-  max-height: 1524px;
+  max-height: 762px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -124,9 +129,8 @@
   height: 100%;
   min-width: 100%;
   min-height: 100%;
-  /* Use contain so banner text/top area isn't cropped */
-  object-fit: contain;
-  object-position: center top;
+  object-fit: cover;
+  object-position: center;
   display: block;
   background-size: cover;
   background-position: center;
@@ -271,7 +275,7 @@
 .pd-details {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.35rem;
   width: 100%;
   min-width: 0;
   max-width: 100%;
@@ -283,7 +287,7 @@
 .pd-details-header {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.15rem;
 }
 
 .pd-details .pd-title {
@@ -321,19 +325,23 @@
 
 .pd-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.25rem, 2.5vw + 1rem, 2.5rem);
+  font-size: clamp(1.2rem, 1.8vw + 0.95rem, 2.1rem);
   font-weight: 700;
   color: #1f2937;
-  margin: 0 0 0.15em;
-  line-height: 1.35;
+  margin: 0 0 0.1em;
+  line-height: 1.25;
   max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pd-purpose {
-  font-size: clamp(0.875rem, 1.2vw, 1rem);
+  font-size: clamp(0.82rem, 0.95vw, 0.95rem);
   color: #4b5563;
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pd-details-header .pd-meta {
@@ -341,12 +349,15 @@
 }
 
 .pd-meta {
-  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  font-size: clamp(0.8rem, 0.9vw, 0.9rem);
   color: #4b5563;
   margin: 0;
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .pd-meta-icon {
@@ -354,14 +365,14 @@
 }
 
 .pd-countdown-label {
-  font-size: clamp(0.85rem, 1.2vw, 0.95rem);
+  font-size: clamp(0.8rem, 0.9vw, 0.9rem);
   color: #374151;
-  margin: 0.35rem 0 0.35rem;
+  margin: 0.25rem 0 0.25rem;
 }
 
 .pd-countdown {
   display: flex;
-  gap: clamp(6px, 1.5vw, 12px);
+  gap: clamp(5px, 1vw, 9px);
   flex-wrap: nowrap;
   width: 100%;
   max-width: 100%;
@@ -371,21 +382,21 @@
   flex: 1;
   min-width: 0;
   background: #fef3c7;
-  border-radius: clamp(8px, 1.5vw, 10px);
-  padding: clamp(8px, 1.5vw, 12px) clamp(6px, 1.2vw, 10px);
+  border-radius: clamp(7px, 1.2vw, 9px);
+  padding: clamp(6px, 1vw, 9px) clamp(5px, 1vw, 8px);
   text-align: center;
   border: 1px solid #fde68a;
 }
 
 .pd-countdown-num {
   display: block;
-  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  font-size: clamp(1rem, 1.5vw, 1.25rem);
   font-weight: 700;
   color: #1f2937;
 }
 
 .pd-countdown-label-sm {
-  font-size: clamp(0.7rem, 1vw, 0.8rem);
+  font-size: clamp(0.62rem, 0.85vw, 0.72rem);
   color: #6b7280;
 }
 
@@ -498,6 +509,8 @@
   line-height: 1.5;
   color: #4b5563;
   margin: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 /* Inner HTML - blocks inline for line-clamp */
@@ -932,6 +945,7 @@
   max-width: 100%;
   margin: 0;
   padding: 12px 30px;
+  box-sizing: border-box;
 }
 
 .pd-section-title {
@@ -1675,6 +1689,10 @@
 
 /* Tablet - side by side like desktop, smaller right-column fonts to fit */
 @media (max-width: 1024px) {
+  .pd-section-content {
+    padding: 12px 16px;
+  }
+
   .pd-grid {
     grid-template-columns: minmax(260px, 1fr) minmax(260px, 1fr);
     gap: clamp(1.25rem, 3vw, 2rem);
@@ -1731,20 +1749,47 @@
     padding: 0.75rem 1rem 1.5rem;
   }
 
+  /* .puja-detail-page .pd-section-content.pd-grid {
+    margin-top: 10px;
+  } */
+
+  .pd-section-content {
+    padding: 8px 0 !important;
+  }
+
   .pd-grid {
-    grid-template-columns: 1fr;
     gap: 1.25rem;
     padding: 12px 0;
+    overflow-x: hidden;
+    justify-items: center;
+    display: flex;
+    flex-direction: column;
   }
 
   .pd-details {
-    width: 100%;
-    max-width: 100%;
+    width: min(100%, 560px);
+    max-width: 560px;
     gap: 1rem;
+    overflow-x: hidden;
+    align-items: center;
+  }
+
+  /* Center right-side content block on mobile without clipping */
+  .pd-details-header,
+  .pd-details-about,
+  .pd-countdown-label,
+  .pd-countdown,
+  .pd-booking-closed,
+  .pd-cta {
+    width: min(100%, 560px);
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
   }
 
   .pd-carousel-wrap {
-    width: 100%;
+    width: min(100%, 560px);
+    max-width: 560px;
   }
 
   .pd-carousel-frame {
@@ -1760,7 +1805,7 @@
   }
 
   .pd-title {
-    font-size: clamp(1.35rem, 5vw, 1.75rem);
+    font-size: clamp(1.2rem, 4.6vw, 1.55rem);
   }
 
   .pd-countdown-label {
@@ -1769,7 +1814,8 @@
   }
 
   .pd-countdown {
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 4px;
   }
 
@@ -1954,6 +2000,7 @@
 @media (max-width: 480px) {
   .pd-carousel-wrap {
     width: 100%;
+    max-width: 100%;
   }
 
   .pd-carousel-frame {
@@ -1968,6 +2015,17 @@
 
   .pd-details {
     gap: 0.875rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .pd-details-header,
+  .pd-details-about,
+  .pd-countdown-label,
+  .pd-countdown,
+  .pd-booking-closed,
+  .pd-cta {
+    width: 100%;
   }
 
   .pd-title {
@@ -2129,8 +2187,8 @@
 .pd-carousel-slide img.pd-carousel-image {
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  object-position: center top;
+  object-fit: cover;
+  object-position: center;
   display: block;
   margin: 0;
   padding: 0;

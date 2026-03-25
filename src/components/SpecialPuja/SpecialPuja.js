@@ -109,7 +109,7 @@ function SpecialPuja() {
                   puja.bannerUrls?.[0]
                     ? {
                         backgroundImage: `url(${puja.bannerUrls[0].url})`,
-                        backgroundSize: "contain",
+                        backgroundSize: "cover",
                         backgroundPosition: "center",
                         backgroundRepeat: "no-repeat",
                         backgroundColor: "#1a1a1a",
