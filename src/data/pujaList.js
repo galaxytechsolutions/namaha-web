@@ -20,6 +20,93 @@ const sortByAvailabilityThenDate = (a, b) => {
   return (a.rank ?? 9999) - (b.rank ?? 9999);
 };
 
+const normalizeCompareText = (value) =>
+  String(value || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+
+const getItemsFromChadhavaResponse = (data) => {
+  if (Array.isArray(data?.items)) return data.items;
+  if (Array.isArray(data?.data?.items)) return data.data.items;
+  if (Array.isArray(data?.result?.items)) return data.result.items;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data)) return data;
+  return [];
+};
+
+const mapChadhavaOfferingsToAddOns = (offerings = []) =>
+  offerings
+    .map((offering, index) => {
+      const price = Number(offering?.price ?? offering?.amount ?? 0);
+      if (!Number.isFinite(price) || price <= 0) return null;
+      return {
+        id: offering?._id || offering?.id || `chadhava-offering-${index}`,
+        name: offering?.title || offering?.name || "Chadhava Offering",
+        price: `₹${price}`,
+      };
+    })
+    .filter(Boolean);
+
+const mergeMatchedChadhavaOfferings = async (puja) => {
+  const pujaNameKey = normalizeCompareText(puja?.title || puja?.name);
+  if (!pujaNameKey) return puja;
+
+  try {
+    const res = await axiosInstance.get("/chadhava");
+    const chadhavaItems = getItemsFromChadhavaResponse(res?.data);
+    if (!chadhavaItems.length) return puja;
+
+    const matchedChadhava = chadhavaItems.find((item) => {
+      const shortTitleKey = normalizeCompareText(item?.shortTitle);
+      const titleKey = normalizeCompareText(item?.title);
+      return shortTitleKey === pujaNameKey || titleKey === pujaNameKey;
+    });
+    if (!matchedChadhava) return puja;
+
+    let offerings = Array.isArray(matchedChadhava?.offerings)
+      ? matchedChadhava.offerings
+      : [];
+
+    // Fallback: if offerings are not present in list API response, fetch detail.
+    if (!offerings.length) {
+      const detailId =
+        matchedChadhava?._id ||
+        matchedChadhava?.id ||
+        matchedChadhava?.shortTitle ||
+        matchedChadhava?.slug;
+      if (detailId) {
+        const detailRes = await axiosInstance.get(`/chadhava/${encodeURIComponent(detailId)}`);
+        const detailItem =
+          detailRes?.data?.item ||
+          detailRes?.data?.data?.item ||
+          detailRes?.data?.data ||
+          detailRes?.data;
+        offerings = Array.isArray(detailItem?.offerings) ? detailItem.offerings : [];
+      }
+    }
+
+    const chadhavaAddOns = mapChadhavaOfferingsToAddOns(offerings);
+    if (!chadhavaAddOns.length) return puja;
+
+    const existingAddOns = Array.isArray(puja?.addOns) ? puja.addOns : [];
+    const existingNames = new Set(
+      existingAddOns.map((a) => normalizeCompareText(a?.name))
+    );
+    const uniqueChadhavaAddOns = chadhavaAddOns.filter(
+      (addon) => !existingNames.has(normalizeCompareText(addon?.name))
+    );
+
+    if (!uniqueChadhavaAddOns.length) return puja;
+    return {
+      ...puja,
+      addOns: [...existingAddOns, ...uniqueChadhavaAddOns],
+    };
+  } catch (error) {
+    console.warn("Chadhava add-on merge skipped:", error?.message || error);
+    return puja;
+  }
+};
+
 /* =====================================================
    MAP API RESPONSE → UI FORMAT
 ===================================================== */
@@ -299,7 +386,8 @@ export const fetchPujaById = async (id) => {
     else if (raw.data && typeof raw.data === "object") apiPuja = raw.data;
     const arr = Array.isArray(apiPuja) ? apiPuja : [apiPuja];
     const mapped = arr.map(mapApiPujaToPUJA_LIST);
-    return mapped[0] || null;
+    if (!mapped[0]) return null;
+    return await mergeMatchedChadhavaOfferings(mapped[0]);
   } catch (error) {
     if (error?.response?.status === 404) return null;
     console.error("fetchPujaById failed:", error);

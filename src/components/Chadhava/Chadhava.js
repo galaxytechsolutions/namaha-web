@@ -33,6 +33,16 @@ function Chadhava() {
   const [expandedCards, setExpandedCards] = useState({});
   const offeringsRef = useRef(null);
 
+  // Match PujaList/SpecialPuja banner sizing (2:1, capped height, cover crop).
+  const CARD_BANNER_STYLE_BASE = {
+    aspectRatio: '2 / 1',
+    maxHeight: '762px',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundColor: '#1a1a1a',
+  };
+
   const formatEventDate = (value) => {
     if (!value) return 'Date will be announced';
     const d = new Date(value);
@@ -151,13 +161,10 @@ function Chadhava() {
                   style={
                     card.bannerImage
                       ? {
+                          ...CARD_BANNER_STYLE_BASE,
                           backgroundImage: `url(${card.bannerImage})`,
-                          backgroundSize: 'contain',
-                          backgroundPosition: 'center',
-                          backgroundRepeat: 'no-repeat',
-                          backgroundColor: '#1a1a1a',
                         }
-                      : undefined
+                      : CARD_BANNER_STYLE_BASE
                   }
                 />
                 <div className="ch-card-body">

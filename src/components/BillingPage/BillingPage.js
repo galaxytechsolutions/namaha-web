@@ -31,7 +31,7 @@ function BillingPage() {
     selectedChadhava,
     selectedPackage,
     image,
-    addons = [],
+    addons: routeAddons = [],
     addonsTotal = 0,
     grandTotal,
     coupon,
@@ -55,19 +55,67 @@ function BillingPage() {
   };
 
   const packagePrice = parseAmount(selectedPackage?.price);
-  const addonsPrice = parseAmount(addonsTotal);
-  const computedAddonsTotal = addonsPrice > 0
-    ? addonsPrice
-    : (addons || []).reduce((sum, addon) => {
+
+  /** Puja flow: optional add-ons chosen on this page (not on PujaDetail). */
+  const [pujaAddonQuantities, setPujaAddonQuantities] = useState(() => {
+    const q = {};
+    (routeAddons || []).forEach((a) => {
+      const id = a.id || a.name;
+      if (id && Number(a.quantity) > 0) q[id] = Number(a.quantity);
+    });
+    return q;
+  });
+
+  const updatePujaAddonQuantity = useCallback((addonId, change) => {
+    setPujaAddonQuantities((prev) => ({
+      ...prev,
+      [addonId]: Math.max(0, (prev[addonId] || 0) + change),
+    }));
+  }, []);
+
+  const resolvedAddons = useMemo(() => {
+    if (isChadhavaFlow) return routeAddons || [];
+    const catalog = puja?.addOns || [];
+    if (!catalog.length) return [];
+    return catalog
+      .map((addon, index) => {
+        const addonId = addon.id || `addon-${index}`;
+        const qty = pujaAddonQuantities[addonId] || 0;
+        if (qty <= 0) return null;
+        const unitPrice = parseAmount(addon.price);
+        return {
+          id: addon.id || addonId,
+          name: addon.name,
+          price: unitPrice,
+          quantity: qty,
+          total: unitPrice * qty,
+        };
+      })
+      .filter(Boolean);
+  }, [isChadhavaFlow, routeAddons, puja?.addOns, pujaAddonQuantities]);
+
+  const computedAddonsTotal = useMemo(() => {
+    if (isChadhavaFlow) {
+      const addonsPrice = parseAmount(addonsTotal);
+      if (addonsPrice > 0) return addonsPrice;
+      return (resolvedAddons || []).reduce((sum, addon) => {
         const qty = Number(addon?.quantity || 0);
         const unitPrice = parseAmount(addon?.price);
         const lineTotal = parseAmount(addon?.total);
         return sum + (lineTotal > 0 ? lineTotal : unitPrice * qty);
       }, 0);
+    }
+    return resolvedAddons.reduce((sum, a) => sum + (a.total || 0), 0);
+  }, [isChadhavaFlow, addonsTotal, resolvedAddons]);
+
   const passedGrandTotal = parseAmount(grandTotal);
 
-  const subtotal =
-    passedGrandTotal > 0 ? passedGrandTotal : packagePrice + computedAddonsTotal;
+  const subtotal = useMemo(() => {
+    if (isChadhavaFlow) {
+      return passedGrandTotal > 0 ? passedGrandTotal : packagePrice + computedAddonsTotal;
+    }
+    return packagePrice + computedAddonsTotal;
+  }, [isChadhavaFlow, passedGrandTotal, packagePrice, computedAddonsTotal]);
   const resolvedSelectedPackage = useMemo(
     () =>
       isChadhavaFlow
@@ -291,7 +339,7 @@ function BillingPage() {
       couponCode: appliedCoupon?.code || coupon?.code || null,
       discountAmount: couponApplied ? discountAmount : 0,
       selectedPackageId: selectedPackage?.id || selectedPackage?._id || null,
-      addonsTotal,
+      addonsTotal: computedAddonsTotal,
       grandTotal: finalPayable,
     });
     // If we already auto-saved this exact data and we have an ID, don't spam backend.
@@ -316,7 +364,8 @@ function BillingPage() {
         grandTotal: finalPayable,
         selectedPackage: resolvedSelectedPackage,
         selectedChadhava: selectedChadhava || null,
-        addonsTotal,
+        addons: resolvedAddons,
+        addonsTotal: computedAddonsTotal,
         ...(prasadam && { prasadam: true }),
       };
       pendingSaveInFlightRef.current = true;
@@ -368,7 +417,8 @@ function BillingPage() {
     selectedPackage,
     resolvedSelectedPackage,
     selectedChadhava,
-    addonsTotal,
+    computedAddonsTotal,
+    resolvedAddons,
     prasadam,
   ]);
 
@@ -468,7 +518,8 @@ function BillingPage() {
         grandTotal: finalPayable,
         selectedPackage: resolvedSelectedPackage,
         selectedChadhava: selectedChadhava || null,
-        addonsTotal,
+        addons: resolvedAddons,
+        addonsTotal: computedAddonsTotal,
 
         ...(prasadam && { prasadam: true }),
       };
@@ -482,6 +533,7 @@ function BillingPage() {
         couponCode: payload.couponCode,
         isCouponApplied: payload.isCouponApplied,
         discountAmount: payload.discountAmount,
+        addons: payload.addons,
         addonsTotal: payload.addonsTotal,
         prasadam: payload.prasadam || false,
       });
@@ -616,8 +668,8 @@ function BillingPage() {
           puja,
           selectedPackage,
           image: image || null,
-          addons,
-          addonsTotal,
+          addons: resolvedAddons,
+          addonsTotal: computedAddonsTotal,
           prasadam,
         };
         try {
@@ -670,8 +722,8 @@ function BillingPage() {
             pujaDate: payload.date,
             packageName: selectedPackage?.name,
             packagePrice: selectedPackage?.price,
-            addons: addons || [],
-            addonsTotal,
+            addons: resolvedAddons || [],
+            addonsTotal: computedAddonsTotal,
             coupon: payload.coupon,
             couponCode: payload.couponCode,
             discountAmount: payload.discountAmount || discountAmount,
@@ -1024,17 +1076,62 @@ function BillingPage() {
             <b>{isChadhavaFlow ? "Offerings Amount" : "Package Amount"}:</b> {selectedPackage.price}
           </p>
 
-          {/* ✅ ADDONS SUMMARY */}
-          {addons && addons.length > 0 && (
+          {/* Puja: choose add-ons on billing (quantities) */}
+          {!isChadhavaFlow && puja?.addOns?.length > 0 && (
+            <div className="billing-addons-picker">
+              <h4 className="billing-addons-picker-title">Add-ons (optional)</h4>
+              <p className="billing-addons-picker-hint">
+                Select quantities for extra offerings. Totals update below.
+              </p>
+              <div className="billing-addons-picker-list">
+                {puja.addOns.map((addon, index) => {
+                  const addonId = addon.id || `addon-${index}`;
+                  const qty = pujaAddonQuantities[addonId] || 0;
+                  return (
+                    <div key={addonId} className="billing-addon-row">
+                      <div className="billing-addon-row-info">
+                        <span className="billing-addon-name" title={addon.name}>
+                          {addon.name}
+                        </span>
+                        <span className="billing-addon-unit">{addon.price}</span>
+                      </div>
+                      <div className="billing-addon-qty">
+                        <button
+                          type="button"
+                          className="billing-qty-btn"
+                          onClick={() => updatePujaAddonQuantity(addonId, -1)}
+                          aria-label="Decrease quantity"
+                        >
+                          −
+                        </button>
+                        <span className="billing-qty-val">{qty}</span>
+                        <button
+                          type="button"
+                          className="billing-qty-btn"
+                          onClick={() => updatePujaAddonQuantity(addonId, 1)}
+                          aria-label="Increase quantity"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ADDONS SUMMARY (selected lines) */}
+          {resolvedAddons && resolvedAddons.length > 0 && (
             <div className="addons-summary">
-              <h4>Add-ons ({addons.length})</h4>
-              {addons.map((addon, index) => (
+              <h4>Add-ons ({resolvedAddons.length})</h4>
+              {resolvedAddons.map((addon, index) => (
                 <div key={addon.id || index} className="addon-row">
                   <span>
                     {addon.name} × {addon.quantity} (₹{parseAmount(addon.price)})
                   </span>
                   {!isChadhavaFlow && (
-                    <span className="addon-price">{addon.total}</span>
+                    <span className="addon-price">₹{addon.total}</span>
                   )}
                 </div>
               ))}

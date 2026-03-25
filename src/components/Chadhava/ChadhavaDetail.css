@@ -23,29 +23,46 @@
 }
 
 .chd-hero-banner {
-  background: #111827;
-  border-radius: 16px;
-  padding: 0.45rem;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+  background: #5c2e2e;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  max-width: 470px;
+  width: 100%;
+  min-width: 0;
+  max-width: 1524px;
+  max-height: 762px;
   margin: 0 auto;
   overflow: hidden;
+  aspect-ratio: 2 / 1;
+  border: 4px solid #d4a017;
+  outline: 2px solid rgba(212, 160, 23, 0.5);
+}
+
+.chd-hero-inner {
+  position: relative;
+  width: 100%;
   height: 100%;
+  min-height: 240px;
+  max-height: 762px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
 }
 
 .chd-hero-image {
-  border-radius: 12px;
   width: 100%;
   height: 100%;
+  min-width: 100%;
   min-height: 100%;
-  max-width: none;
-  max-height: none;
   object-fit: cover;
-  object-position: center top;
+  object-position: center;
   display: block;
   background-color: #1a1a1a;
 }
@@ -56,23 +73,25 @@
 
 .chd-hero-dots {
   position: absolute;
-  bottom: 0.65rem;
+  bottom: 24px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  z-index: 3;
 }
 
 .chd-dot {
-  width: 7px;
-  height: 7px;
+  width: 10px;
+  height: 10px;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  padding: 0;
 }
 
 .chd-dot.active {
-  width: 16px;
-  background: #f97316;
+  background: #ea580c;
 }
 
 .chd-hero-text {
@@ -195,8 +214,11 @@
   width: 72px;
   height: 72px;
   border-radius: 12px;
-  background: url('https://dummyimage.com/120x120/facc15/ffffff') center/contain no-repeat;
   background-color: #1a1a1a;
+  background-image: url('https://dummyimage.com/120x120/facc15/ffffff');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 
 .chd-offering-add {
@@ -285,7 +307,7 @@
   .chd-hero-banner {
     order: -1;
     max-width: 100%;
-    padding: 0.4rem;
+    padding: 8px;
   }
 
 }
@@ -296,21 +318,21 @@
   }
 
   .chd-title {
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     line-height: 1.24;
   }
 
   .chd-subtitle {
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     line-height: 1.45;
   }
 
   .chd-date {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
   }
 
   .chd-devotees {
-    font-size: 0.88rem;
+    font-size: 0.8rem;
     line-height: 1.45;
   }
 
@@ -327,20 +349,20 @@
   }
 
   .chd-offering-title {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
   }
 
   .chd-offering-meta {
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     line-height: 1.45;
   }
 
   .chd-offering-price {
-    font-size: 0.95rem;
+    font-size: 0.88rem;
   }
 
   .chd-offering-label {
-    font-size: 0.75rem;
+    font-size: 0.68rem;
   }
 }
 
@@ -507,38 +529,38 @@ body.hide-whatsapp-fab .wa-fab-wrap {
   }
 
   .chd-title {
-    font-size: 1.32rem;
+    font-size: 1.1rem;
     line-height: 1.22;
   }
 
   .chd-subtitle {
-    font-size: 0.9rem;
-  }
-
-  .chd-date {
     font-size: 0.8rem;
   }
 
+  .chd-date {
+    font-size: 0.72rem;
+  }
+
   .chd-devotees {
-    font-size: 0.84rem;
+    font-size: 0.76rem;
   }
 
   .chd-section-title {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     margin-bottom: 0.9rem;
   }
 
   .chd-offering-title {
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 
   .chd-offering-meta {
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     line-height: 1.4;
   }
 
   .chd-offering-price {
-    font-size: 0.9rem;
+    font-size: 0.82rem;
   }
 
   .chd-offering-thumb {
@@ -548,7 +570,7 @@ body.hide-whatsapp-fab .wa-fab-wrap {
 
   .chd-offering-add {
     min-height: 34px;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     padding: 0.28rem 0.62rem;
   }
 
@@ -564,6 +586,6 @@ body.hide-whatsapp-fab .wa-fab-wrap {
   }
 
   .chd-qty-display {
-    font-size: 15px;
+    font-size: 13px;
   }
 }
