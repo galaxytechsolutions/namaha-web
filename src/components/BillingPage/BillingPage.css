@@ -36,8 +36,8 @@
 
   .billing-left img {
     width: 100%;
-    aspect-ratio: 1 / 1;
-    min-height: 320px;
+    aspect-ratio: 2 / 1;
+    min-height: 0;
     object-fit: cover;
     object-position: center;
     border-radius: 8px;
@@ -191,7 +191,7 @@
 
     .billing-left img {
       width: 100%;
-      min-height: 220px;
+      min-height: 0;
     }
 
     .billing-left-message {
@@ -223,7 +223,7 @@
 
     .billing-left img {
       width: 100%;
-      min-height: 200px;
+      min-height: 0;
     }
   }
   

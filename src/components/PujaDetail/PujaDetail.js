@@ -127,12 +127,9 @@ function PujaDetail() {
   const [openFaq, setOpenFaq] = useState(null);
   const [isNavSticky, setIsNavSticky] = useState(false);
   const [addonQuantities, setAddonQuantities] = useState({});
-  const [aboutVisibleLines, setAboutVisibleLines] = useState(() =>
-    typeof window !== "undefined" && window.innerWidth <= 768 ? 2 : 7
-  );
+  const [aboutVisibleLines, setAboutVisibleLines] = useState(4);
   const [aboutHasOverflow, setAboutHasOverflow] = useState(false);
-  const [isMobileView, setIsMobileView] = useState(typeof window !== "undefined" && window.innerWidth <= 768);
-  const collapsedLines = isMobileView ? 2 : 7;
+  const collapsedLines = 4;
   const [howItWorksHoverIndex, setHowItWorksHoverIndex] = useState(null);
   // Track which package card's "Read more" is expanded by index (per-card)
   const [expandedPackageIndex, setExpandedPackageIndex] = useState(null);
@@ -214,11 +211,9 @@ function PujaDetail() {
   // Sync mobile viewport and collapse lines on resize
   useEffect(() => {
     const mq = window.matchMedia("(max-width: 768px)");
-    const handleChange = (e) => {
-      const mobile = e.matches;
-      setIsMobileView(mobile);
+    const handleChange = () => {
       setAboutVisibleLines((prev) => {
-        if (prev < 999) return mobile ? 2 : 7;
+        if (prev < 999) return 4;
         return prev;
       });
     };
