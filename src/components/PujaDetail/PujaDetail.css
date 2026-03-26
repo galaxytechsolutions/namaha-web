@@ -25,15 +25,9 @@
   box-sizing: border-box;
 }
 
-/* Add breathing room below fixed header for the top grid (image + title) */
+/* No extra top padding — hero row handles clearance under fixed header */
 .puja-detail-page .pd-container {
-  padding-top: 18px;
-}
-
-@media (max-width: 768px) {
-  .puja-detail-page .pd-container {
-    padding-top: 14px;
-  }
+  padding-top: 0;
 }
 
 .pd-grid {
@@ -45,16 +39,31 @@
   overflow-x: hidden;
 }
 
-/* Extra separation from fixed header for the top hero grid */
+/*
+ * Fixed header is shorter than `--header-offset` (140/100) in practice; shaving avoids a tall empty band.
+ * Slightly more air on very wide screens so hero does not feel stuck to the nav.
+ */
 .puja-detail-page .pd-section-content.pd-grid {
-  margin-top: 80px;
+  margin-top: calc(var(--header-offset, 140px) - 44px + 6px);
 }
 
-/* Laptop L (1440px) - use full available space */
+@media (min-width: 1920px) {
+  .puja-detail-page .pd-section-content.pd-grid {
+    margin-top: calc(var(--header-offset, 140px) - 36px + 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .puja-detail-page .pd-section-content.pd-grid {
+    margin-top: calc(var(--header-offset, 100px) - 20px + 4px);
+  }
+}
+
+/* Laptop L+ — align with site content width */
 @media (min-width: 1440px) {
   .pd-container {
-    max-width: 1400px;
-    padding: 0 2rem 1.5rem;
+    max-width: var(--content-max);
+    padding: 0 var(--content-pad-x) 1.5rem;
   }
 
   .pd-grid {
@@ -66,6 +75,25 @@
   .pd-details {
     width: 100%;
     max-width: 100%;
+  }
+}
+
+/* 4K / ultra-wide: give hero image more column share and larger frame */
+@media (min-width: 1920px) {
+  .pd-grid {
+    grid-template-columns: minmax(480px, 1.22fr) minmax(420px, 1fr);
+    gap: clamp(3rem, 3.5vw, 4.5rem);
+    align-items: stretch;
+  }
+
+  .puja-detail-page .pd-carousel-inner {
+    min-height: clamp(300px, 24vw, 560px);
+    max-width: none;
+    max-height: min(92vh, 960px);
+  }
+
+  .pd-carousel-frame {
+    padding: clamp(12px, 1vw, 18px);
   }
 }
 
@@ -96,10 +124,11 @@
   position: relative;
   border-radius: 8px;
   overflow: hidden;
-  /* aspect-ratio: 2 / 1; */
-  min-height: 240px;
-  max-width: 1524px;
-  max-height: 762px;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  min-height: clamp(220px, 16vw, 380px);
+  max-width: min(100%, 1524px);
+  max-height: min(762px, 52vh);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -936,7 +965,7 @@
 .pd-section {
   padding: 2.5rem 0;
   border-bottom: 1px solid #f3f4f6;
-  scroll-margin-top: 140px;
+  scroll-margin-top: calc(var(--header-offset, 140px) + 12px);
 }
 
 /* Center section content on the page (inherits width from container) */
@@ -1746,7 +1775,7 @@
   .pd-container {
     max-width: 100%;
     margin: 0 auto;
-    padding: 0.75rem 1rem 1.5rem;
+    padding: 0 1rem 1.5rem;
   }
 
   /* .puja-detail-page .pd-section-content.pd-grid {
@@ -2500,5 +2529,26 @@
   align-items: center !important;
   gap: 12px !important;
   flex-shrink: 0 !important;
+}
+
+/* Ultra-wide / 4K: body copy was capping too low vs. imagery */
+@media (min-width: 1600px) {
+  .pd-title {
+    font-size: clamp(1.35rem, 1rem + 1.1vw, 2.65rem);
+  }
+
+  .pd-purpose {
+    font-size: clamp(0.9rem, 0.75rem + 0.4vw, 1.2rem);
+  }
+
+  .pd-meta,
+  .pd-countdown-label,
+  .pd-countdown-label-sm {
+    font-size: clamp(0.875rem, 0.72rem + 0.35vw, 1.08rem);
+  }
+
+  .pd-countdown-num {
+    font-size: clamp(1.05rem, 0.9rem + 0.55vw, 1.45rem);
+  }
 }
 

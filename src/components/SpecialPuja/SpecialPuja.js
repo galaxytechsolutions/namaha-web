@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./SpecialPuja.css";
 import "../PujaList/PujaList.css";
-import { fetchPujaList } from "../../data/pujaList"; // ✅ CHANGED: fetchPujaList
+import {
+  fetchPujaList,
+  PUJA_LIST_GRID_COLUMNS,
+} from "../../data/pujaList";
 
 const SP_IMAGE_MAP = {
   1: "sp-banner-1",
@@ -61,7 +64,7 @@ function SpecialPuja() {
           }))
           .sort(sortByAvailabilityThenDate);
         console.log("✅ SpecialPuja mapped (sorted by date):", specialPujas);
-        setPujas(specialPujas.slice(0, 4));
+        setPujas(specialPujas.slice(0, PUJA_LIST_GRID_COLUMNS));
       })
       .catch((err) => {
         console.error("❌ SpecialPuja fetch failed:", err);
