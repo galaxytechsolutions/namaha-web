@@ -152,6 +152,17 @@ function Layout({ children }) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    // Close mobile hamburger menu when clicking anywhere outside header
+    useEffect(() => {
+        const handleOutsideMenuClick = (event) => {
+            if (menuOpen && !event.target.closest('.header')) {
+                setMenuOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleOutsideMenuClick);
+        return () => document.removeEventListener('mousedown', handleOutsideMenuClick);
+    }, [menuOpen]);
+
     // Close profile dropdown when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {

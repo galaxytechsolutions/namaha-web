@@ -31,6 +31,7 @@ function Footer() {
     ];
     const serviceLinks = [
         { label: 'Puja', href: '/puja' },
+        { label: 'Chadhava', href: '/chadhava' },
     ];
     const socialLinks = [
         { name: 'YouTube', href: 'https://youtube.com/@shri_aaum?si=5kOi-XTTaETP85jK' },

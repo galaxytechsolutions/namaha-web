@@ -2376,6 +2376,42 @@
     max-width: 200px;
     text-align: center;
   }
+
+  /* Ensure full banner image is visible on mobile (no crop) */
+  .pd-carousel-slide {
+    background: #000;
+  }
+
+  .pd-carousel-slide img.pd-carousel-image {
+    object-fit: contain;
+    object-position: center;
+  }
+
+  /* Make frame hug the image better on mobile */
+  .pd-carousel-frame {
+    padding: 4px;
+    border-width: 2px;
+    outline: none;
+    border-radius: 12px;
+  }
+
+  .pd-carousel-inner {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: none;
+    border-radius: 10px;
+  }
+}
+
+@media (max-width: 425px) {
+  .pd-carousel-frame {
+    padding: 3px;
+  }
+
+  .pd-carousel-inner {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
 }
 
 

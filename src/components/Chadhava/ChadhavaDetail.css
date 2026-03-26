@@ -676,3 +676,39 @@ body.hide-whatsapp-fab .wa-fab-wrap {
     font-size: 13px;
   }
 }
+
+/* Match PujaDetail mobile hero image/frame behavior */
+@media (max-width: 768px) {
+  .chd-hero-banner {
+    padding: 4px;
+    border-width: 2px;
+    outline: none;
+    border-radius: 12px;
+  }
+
+  .chd-hero-inner {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+    max-height: none;
+    border-radius: 10px;
+    background: #000;
+  }
+
+  .chd-hero-image {
+    object-fit: contain;
+    object-position: center;
+    min-width: 0;
+    min-height: 0;
+  }
+}
+
+@media (max-width: 425px) {
+  .chd-hero-banner {
+    padding: 3px;
+  }
+
+  .chd-hero-inner {
+    aspect-ratio: 16 / 9;
+    min-height: 0;
+  }
+}

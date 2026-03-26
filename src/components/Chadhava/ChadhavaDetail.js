@@ -5,13 +5,41 @@ import './ChadhavaDetail.css';
 import Footer from '../Footer/Footer';
 
 const FAQS = [
-  'What is MahaSHRI AAUM?',
-  'Will I receive a certificate after booking the service?',
-  'How can I check the status of my service?',
-  'Can I choose multiple services?',
-  'Who should I contact if there is an issue with my Service?',
-  'How does it work?',
-  'Do I get an 80G certificate?',
+  {
+    question: 'What is Chadhava and how does it benefit devotees?',
+    answer:
+      'Chadhava is a sacred offering made with devotion at the temple during puja. It helps devotees express sankalp, seek blessings, and spiritually participate in temple rituals even if they are not physically present.',
+  },
+  {
+    question: 'Can I offer multiple Chadhava items in a single booking?',
+    answer:
+      'Yes. You can select multiple offering items and quantities in one booking. Your total amount is calculated automatically before payment.',
+  },
+  {
+    question: 'How will I know that my Chadhava has been offered?',
+    answer:
+      'After successful booking, your order is recorded in your account. You can track status updates from your booking details and contact support if you need confirmation.',
+  },
+  {
+    question: 'Can I book Chadhava for a specific date or occasion?',
+    answer:
+      'Yes. If a specific event date is available for the selected Chadhava, your offering is scheduled accordingly. Please book before the event cut-off time for timely inclusion.',
+  },
+  {
+    question: 'Can I book Chadhava on behalf of my family members?',
+    answer:
+      'Yes, you can book on behalf of family members or loved ones. Please make sure the sankalp details shared during booking are correct.',
+  },
+  {
+    question: 'What happens if I miss the event date after booking?',
+    answer:
+      'If your payment is successful before the cut-off, your Chadhava is usually processed for that event. For edge cases or delays, please connect with support to verify the final status.',
+  },
+  {
+    question: 'Whom should I contact for Chadhava booking support?',
+    answer:
+      'For any issue related to booking, payment, or status, please use the contact options available in the app/site support section. Our team will assist you promptly.',
+  },
 ];
 
 function ChadhavaDetail() {
@@ -278,22 +306,21 @@ function ChadhavaDetail() {
           <section className="chd-faqs">
             <h2 className="chd-section-title">Frequently asked Questions</h2>
             <ul className="chd-faq-list">
-              {FAQS.map((q, index) => (
-                <li key={q} className="chd-faq-item">
+              {FAQS.map((faq, index) => (
+                <li key={faq.question} className="chd-faq-item">
                   <button
                     type="button"
                     className="chd-faq-question"
                     onClick={() => setActiveFaq(activeFaq === index ? null : index)}
                   >
-                    {q}
+                    {faq.question}
                     <span className="chd-faq-chevron">
                       {activeFaq === index ? '▲' : '▼'}
                     </span>
                   </button>
                   {activeFaq === index && (
                     <p className="chd-faq-answer">
-                      Detailed information for this question will be provided here based on your
-                      backend content.
+                      {faq.answer}
                     </p>
                   )}
                 </li>
