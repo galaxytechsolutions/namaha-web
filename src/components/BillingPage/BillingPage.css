@@ -2,7 +2,6 @@
     display: flex;
     min-height: 100vh;
     font-family: var(--font-body);
-    padding-top: 80px; /* Clear fixed header */
     box-sizing: border-box;
     width: 100%;
     max-width: var(--content-max);
@@ -404,6 +403,115 @@
   background: #d1d5db;
 }
   
+/* Puja add-ons: quantity picker on billing */
+.billing-addons-picker {
+  margin: 16px 0;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+}
+
+.billing-addons-picker-title {
+  font-family: var(--font-heading);
+  margin: 0 0 6px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.billing-addons-picker-hint {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.billing-addons-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.billing-addon-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.billing-addon-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  flex: 1;
+}
+
+.billing-addon-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.billing-addon-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: #ea580c;
+}
+
+.billing-addon-qty {
+  display: inline-flex;
+  align-items: flex-end;
+  justify-content: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 6px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.billing-qty-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.billing-qty-btn:hover {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+}
+
+.billing-qty-val {
+  width: 28px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1;
+  color: #1e293b;
+}
+
   /* Addons Summary Styles */
 .addons-summary {
   margin: 16px 0;
@@ -623,7 +731,7 @@
 /* ===== Mobile Billing Page - font sizes & optimization ===== */
 @media (max-width: 768px) {
   .billing-container {
-    padding-top: 70px;
+    padding-top: 10px;
   }
 
   .billing-right {
@@ -679,6 +787,57 @@
   .addon-row,
   .addons-total-row {
     font-size: 0.85rem;
+  }
+
+  .billing-addons-picker {
+    margin: 12px 0;
+    padding: 12px;
+    border-radius: 10px;
+  }
+
+  .billing-addons-picker-title {
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+
+  .billing-addons-picker-hint {
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  .billing-addons-picker-list {
+    gap: 8px;
+  }
+
+  .billing-addon-row {
+    padding: 8px 10px;
+    gap: 10px;
+  }
+
+  .billing-addon-name {
+    font-size: 0.9rem;
+    line-height: 1.3;
+  }
+
+  .billing-addon-unit {
+    font-size: 0.82rem;
+  }
+
+  .billing-addon-qty {
+    gap: 5px;
+  }
+
+  .billing-qty-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    border-radius: 7px;
+  }
+
+  .billing-qty-val {
+    width: 24px;
+    height: 32px;
+    font-size: 14px;
   }
 
   .billing-coupon-label,
@@ -760,6 +919,49 @@
 
   .grand-total-price {
     font-size: 1rem;
+  }
+
+  .billing-addons-picker {
+    padding: 10px;
+    border-radius: 9px;
+  }
+
+  .billing-addons-picker-title {
+    font-size: 0.9rem;
+  }
+
+  .billing-addons-picker-hint {
+    font-size: 0.75rem;
+    line-height: 1.35;
+  }
+
+  .billing-addon-row {
+    padding: 8px;
+    gap: 8px;
+  }
+
+  .billing-addon-name {
+    font-size: 0.84rem;
+  }
+
+  .billing-addon-unit {
+    font-size: 0.76rem;
+  }
+
+  .billing-addon-qty {
+    gap: 4px;
+  }
+
+  .billing-qty-btn {
+    width: 30px;
+    height: 30px;
+    font-size: 15px;
+  }
+
+  .billing-qty-val {
+    width: 22px;
+    height: 30px;
+    font-size: 13px;
   }
 
   button {

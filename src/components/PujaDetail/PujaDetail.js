@@ -126,8 +126,9 @@ function PujaDetail() {
   const [activeTab, setActiveTab] = useState("packages");
   const [openFaq, setOpenFaq] = useState(null);
   const [isNavSticky, setIsNavSticky] = useState(false);
-  const [addonQuantities, setAddonQuantities] = useState({});
-  const [aboutVisibleLines, setAboutVisibleLines] = useState(4);
+  const [aboutVisibleLines, setAboutVisibleLines] = useState(() =>
+    typeof window !== "undefined" && window.innerWidth <= 768 ? 2 : 7
+  );
   const [aboutHasOverflow, setAboutHasOverflow] = useState(false);
   const collapsedLines = 4;
   const [howItWorksHoverIndex, setHowItWorksHoverIndex] = useState(null);
@@ -141,13 +142,6 @@ function PujaDetail() {
 
   const slides = puja?.bannerUrls?.map((img) => img.url) || [];
 
-  const updateAddonQuantity = (addonId, change) => {
-    setAddonQuantities((prev) => ({
-      ...prev,
-      [addonId]: Math.max(0, (prev[addonId] || 0) + change),
-    }));
-  };
-
   const handleBookPujaClick = (pkg) => {
     // Block booking strictly based on event date
     if (isEventDatePassed) {
@@ -155,38 +149,16 @@ function PujaDetail() {
       return;
     }
 
-    const selectedAddons = (puja?.addOns || []).length
-      ? Object.entries(addonQuantities)
-          .filter(([_, qty]) => qty > 0)
-          .map(([addonId, quantity]) => {
-            const addon = puja.addOns.find(
-              (a) => (a.id || `addon-${puja.addOns.indexOf(a)}`) === addonId
-            );
-            if (!addon) return null;
-            const price = parseInt(String(addon.price).replace(/[^0-9]/g, ""), 10) || 0;
-            return {
-              id: addon.id || addonId,
-              name: addon.name,
-              price,
-              quantity,
-              total: price * quantity,
-            };
-          })
-          .filter(Boolean)
-      : [];
-
     const mainImage = puja?.bannerUrls?.[0]?.url || null;
-    const addonsTotalAmount = selectedAddons.reduce((sum, a) => sum + a.total, 0);
     const pkgPrice = Number(pkg?.price) || 0;
-    const grandTotalVal = pkgPrice + addonsTotalAmount;
 
     const billingState = {
       puja,
       selectedPackage: pkg,
       image: mainImage,
-      addons: selectedAddons,
-      addonsTotal: addonsTotalAmount,
-      grandTotal: grandTotalVal,
+      addons: [],
+      addonsTotal: 0,
+      grandTotal: pkgPrice,
       coupon: puja?.coupon ?? null,
       coupons: puja?.coupons ?? (puja?.coupon ? [puja.coupon] : null),
       mode: puja?.mode,
@@ -388,60 +360,6 @@ function PujaDetail() {
               )}
             </div>
 
-            {/* Add-ons section: show only when add-on data is available from API */}
-            {puja?.addOns?.length > 0 && (
-              <div className="pd-addons-card">
-                <div className="pd-addons-header">
-                  <span className="pd-addons-icon">＋</span>
-                  <h3>Add-ons</h3>
-                </div>
-
-                {!puja?.addOns || puja.addOns.length === 0 ? (
-                  <p className="pd-addons-empty">No add-ons available</p>
-                ) : (
-                  <div className="pd-addons-list">
-                    {puja.addOns.map((addon, index) => {
-                      const addonId = addon.id || `addon-${index}`;
-                      const quantity = addonQuantities[addonId] || 0;
-
-                      return (
-                        <div key={addonId} className="pd-addon-item">
-                          <div className="pd-addon-info">
-                            <div className="pd-addon-info">
-                              <p
-                                className="pd-addon-name"
-                                title={addon.name}
-                              >
-                                {addon.name}
-                              </p>
-                            </div>
-                          </div>
-
-                          <div className="pd-addon-controls">
-                            <span className="pd-addon-price">{addon.price}</span>
-                            <div className="pd-quantity-group">
-                              <button
-                                className="pd-qty-btn pd-minus"
-                                onClick={() => updateAddonQuantity(addonId, -1)}
-                              >
-                                −
-                              </button>
-                              <span className="pd-qty-display">{quantity}</span>
-                              <button
-                                className="pd-qty-btn pd-plus"
-                                onClick={() => updateAddonQuantity(addonId, 1)}
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Right: Event details */}

@@ -1,32 +1,37 @@
+/* Align with site rhythm: `index.css` fluid type + `--content-max` / `--content-pad-x` (see PujaList, PujaDetail). */
 .chadhava-page {
-  padding-top: 80px;
   background: #fff;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .ch-hero {
   background: linear-gradient(180deg, #feeada 0%, #ffffff 70%);
-  padding: 3rem 1.5rem 3.5rem;
+  padding: 2rem var(--content-pad-x) 1rem;
 }
 
 .ch-hero-inner {
-  max-width: 1200px;
+  max-width: var(--content-max);
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 3rem;
+  display: block;
 }
 
 .ch-hero-content {
-  flex: 1.1;
+  max-width: 100%;
+  width: 100%;
 }
 
 .ch-hero-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.9rem, 3.3vw, 2.4rem);
-  line-height: 1.25;
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.75rem);
+  line-height: 1.18;
   font-weight: 800;
   color: #111827;
-  margin: 0 0 1.5rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+  max-width: 100%;
+  width: 100%;
 }
 
 .ch-hero-points {
@@ -38,8 +43,9 @@
 .ch-hero-points li {
   position: relative;
   padding-left: 1.5rem;
-  margin-bottom: 0.4rem;
-  font-size: 0.98rem;
+  margin-bottom: 0.35rem;
+  font-size: var(--fluid-lead);
+  line-height: 1.45;
   color: #374151;
 }
 
@@ -56,21 +62,40 @@
   display: flex;
   gap: 0.75rem;
   margin-top: 1rem;
+  justify-content: flex-start;
+}
+
+/* Desktop: keep View Now compact and left-aligned */
+@media (min-width: 769px) {
+  .ch-hero-actions .ch-btn-primary {
+    flex: 0 0 auto;
+    width: 200px;
+    min-width: 200px;
+    max-width: 200px;
+    padding: 0.68rem 1rem;
+    font-size: 0.95rem;
+  }
 }
 
 .ch-btn {
   border-radius: 999px;
-  padding: 0.7rem 1.4rem;
-  font-size: 0.95rem;
+  padding: 0.72rem 1.5rem;
+  font-size: var(--fluid-button);
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
+  min-height: 44px;
 }
 
 .ch-btn-primary {
-  background: #16a34a;
+  background: #ea580c;
   color: #fff;
-  border-color: #16a34a;
+  border-color: #ea580c;
+}
+
+.ch-btn-primary:hover {
+  background: #c2410c;
+  border-color: #c2410c;
 }
 
 .ch-btn-outline {
@@ -82,116 +107,202 @@
 .ch-hero-illustration {
   flex: 0.9;
   max-width: 420px;
-  height: 260px;
+  min-width: 0;
+  aspect-ratio: 2 / 1;
   border-radius: 32px;
-  background:
-    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.9), transparent 60%),
-    radial-gradient(circle at 20% 80%, rgba(248, 113, 113, 0.35), transparent 65%),
-    linear-gradient(120deg, #f97316, #facc15);
-  position: relative;
   overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(249, 115, 22, 0.15);
 }
 
-.ch-hero-illustration::after {
-  content: '';
-  position: absolute;
-  inset: 18px 24px;
-  border-radius: 28px;
-  background:
-    linear-gradient(135deg, #ffedd5, #fed7aa),
-    url('https://dummyimage.com/600x400/f97316/fff') center/cover no-repeat;
-  mix-blend-mode: multiply;
-  opacity: 0.9;
+.ch-hero-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 
-/* Offerings */
+/* Offerings — grid column count from `PUJA_LIST_GRID_COLUMNS` in `pujaList.js` via `--ch-grid-cols` */
 .ch-offerings {
-  max-width: 1200px;
+  max-width: var(--content-max);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 0;
+  padding: 2.5rem var(--content-pad-x) 2.5rem;
 }
 
 .ch-offerings-header {
-  max-width: 760px;
+  max-width: min(760px, 100%);
   margin-bottom: 2rem;
 }
 
 .ch-offerings-title {
   font-family: var(--font-heading);
-  font-size: 1.6rem;
+  font-size: var(--fluid-section-title);
   font-weight: 800;
   color: #111827;
   margin: 0 0 0.75rem;
 }
 
 .ch-offerings-subtitle {
-  font-size: 0.98rem;
+  font-size: var(--fluid-lead);
   color: #4b5563;
   line-height: 1.6;
   margin: 0;
 }
 
+.ch-loading-state {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.ch-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(234, 88, 12, 0.2);
+  border-top-color: #ea580c;
+  border-radius: 50%;
+  animation: ch-spin 0.8s linear infinite;
+}
+
+.ch-loading-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+@keyframes ch-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .ch-card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(var(--ch-grid-cols, 4), minmax(0, 1fr));
   gap: 1.5rem;
+  align-items: stretch;
 }
 
 .ch-card {
   background: #fff;
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  width: 100%;
 }
 
+/* Same geometry as `PujaList.css` `.pl-card-banner` (see `PujaList.js` card markup) */
 .ch-card-banner {
-  height: 160px;
-  background: radial-gradient(circle at 10% 0, #fef3c7, transparent 55%),
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  max-width: 1524px;
+  max-height: 762px;
+  margin: 0 auto;
+  background-color: #000;
+  background-image: radial-gradient(circle at 10% 0, #fef3c7, transparent 55%),
     radial-gradient(circle at 90% 100%, #a855f7, transparent 60%),
     linear-gradient(120deg, #1d4ed8, #7c3aed);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  border-radius: 12px 12px 0 0;
 }
 
 .ch-card-body {
-  padding: 1.25rem 1.5rem 1.5rem;
+  padding: 0 16px;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0;
   flex: 1; /* fill remaining height so button can sit at bottom */
 }
 
 .ch-card-title {
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: var(--fluid-card-title);
   font-weight: 700;
-  color: #111827;
-  margin: 0;
+  color: #1a1a1a;
+  margin: 0.75rem 0 6px;
+  line-height: 1.35;
 }
 
 .ch-card-date {
-  font-size: 0.88rem;
+  font-size: var(--fluid-card-meta);
   color: #6b7280;
-  margin: 0 0 0.25rem;
+  margin: 0 0 6px;
 }
 
 .ch-card-text {
-  font-size: 0.92rem;
+  font-size: var(--fluid-card-body);
   color: #4b5563;
-  line-height: 1.5;
-  margin: 0 0 0.75rem;
+  line-height: 1.45;
+  margin: 0 0 8px;
+  overflow-wrap: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.ch-card-text.is-expanded {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+  overflow: visible;
+}
+
+.ch-card-readmore {
+  background: none;
+  border: none;
+  color: #ea580c;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin: -0.35rem 0 0.55rem;
+  align-self: flex-start;
+}
+
+@media (max-width: 1280px) {
+  .ch-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.35rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .ch-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .ch-card-grid--single {
+    grid-template-columns: 1fr;
+  }
 }
 
 .ch-card-cta {
   align-self: stretch;
+  width: auto;
+  margin: 16px 0;
   margin-top: auto;
-  background: #16a34a;
+  background: #ea580c;
   color: #fff;
   border: none;
-  border-radius: 999px;
-  padding: 5px;
-  font-size: 12px;
+  border-radius: 8px;
+  padding: 12px 20px;
+  min-height: 44px;
+  font-size: var(--fluid-button);
   font-weight: 600;
   cursor: pointer;
 
@@ -201,34 +312,23 @@
 }
 
 .ch-card-cta:hover {
-  background: #15803d;
+  background: #c2410c;
 }
 
 @media (max-width: 900px) {
   .ch-hero-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .ch-hero-illustration {
-    align-self: center;
-    width: 100%;
-    max-width: 380px;
+    display: block;
   }
 }
 
 @media (max-width: 640px) {
   .ch-hero {
-    padding: 2.5rem 1.25rem 3rem;
+    padding: 1.5rem 1rem 0.75rem;
   }
 
   .ch-hero-title {
-    font-size: 1.7rem;
-  }
-
-  .ch-hero-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
+    font-size: clamp(1.25rem, 4.5vw, 1.75rem);
+    max-width: 100%;
   }
 }
 /* ========================================
@@ -238,160 +338,260 @@
 /* Mobile First - Base Adjustments */
 @media (max-width: 768px) {
   .chadhava-page {
-    padding-top: 70px; /* Account for mobile header */
+    padding-top: 10px; /* Account for mobile header */
   }
 
   /* Hero Section - Mobile */
   .ch-hero {
-    padding: 2rem 1rem 2.5rem;
+    padding: 1.5rem 1rem 0.75rem;
     background: linear-gradient(180deg, #feeada 0%, #fef3c7 50%, #ffffff 80%);
   }
 
   .ch-hero-inner {
-    flex-direction: column;
-    gap: 2rem;
-    align-items: stretch;
+    display: block;
   }
 
   .ch-hero-content {
-    order: 2;
-    text-align: center;
+    text-align: left;
   }
 
   .ch-hero-title {
-    font-size: clamp(1.4rem, 5vw, 1.8rem) !important;
-    line-height: 1.35;
-    margin-bottom: 1.25rem;
-    padding: 0 0.5rem;
+    font-size: clamp(1.2rem, 4.8vw, 1.55rem);
+    line-height: 1.24;
+    margin-bottom: 0;
+    padding: 0;
+    letter-spacing: -0.005em;
+    max-width: 100%;
   }
 
   .ch-hero-points {
     text-align: left;
     max-width: 380px;
-    margin: 0 auto 1.5rem;
+    margin: 0 0 1.5rem;
   }
 
   .ch-hero-points li {
     padding-left: 1.25rem;
-    font-size: 0.95rem;
-    margin-bottom: 0.5rem;
+    font-size: clamp(0.8rem, 3vw, 0.92rem);
+    margin-bottom: 0.35rem;
+    line-height: 1.4;
   }
 
   .ch-hero-actions {
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0.75rem;
     flex-wrap: wrap;
   }
 
   .ch-btn {
-    flex: 1;
-    min-width: 140px;
+    flex: 0 0 auto;
+    min-width: 170px;
+    width: 190px;
     min-height: 44px; /* iOS Touch Target */
-    padding: 0.65rem 1.2rem;
-    font-size: 0.95rem;
+    padding: 0.62rem 1rem;
+    font-size: 0.85rem;
   }
 
-  /* Hero Illustration - Mobile */
-  .ch-hero-illustration {
-    order: 1;
-    align-self: center;
-    width: 280px;
-    height: 200px;
-    max-width: 90vw;
-  }
 }
 
 /* Small Mobile (iPhone SE) */
 @media (max-width: 480px) {
   .ch-hero {
-    padding: 1.75rem 0.75rem 2rem;
+    padding: 1.25rem 0.75rem 0.5rem;
   }
 
   .ch-hero-title {
-    font-size: 1.35rem !important;
+    font-size: clamp(1.1rem, 5.2vw, 1.3rem);
     padding: 0 0.25rem;
+    line-height: 1.26;
   }
 
-  .ch-hero-points li {
-    font-size: 0.92rem;
-    padding-left: 1.1rem;
+  .ch-offerings-title {
+    font-size: 1rem;
+    line-height: 1.3;
   }
 
-  .ch-hero-illustration {
-    width: 240px;
-    height: 170px;
-  }
-
-  .ch-btn {
-    min-height: 42px;
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
+  .ch-offerings-subtitle {
+    font-size: 0.78rem;
+    line-height: 1.45;
   }
 }
 
 /* Offerings Section - Mobile */
 @media (max-width: 768px) {
   .ch-offerings {
-    padding: 2rem 1rem 1rem;
+    padding: 2rem 1rem 2rem;
+  }
+
+  /* Match `PujaList.css` `.pl-upcoming .pl-card` / `.pl-card-banner` radii */
+  .ch-offerings .ch-card {
+    border-radius: 10px;
+  }
+
+  .ch-offerings .ch-card-banner {
+    border-radius: 10px 10px 0 0;
   }
 
   .ch-offerings-header {
-    text-align: center;
+    text-align: left;
     margin-bottom: 1.75rem;
     padding: 0 0.25rem;
   }
 
   .ch-offerings-title {
-    font-size: 1.45rem;
+    font-size: 1.1rem;
     line-height: 1.3;
   }
 
   .ch-offerings-subtitle {
-    font-size: 0.95rem;
-    line-height: 1.55;
-    max-width: 90%;
-    margin: 0 auto;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    max-width: 100%;
+    margin: 0;
   }
 
-  /* Cards Grid - Single Column */
+  /* Cards Grid - compact two-column; single card uses full width */
   .ch-card-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.9rem;
     max-width: 100%;
-    padding: 0rem 1rem;
+    padding: 0 0.25rem;
+  }
+
+  .ch-card-grid--single {
+    grid-template-columns: 1fr;
+  }
+
+  .ch-card-grid--single .ch-card {
+    max-width: 100%;
   }
 
   .ch-card {
-    max-width: 380px;
-    margin: 0 auto;
-  }
-
-  .ch-card-banner {
-    height: 140px; /* Smaller on mobile */
+    max-width: 100%;
+    margin: 0;
   }
 
   .ch-card-body {
-    padding: 1.25rem 1.25rem 1.5rem;
+    padding: 0 12px;
   }
 
   .ch-card-title {
-    font-size: 1.1rem;
-    line-height: 1.35;
-    margin-bottom: 0.5rem;
+    font-size: 13px;
+    line-height: 1.3;
+    margin: 0.6rem 0 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .ch-card-date {
-    font-size: 0.85rem;
+    font-size: 11px;
+    margin: 0 0 4px;
   }
 
   .ch-card-text {
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 11px;
+    line-height: 1.35;
+    margin: 0 0 6px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
   .ch-card-cta {
     margin-top: auto;
+    margin-bottom: 12px;
     min-height: 44px;
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+}
+
+@media (max-width: 576px) {
+  .ch-offerings .ch-card {
+    border-radius: 8px;
+  }
+
+  .ch-offerings .ch-card-banner {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .ch-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.85rem;
+    padding: 0 0.2rem;
+  }
+
+  .ch-card-grid--single {
+    grid-template-columns: 1fr;
+  }
+
+  .ch-card-body {
+    padding: 0 10px;
+  }
+
+  .ch-card-title {
+    font-size: 12px;
+    margin: 0.55rem 0 4px;
+  }
+
+  .ch-card-date {
+    font-size: 10px;
+    margin: 0 0 4px;
+  }
+
+  .ch-card-text {
+    font-size: 10px;
+    line-clamp: 3;
+    margin: 0 0 6px;
+  }
+
+  .ch-card-cta {
+    margin-bottom: 10px;
+    font-size: 11px;
+    padding: 9px 10px;
+    min-height: 40px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ch-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.7rem;
+    padding: 0 0.15rem;
+  }
+
+  .ch-card-grid--single {
+    grid-template-columns: 1fr;
+  }
+
+  .ch-card-body {
+    padding: 0 8px;
+  }
+
+  .ch-card-title {
+    font-size: 12px;
+    line-height: 1.25;
+    margin: 0.45rem 0 3px;
+  }
+
+  .ch-card-date,
+  .ch-card-text {
+    font-size: 10.5px;
+    line-height: 1.35;
+  }
+
+  .ch-card-cta {
+    font-size: 11px;
+    min-height: 36px;
+    padding: 8px 8px;
+    margin-bottom: 8px;
   }
 }
 
@@ -402,7 +602,7 @@
   }
   
   .ch-hero-illustration {
-    height: 280px;
+    max-width: 360px;
   }
 }
 
@@ -417,7 +617,8 @@
   }
   
   .ch-hero-illustration {
-    height: 160px;
+    max-height: 140px;
+    aspect-ratio: 4 / 3;
   }
 }
 

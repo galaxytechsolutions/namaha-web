@@ -1,4 +1,21 @@
-/* Touche Bold for headings */
+/* Brand fonts from design system (falls back if local fonts are unavailable) */
+@font-face {
+  font-family: 'Namian';
+  src: local('Namian');
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montage';
+  src: local('Montage');
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Legacy heading fallback */
 @font-face {
   font-family: 'Touche Bold';
   src: url('https://db.onlinewebfonts.com/t/6ff35b8857ed1d3bf6a3cc93164ff962.woff2') format('woff2');
@@ -8,8 +25,10 @@
 }
 
 :root {
-  --font-heading: 'Touche Bold', 'Poppins', sans-serif;
-  --font-body: 'Poppins', sans-serif;
+  /* Typography roles */
+  --font-heading: 'Montage', 'Touche Bold', 'Poppins', sans-serif;
+  --font-subheading: 'Namian', 'Poppins', sans-serif;
+  --font-body: 'Namian', 'Poppins', sans-serif;
 
   /* Readable on phone → 4K: type tracks viewport without tiny text on ultra-wide */
   --fluid-hero-title: clamp(1.5rem, 1.15rem + 1.35vw, 3rem);
@@ -20,6 +39,8 @@
   --fluid-card-body: clamp(0.875rem, 0.8rem + 0.32vw, 1.0625rem);
   --fluid-card-meta: clamp(0.8125rem, 0.74rem + 0.28vw, 1rem);
   --fluid-button: clamp(0.875rem, 0.8rem + 0.25vw, 1.0625rem);
+  --fluid-body: clamp(0.9375rem, 0.88rem + 0.22vw, 1.0625rem);
+  --fluid-small: clamp(0.8125rem, 0.78rem + 0.16vw, 0.9375rem);
 
   /* One horizontal rhythm for list + special sections + header */
   --content-max: min(100%, 112rem);
@@ -66,9 +87,43 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* All headings use Touche Bold */
+/* Global type mapping */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+}
+
+h1 {
+  font-size: var(--fluid-page-title);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+h2 {
+  font-size: var(--fluid-section-title);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.008em;
+}
+
+h3, h4, h5, h6 {
+  font-family: var(--font-subheading);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+p, li, span, label, input, textarea, select, button {
+  font-family: var(--font-body);
+}
+
+p, li {
+  font-size: var(--fluid-body);
+  line-height: 1.55;
+}
+
+small {
+  font-family: var(--font-body);
+  font-size: var(--fluid-small);
 }
 
 code {

@@ -25,9 +25,15 @@
   box-sizing: border-box;
 }
 
-/* No extra top padding — hero row handles clearance under fixed header */
+/* Minimal top padding — layout-main provides header offset; hero row clears fixed header */
 .puja-detail-page .pd-container {
-  padding-top: 0;
+  padding-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .puja-detail-page .pd-container {
+    padding-top: 8px;
+  }
 }
 
 .pd-grid {
@@ -44,18 +50,18 @@
  * Slightly more air on very wide screens so hero does not feel stuck to the nav.
  */
 .puja-detail-page .pd-section-content.pd-grid {
-  margin-top: calc(var(--header-offset, 140px) - 44px + 6px);
+  margin-top: 12px;
 }
 
 @media (min-width: 1920px) {
   .puja-detail-page .pd-section-content.pd-grid {
-    margin-top: calc(var(--header-offset, 140px) - 36px + 20px);
+    margin-top: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .puja-detail-page .pd-section-content.pd-grid {
-    margin-top: calc(var(--header-offset, 100px) - 20px + 4px);
+    margin-top: 8px;
   }
 }
 
@@ -1776,6 +1782,14 @@
     max-width: 100%;
     margin: 0 auto;
     padding: 0 1rem 1.5rem;
+  }
+
+  /* .puja-detail-page .pd-section-content.pd-grid {
+    margin-top: 10px;
+  } */
+
+  .pd-section-content {
+    padding: 8px 0 !important;
   }
 
   /* .puja-detail-page .pd-section-content.pd-grid {

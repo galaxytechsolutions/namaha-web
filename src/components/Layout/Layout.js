@@ -1,7 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation, useNavigate,  NavLink} from 'react-router-dom';
+import { Link, useLocation, useNavigate, NavLink } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
 import './Layout.css';
+
+const HomeIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+            d="M4 10.5L12 4l8 6.5V20a1 1 0 0 1-1 1h-4.5a.5.5 0 0 1-.5-.5v-4a2 2 0 0 0-2-2h-1a2 2 0 0 0-2 2v4a.5.5 0 0 1-.5.5H5a1 1 0 0 1-1-1v-9.5Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
+
+const PujaIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+            d="M5 14.5c0 2.2 3 4 7 4s7-1.8 7-4H5Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M12 6c0 1.6-1.2 2.2-1.2 3.3 0 .8.6 1.5 1.2 1.5s1.2-.7 1.2-1.5C13.2 8.2 12 7.6 12 6Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+);
+
+const BookingsIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+        <rect
+            x="6"
+            y="4"
+            width="12"
+            height="16"
+            rx="1.5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+        />
+        <line x1="9" y1="8" x2="15" y2="8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <line x1="9" y1="11" x2="15" y2="11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+        <line x1="9" y1="14" x2="13" y2="14" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+);
 
 function Layout({ children }) {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -127,6 +178,26 @@ function Layout({ children }) {
     console.log('🔐 isLoggedIn:', isLoggedIn, 'user:', user); // Debug
     const SHOW_PROFILE_MENU = true; // Show profile dropdown when logged in
 
+    const mobileNavItems = [
+        { path: '/', label: 'Home', icon: 'home' },
+        { path: '/puja', label: 'Puja', icon: 'puja' },
+        { path: '/my-bookings', label: 'Bookings', icon: 'bookings', requiresAuth: true },
+    ];
+
+    const isPathActive = (targetPath) => {
+        if (targetPath === '/') return location.pathname === '/';
+        return location.pathname.startsWith(targetPath);
+    };
+
+    const handleMobileNavClick = (item) => {
+        if (item.requiresAuth && !isLoggedIn) {
+            navigate('/login');
+            return;
+        }
+        if (location.pathname === item.path) return;
+        navigate(item.path);
+    };
+
     return (
         <div className="app-wrap">
             <header className={`header ${isScrolled ? 'scrolled' : ''} ${menuOpen ? 'open' : ''}`}>
@@ -135,7 +206,7 @@ function Layout({ children }) {
                         <img src="/logo.png" alt="Shri AAUM" className="logo-img" />
                     </Link>
                     <ul className="nav-links">
-                        <li>
+                        <li className="nav-item-mobile-hide">
                             <Link
                                 to="/"
                                 className={location.pathname === '/' ? 'active' : ''}
@@ -144,13 +215,22 @@ function Layout({ children }) {
                                 Home
                             </Link>
                         </li>
-                        <li>
+                        <li className="nav-item-mobile-hide">
                             <NavLink
                                 to="/puja"
                                 className={location.pathname === '/puja' ? 'active' : ''}
                                 onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
                             >
                                 Puja
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink
+                                to="/chadhava"
+                                className={location.pathname === '/chadhava' ? 'active' : ''}
+                                onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
+                            >
+                                Chadhava
                             </NavLink>
                         </li>
                         <li>
@@ -171,15 +251,6 @@ function Layout({ children }) {
                                 Contact
                             </Link>
                         </li>
-                        {/* <li>
-                            <NavLink
-                                to="/chadhava"
-                                className={location.pathname === '/chadhava' ? 'active' : ''}
-                                onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
-                            >
-                                Chadhava
-                            </NavLink>
-                        </li> */}
                         {/* <li><a href="#library" onClick={closeMenu}>Library</a></li> */}
                     </ul>
                     <div className="nav-right">
@@ -226,7 +297,7 @@ function Layout({ children }) {
                                         </div>
 
                                         <div className="profile-menu">
-                                            <Link to="/my-bookings" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                            <Link to="/my-bookings" className="profile-item profile-item-my-bookings" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🕉</div>
                                                 <span>My Puja Bookings</span>
                                                 <div className="profile-chevron">›</div>
@@ -295,8 +366,29 @@ function Layout({ children }) {
                     </div>
                 </nav>
             </header>
-            {children}
+            <main className="layout-main">{children}</main>
 
+            <nav className="mobile-bottom-nav" aria-label="Mobile navigation">
+                {mobileNavItems.map((item) => {
+                    const active = isPathActive(item.path);
+                    return (
+                        <button
+                            key={item.path}
+                            type="button"
+                            className={`mobile-bottom-nav-item${active ? ' active' : ''}`}
+                            onClick={() => handleMobileNavClick(item)}
+                        >
+                            <span className="mobile-bottom-nav-indicator" />
+                            <span className="mobile-bottom-nav-icon" aria-hidden="true">
+                                {item.icon === 'home' && <HomeIcon />}
+                                {item.icon === 'puja' && <PujaIcon />}
+                                {item.icon === 'bookings' && <BookingsIcon />}
+                            </span>
+                            <span className="mobile-bottom-nav-label">{item.label}</span>
+                        </button>
+                    );
+                })}
+            </nav>
         </div>
     );
 }
