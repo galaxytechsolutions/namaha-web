@@ -184,25 +184,19 @@ function ChadhavaDetail() {
           {/* Hero: banner + text */}
           <section className="chd-hero">
             <div className="chd-hero-grid">
-              <div className="chd-hero-banner">
-                <div className="chd-hero-inner">
-                  {detail.bannerImage ? (
-                    <img
-                      src={detail.bannerImage}
-                      alt={detail.title || 'Chadhava'}
-                      className="chd-hero-image"
-                    />
-                  ) : (
-                    <div className="chd-hero-image chd-hero-image-fallback" />
-                  )}
-                </div>
-                <div className="chd-hero-dots">
-                  {[0, 1, 2, 3, 4].map((dot) => (
-                    <span
-                      key={dot}
-                      className={`chd-dot ${dot === 1 ? 'active' : ''}`}
-                    />
-                  ))}
+              <div className="chd-hero-wrap">
+                <div className="chd-hero-banner">
+                  <div className="chd-hero-inner">
+                    {detail.bannerImage ? (
+                      <img
+                        src={detail.bannerImage}
+                        alt={detail.title || 'Chadhava'}
+                        className="chd-hero-image"
+                      />
+                    ) : (
+                      <div className="chd-hero-image chd-hero-image-fallback" />
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="chd-hero-text">

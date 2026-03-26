@@ -27,6 +27,12 @@ const normalizeCard = (item = {}) => {
   };
 };
 
+const getEventTimestamp = (value) => {
+  if (!value) return Number.POSITIVE_INFINITY;
+  const ts = new Date(value).getTime();
+  return Number.isNaN(ts) ? Number.POSITIVE_INFINITY : ts;
+};
+
 function Chadhava() {
   const [cards, setCards] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +69,10 @@ function Chadhava() {
         const mapped = items
           .map(normalizeCard)
           .filter((card) => card.idOrShortTitle || card.id);
-        setCards(mapped);
+        const sorted = [...mapped].sort(
+          (a, b) => getEventTimestamp(a.eventdate) - getEventTimestamp(b.eventdate)
+        );
+        setCards(sorted);
       } catch (err) {
         if (!mounted) return;
         setError(err?.response?.data?.message || 'Unable to load Chadhava offerings right now.');
@@ -87,32 +96,7 @@ function Chadhava() {
           <div className="ch-hero-content">
             <h1 className="ch-hero-title">
               Offer Chadhava as per Vedic rituals at sacred Hindu Pilgrimages and Temples in India
-              through SHRI AAUM from anywhere in the world!
             </h1>
-            <ul className="ch-hero-points">
-              <li>Divine Blessings through Chadhava.</li>
-              <li>Vedic Rituals Performed by Purohit ji.</li>
-              <li>Offer Chadhava from Anywhere.</li>
-              <li>Receive Chadhava Video in 2–3 days.</li>
-            </ul>
-            <div className="ch-hero-actions">
-              <button
-                type="button"
-                className="ch-btn ch-btn-primary"
-                onClick={() => offeringsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
-              >
-                View Now
-              </button>
-            </div>
-          </div>
-          <div className="ch-hero-illustration">
-            <img
-              src="/images/chad1.webp"
-              alt="Handcrafted Ganesha idol with modaks and flowers representing traditional Hindu Chadhava offerings"
-              className="ch-hero-image"
-              loading="eager"
-              fetchPriority="high"
-            />
           </div>
         </div>
       </section>
@@ -121,28 +105,17 @@ function Chadhava() {
       <section className="ch-offerings" ref={offeringsRef}>
         <div className="ch-offerings-header">
           <h2 className="ch-offerings-title">Upcoming Chadhava Offerings on SHRI AAUM.</h2>
-          <p className="ch-offerings-subtitle">
+          {/* <p className="ch-offerings-subtitle">
             Experience the divine with Shri aaum Chadhava SHRI AAUM. Offer Chadhava at renowned
             temples across India, receiving blessings and a video recording of the ceremony
             performed by our Purohit ji on your behalf.
-          </p>
+          </p> */}
         </div>
 
         {loading ? (
-          <div
-            className="ch-card-grid"
-            style={{ '--ch-grid-cols': String(PUJA_LIST_GRID_COLUMNS) }}
-          >
-            {[1, 2, 3].map((n) => (
-              <article key={n} className="ch-card">
-                <div className="ch-card-banner" />
-                <div className="ch-card-body">
-                  <h3 className="ch-card-title">Loading...</h3>
-                  <p className="ch-card-date">Please wait</p>
-                  <p className="ch-card-text">Fetching latest chadhava offerings.</p>
-                </div>
-              </article>
-            ))}
+          <div className="ch-loading-state" role="status" aria-live="polite">
+            <div className="ch-loading-spinner" aria-hidden="true" />
+            <p className="ch-loading-text">Loading chadhava offerings...</p>
           </div>
         ) : error ? (
           <p className="ch-offerings-subtitle">{error}</p>

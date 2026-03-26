@@ -50,18 +50,18 @@
  * Slightly more air on very wide screens so hero does not feel stuck to the nav.
  */
 .puja-detail-page .pd-section-content.pd-grid {
-  margin-top: calc(var(--header-offset, 140px) - 44px + 6px);
+  margin-top: 12px;
 }
 
 @media (min-width: 1920px) {
   .puja-detail-page .pd-section-content.pd-grid {
-    margin-top: calc(var(--header-offset, 140px) - 36px + 20px);
+    margin-top: 16px;
   }
 }
 
 @media (max-width: 768px) {
   .puja-detail-page .pd-section-content.pd-grid {
-    margin-top: calc(var(--header-offset, 100px) - 20px + 4px);
+    margin-top: 8px;
   }
 }
 

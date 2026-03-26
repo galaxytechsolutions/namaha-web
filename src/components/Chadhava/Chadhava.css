@@ -8,30 +8,30 @@
 
 .ch-hero {
   background: linear-gradient(180deg, #feeada 0%, #ffffff 70%);
-  padding: 3rem var(--content-pad-x) 3.5rem;
+  padding: 2rem var(--content-pad-x) 1rem;
 }
 
 .ch-hero-inner {
   max-width: var(--content-max);
   margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 3rem;
+  display: block;
 }
 
 .ch-hero-content {
-  flex: 1.1;
+  max-width: 100%;
+  width: 100%;
 }
 
 .ch-hero-title {
   font-family: var(--font-heading);
-  font-size: var(--fluid-page-title);
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 2.75rem);
   line-height: 1.18;
   font-weight: 800;
   color: #111827;
-  margin: 0 0 1.2rem;
+  margin: 0;
   letter-spacing: -0.01em;
-  max-width: 22ch;
+  max-width: 100%;
+  width: 100%;
 }
 
 .ch-hero-points {
@@ -148,6 +148,36 @@
   color: #4b5563;
   line-height: 1.6;
   margin: 0;
+}
+
+.ch-loading-state {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.ch-loading-spinner {
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(234, 88, 12, 0.2);
+  border-top-color: #ea580c;
+  border-radius: 50%;
+  animation: ch-spin 0.8s linear infinite;
+}
+
+.ch-loading-text {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6b7280;
+}
+
+@keyframes ch-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .ch-card-grid {
@@ -287,29 +317,18 @@
 
 @media (max-width: 900px) {
   .ch-hero-inner {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .ch-hero-illustration {
-    align-self: center;
-    width: 100%;
-    max-width: 380px;
+    display: block;
   }
 }
 
 @media (max-width: 640px) {
   .ch-hero {
-    padding: 2.5rem 1.25rem 3rem;
+    padding: 1.5rem 1rem 0.75rem;
   }
 
   .ch-hero-title {
-    font-size: 1.7rem;
-  }
-
-  .ch-hero-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
+    font-size: clamp(1.25rem, 4.5vw, 1.75rem);
+    max-width: 100%;
   }
 }
 /* ========================================
@@ -324,27 +343,25 @@
 
   /* Hero Section - Mobile */
   .ch-hero {
-    padding: 2rem 1rem 2.5rem;
+    padding: 1.5rem 1rem 0.75rem;
     background: linear-gradient(180deg, #feeada 0%, #fef3c7 50%, #ffffff 80%);
   }
 
   .ch-hero-inner {
-    flex-direction: column;
-    gap: 2rem;
-    align-items: stretch;
+    display: block;
   }
 
   .ch-hero-content {
-    order: 2;
     text-align: left;
   }
 
   .ch-hero-title {
-    font-size: clamp(1.2rem, 4.8vw, 1.55rem) !important;
-    line-height: 1.28;
-    margin-bottom: 1rem;
-    padding: 0 0.5rem;
+    font-size: clamp(1.2rem, 4.8vw, 1.55rem);
+    line-height: 1.24;
+    margin-bottom: 0;
+    padding: 0;
     letter-spacing: -0.005em;
+    max-width: 100%;
   }
 
   .ch-hero-points {
@@ -375,43 +392,18 @@
     font-size: 0.85rem;
   }
 
-  /* Hero Illustration - Mobile */
-  .ch-hero-illustration {
-    order: 1;
-    align-self: center;
-    width: 100%;
-    max-width: 320px;
-  }
 }
 
 /* Small Mobile (iPhone SE) */
 @media (max-width: 480px) {
   .ch-hero {
-    padding: 1.75rem 0.75rem 2rem;
+    padding: 1.25rem 0.75rem 0.5rem;
   }
 
   .ch-hero-title {
-    font-size: clamp(1.1rem, 5.2vw, 1.3rem) !important;
+    font-size: clamp(1.1rem, 5.2vw, 1.3rem);
     padding: 0 0.25rem;
     line-height: 1.26;
-  }
-
-  .ch-hero-points li {
-    font-size: 0.78rem;
-    padding-left: 1.1rem;
-    line-height: 1.38;
-  }
-
-  .ch-hero-illustration {
-    max-width: 280px;
-  }
-
-  .ch-btn {
-    min-height: 42px;
-    min-width: 156px;
-    width: 170px;
-    padding: 0.56rem 0.85rem;
-    font-size: 0.8rem;
   }
 
   .ch-offerings-title {
