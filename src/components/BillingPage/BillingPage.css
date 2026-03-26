@@ -3,6 +3,12 @@
     min-height: 100vh;
     font-family: var(--font-body);
     box-sizing: border-box;
+    width: 100%;
+    max-width: var(--content-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: var(--content-pad-x);
+    padding-right: var(--content-pad-x);
   }
   
   /* LEFT IMAGE - match PujaDetail carousel size & style */
@@ -55,15 +61,15 @@
   .billing-left-message-title {
     font-family: var(--font-heading);
     margin: 0 0 8px 0;
-    font-size: 18px;
+    font-size: clamp(1rem, 0.9rem + 0.35vw, 1.25rem);
     font-weight: 700;
     color: #0f172a;
   }
 
   .billing-left-message-text {
     margin: 0;
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: clamp(0.875rem, 0.8rem + 0.25vw, 1.0625rem);
+    line-height: 1.55;
     color: #475569;
   }
   
@@ -77,6 +83,7 @@
   .billing-right h2 {
     font-family: var(--font-heading);
     margin-bottom: 20px;
+    font-size: var(--fluid-section-title);
   }
   
   /* SUMMARY */
@@ -105,7 +112,7 @@
 
   .participants-section h3 {
     font-family: var(--font-heading);
-    font-size: 18px;
+    font-size: clamp(1rem, 0.92rem + 0.3vw, 1.2rem);
     font-weight: 600;
     margin: 0 0 16px 0;
     color: #1e293b;
@@ -126,7 +133,7 @@
 
   .participant-card h4 {
     font-family: var(--font-heading);
-    font-size: 14px;
+    font-size: clamp(0.8125rem, 0.78rem + 0.2vw, 1rem);
     font-weight: 600;
     margin: 0 0 10px 0;
     color: #475569;
@@ -159,7 +166,7 @@
     color: white;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: var(--fluid-button);
     cursor: pointer;
     margin-top: 20px;
   }

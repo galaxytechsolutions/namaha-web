@@ -64,12 +64,11 @@ function PujaList() {
 
   return (
     <main className="puja-list-page">
-      <h1 className="pl-main-heading">
-        Perform Puja as per Vedic rituals at Famous Hindu Temples in India
-      </h1>
-
       {/* ================= PUJA LIST ================= */}
       <section className="pl-upcoming">
+        <h1 className="pl-main-heading">
+          Perform Puja as per Vedic rituals at Famous Hindu Temples in India
+        </h1>
         <h2 className="pl-upcoming-title">
           Upcoming Pujas ({sortedPujas.length})
         </h2>
