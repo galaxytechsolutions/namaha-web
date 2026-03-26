@@ -341,6 +341,21 @@
   }
 }
 
+/* 4K UHD (3840px+): banner art carries copy — hide left hero title / subtitle / CTA */
+@media (min-width: 3840px) {
+  .home-hero-viewport .hero-content1 {
+    display: none !important;
+  }
+
+  .home-hero-viewport .hero-slide1::after {
+    background: transparent;
+  }
+
+  .home-hero-viewport .hero-bg-image1 {
+    object-position: center center;
+  }
+}
+
 /* ========================================
    RESPONSIVE BREAKPOINTS
    ======================================== */
