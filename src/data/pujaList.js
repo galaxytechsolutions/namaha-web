@@ -1,6 +1,9 @@
 import axiosInstance from "../lib/instance";
 import  { useState, useEffect } from "react";
 
+/** Grid column count for Puja list + Special Puja cards (see PujaList.css `.pl-cards`, SpecialPuja.css `.sp-cards`). */
+export const PUJA_LIST_GRID_COLUMNS = 4;
+
 const sortByAvailabilityThenDate = (a, b) => {
   const now = Date.now();
   const dateA = Number(a?.eventDateRaw || 0);

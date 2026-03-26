@@ -40,7 +40,7 @@ function Footer() {
     ];
 
     return (
-        <footer className="footer">
+        <footer className="footer" aria-label="Site footer">
             <div className="footer-container">
                 <div className="footer-top">
                     <div className="footer-col footer-brand">
@@ -56,7 +56,7 @@ function Footer() {
                             <p>Temple. Teerth. Tattva. Within your reach.</p>
                         </div>
                     </div>
-                    <div className="footer-col">
+                    <nav className="footer-col" aria-label="Company">
                         <h4 className="footer-heading">Company</h4>
                         <ul className="footer-links">
                             {companyLinks.map((link) => (
@@ -65,8 +65,8 @@ function Footer() {
                                 </li>
                             ))}
                         </ul>
-                    </div>
-                    <div className="footer-col">
+                    </nav>
+                    <nav className="footer-col" aria-label="Services">
                         <h4 className="footer-heading">Our Services</h4>
                         <ul className="footer-links">
                             {serviceLinks.map((link) => (
@@ -79,7 +79,7 @@ function Footer() {
                                 </li>
                             ))}
                         </ul>
-                    </div>
+                    </nav>
                     <div className="footer-col footer-address-col">
                         <h4 className="footer-heading">Our Address</h4>
                         <p className="footer-address">

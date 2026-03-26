@@ -10,12 +10,50 @@
 :root {
   --font-heading: 'Touche Bold', 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
+
+  /* Readable on phone → 4K: type tracks viewport without tiny text on ultra-wide */
+  --fluid-hero-title: clamp(1.5rem, 1.15rem + 1.35vw, 3rem);
+  --fluid-page-title: clamp(1.5rem, 1.2rem + 1.1vw, 2.75rem);
+  --fluid-section-title: clamp(1.25rem, 1.05rem + 0.75vw, 2rem);
+  --fluid-lead: clamp(0.9375rem, 0.85rem + 0.35vw, 1.1875rem);
+  --fluid-card-title: clamp(1rem, 0.88rem + 0.55vw, 1.5rem);
+  --fluid-card-body: clamp(0.875rem, 0.8rem + 0.32vw, 1.0625rem);
+  --fluid-card-meta: clamp(0.8125rem, 0.74rem + 0.28vw, 1rem);
+  --fluid-button: clamp(0.875rem, 0.8rem + 0.25vw, 1.0625rem);
+
+  /* One horizontal rhythm for list + special sections + header */
+  --content-max: min(100%, 112rem);
+  --content-pad-x: clamp(1rem, 3vw + 0.25rem, 4rem);
+}
+
+/* Slight root scale on very large displays so rem-based UI stays legible vs. images */
+@media (min-width: 1920px) {
+  html {
+    font-size: 110%;
+  }
+}
+
+@media (min-width: 2560px) {
+  html {
+    font-size: 115%;
+  }
+}
+
+@media (min-width: 3840px) {
+  html {
+    font-size: 120%;
+  }
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+html {
+  /* Avoid content looking shifted left when vertical scrollbar appears */
+  scrollbar-gutter: stable;
 }
 
 html, body {
