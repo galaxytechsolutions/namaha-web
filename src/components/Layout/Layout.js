@@ -297,7 +297,7 @@ function Layout({ children }) {
                                         </div>
 
                                         <div className="profile-menu">
-                                            <Link to="/my-bookings" className="profile-item" onClick={() => setProfileOpen(false)}>
+                                            <Link to="/my-bookings" className="profile-item profile-item-my-bookings" onClick={() => setProfileOpen(false)}>
                                                 <div className="profile-icon">🕉</div>
                                                 <span>My Puja Bookings</span>
                                                 <div className="profile-chevron">›</div>

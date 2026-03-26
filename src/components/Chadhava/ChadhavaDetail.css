@@ -1,12 +1,46 @@
+/* Match PujaDetail: global type tokens + content width (`index.css`, `PujaDetail.css`). */
 .chd-page {
   padding-bottom: 3rem;
   background: #fff;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+.chd-page img {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .chd-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
-  padding: 2rem 1.5rem 0;
+  padding: 0 clamp(0.75rem, 3vw, 1.5rem) 1.5rem;
+  box-sizing: border-box;
+}
+
+.chd-page .chd-container {
+  padding-top: 12px;
+}
+
+@media (max-width: 768px) {
+  .chd-page .chd-container {
+    padding-top: 8px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .chd-container {
+    max-width: var(--content-max);
+    padding: 0 var(--content-pad-x) 1.5rem;
+  }
+
+  .chd-page .chd-container {
+    padding-top: 12px;
+  }
 }
 
 /* Hero */
@@ -17,15 +51,39 @@
 
 .chd-hero-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
-  gap: 2rem;
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1.2fr);
+  gap: clamp(1.5rem, 4vw, 2.5rem);
   align-items: stretch;
+  width: 100%;
+  overflow-x: hidden;
+  padding: 12px 30px;
+  box-sizing: border-box;
+  margin-top: calc(var(--header-offset, 104px) - 44px + 6px);
+}
+
+@media (min-width: 1920px) {
+  .chd-hero-grid {
+    margin-top: calc(var(--header-offset, 104px) - 36px + 20px);
+  }
+}
+
+@media (max-width: 768px) {
+  .chd-hero-grid {
+    padding: 8px 0;
+    margin-top: calc(var(--header-offset, 64px) - 20px + 4px);
+  }
+}
+
+@media (max-width: 1024px) {
+  .chd-hero-grid {
+    padding: 12px 16px;
+  }
 }
 
 .chd-hero-banner {
   background: #5c2e2e;
   border-radius: 12px;
-  padding: 12px;
+  padding: clamp(8px, 1vw, 12px);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
   position: relative;
   display: flex;
@@ -33,11 +91,8 @@
   justify-content: center;
   width: 100%;
   min-width: 0;
-  max-width: 1524px;
-  max-height: 762px;
   margin: 0 auto;
   overflow: hidden;
-  aspect-ratio: 2 / 1;
   border: 4px solid #d4a017;
   outline: 2px solid rgba(212, 160, 23, 0.5);
 }
@@ -45,15 +100,16 @@
 .chd-hero-inner {
   position: relative;
   width: 100%;
-  height: 100%;
-  min-height: 240px;
-  max-height: 762px;
   border-radius: 8px;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #1a1a1a;
+  aspect-ratio: 2 / 1;
+  min-height: clamp(220px, 16vw, 380px);
+  max-width: min(100%, 1524px);
+  max-height: min(762px, 52vh);
 }
 
 .chd-hero-image {
@@ -69,6 +125,22 @@
 
 .chd-hero-image-fallback {
   background: linear-gradient(120deg, #1d4ed8, #7c3aed);
+}
+
+@media (min-width: 1920px) {
+  .chd-hero-grid {
+    grid-template-columns: minmax(480px, 1.22fr) minmax(420px, 1fr);
+    gap: clamp(3rem, 3.5vw, 4.5rem);
+  }
+
+  .chd-hero-inner {
+    min-height: clamp(300px, 24vw, 560px);
+    max-height: min(92vh, 960px);
+  }
+
+  .chd-hero-banner {
+    padding: clamp(12px, 1vw, 18px);
+  }
 }
 
 .chd-hero-dots {
@@ -104,28 +176,31 @@
 
 .chd-title {
   font-family: var(--font-heading);
-  font-size: clamp(1.9rem, 2.2vw, 2.3rem);
-  font-weight: 800;
-  color: #111827;
+  font-size: clamp(1.2rem, 1.8vw + 0.95rem, 2.1rem);
+  font-weight: 700;
+  color: #1f2937;
   margin: 0;
-  line-height: 1.2;
+  line-height: 1.25;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .chd-subtitle {
-  font-size: 0.98rem;
-  color: #374151;
+  font-size: clamp(0.82rem, 0.95vw, 0.95rem);
+  color: #4b5563;
   line-height: 1.5;
   margin: 0;
 }
 
 .chd-date {
-  font-size: 0.9rem;
+  font-size: var(--fluid-card-meta);
   color: #6b7280;
   margin: 0.2rem 0 0;
 }
 
 .chd-devotees {
-  font-size: 0.92rem;
+  font-size: var(--fluid-card-body);
   color: #4b5563;
   margin: 0.25rem 0 0;
 }
@@ -137,9 +212,10 @@
 /* Offerings */
 
 .chd-section-title {
-  font-size: 1.35rem;
+  font-family: var(--font-heading);
+  font-size: var(--fluid-section-title);
   font-weight: 700;
-  color: #111827;
+  color: #1f2937;
   margin: 0 0 1.25rem;
 }
 
@@ -171,24 +247,26 @@
 }
 
 .chd-offering-label {
-  font-size: 0.82rem;
-  font-weight: 700;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
   color: #be185d;
   margin: 0 0 0.2rem;
 }
 
 .chd-offering-title {
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: var(--fluid-card-title);
   font-weight: 700;
-  color: #111827;
+  color: #1f2937;
   margin: 0 0 0.3rem;
   line-height: 1.35;
   overflow-wrap: break-word;
 }
 
 .chd-offering-meta {
-  font-size: 0.9rem;
+  font-size: var(--fluid-card-body);
   color: #6b7280;
   margin: 0 0 0.2rem;
   overflow-wrap: break-word;
@@ -196,7 +274,7 @@
 }
 
 .chd-offering-price {
-  font-size: 1.05rem;
+  font-size: var(--fluid-card-title);
   font-weight: 700;
   color: #ea580c;
   margin: 0.45rem 0 0;
@@ -211,14 +289,15 @@
 }
 
 .chd-offering-thumb {
-  width: 72px;
-  height: 72px;
+  width: clamp(64px, 12vw, 88px);
+  height: clamp(64px, 12vw, 88px);
   border-radius: 12px;
   background-color: #1a1a1a;
   background-image: url('https://dummyimage.com/120x120/facc15/ffffff');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
+  flex-shrink: 0;
 }
 
 .chd-offering-add {
@@ -228,7 +307,7 @@
   border: 1px solid #ea580c;
   background: #fff7ed;
   color: #ea580c;
-  font-size: 0.9rem;
+  font-size: var(--fluid-button);
   font-weight: 700;
   cursor: pointer;
 }
@@ -257,28 +336,31 @@
 
 .chd-faq-question {
   width: 100%;
-  padding: 0.9rem 0;
+  padding: 1rem 0;
   background: none;
   border: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 1rem;
   text-align: left;
-  font-size: 0.98rem;
-  color: #111827;
+  font-size: 1rem;
+  color: #1f2937;
   cursor: pointer;
 }
 
 .chd-faq-chevron {
-  font-size: 0.8rem;
+  flex-shrink: 0;
+  font-size: 0.85rem;
   color: #6b7280;
 }
 
 .chd-faq-answer {
-  font-size: 0.9rem;
-  color: #4b5563;
-  line-height: 1.5;
-  margin: 0 0 0.9rem;
+  padding: 0 0 1rem;
+  font-size: 0.95rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* Not found */

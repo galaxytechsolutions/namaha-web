@@ -1,14 +1,18 @@
+/* Align with site rhythm: `index.css` fluid type + `--content-max` / `--content-pad-x` (see PujaList, PujaDetail). */
 .chadhava-page {
   background: #fff;
+  width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 .ch-hero {
   background: linear-gradient(180deg, #feeada 0%, #ffffff 70%);
-  padding: 3rem 1.5rem 3.5rem;
+  padding: 3rem var(--content-pad-x) 3.5rem;
 }
 
 .ch-hero-inner {
-  max-width: 1200px;
+  max-width: var(--content-max);
   margin: 0 auto;
   display: flex;
   align-items: center;
@@ -21,7 +25,7 @@
 
 .ch-hero-title {
   font-family: var(--font-heading);
-  font-size: clamp(2rem, 3.4vw, 3rem);
+  font-size: var(--fluid-page-title);
   line-height: 1.18;
   font-weight: 800;
   color: #111827;
@@ -40,7 +44,7 @@
   position: relative;
   padding-left: 1.5rem;
   margin-bottom: 0.35rem;
-  font-size: clamp(1rem, 1.15vw, 1.15rem);
+  font-size: var(--fluid-lead);
   line-height: 1.45;
   color: #374151;
 }
@@ -76,7 +80,7 @@
 .ch-btn {
   border-radius: 999px;
   padding: 0.72rem 1.5rem;
-  font-size: clamp(0.95rem, 1.1vw, 1rem);
+  font-size: var(--fluid-button);
   font-weight: 600;
   cursor: pointer;
   border: 1px solid transparent;
@@ -119,28 +123,28 @@
   display: block;
 }
 
-/* Offerings */
+/* Offerings — grid column count from `PUJA_LIST_GRID_COLUMNS` in `pujaList.js` via `--ch-grid-cols` */
 .ch-offerings {
-  max-width: 1200px;
+  max-width: var(--content-max);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 2.5rem;
+  padding: 2.5rem var(--content-pad-x) 2.5rem;
 }
 
 .ch-offerings-header {
-  max-width: 760px;
+  max-width: min(760px, 100%);
   margin-bottom: 2rem;
 }
 
 .ch-offerings-title {
   font-family: var(--font-heading);
-  font-size: 1.6rem;
+  font-size: var(--fluid-section-title);
   font-weight: 800;
   color: #111827;
   margin: 0 0 0.75rem;
 }
 
 .ch-offerings-subtitle {
-  font-size: 0.98rem;
+  font-size: var(--fluid-lead);
   color: #4b5563;
   line-height: 1.6;
   margin: 0;
@@ -148,7 +152,7 @@
 
 .ch-card-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--ch-grid-cols, 4), minmax(0, 1fr));
   gap: 1.5rem;
   align-items: stretch;
 }
@@ -165,19 +169,23 @@
   width: 100%;
 }
 
+/* Same geometry as `PujaList.css` `.pl-card-banner` (see `PujaList.js` card markup) */
 .ch-card-banner {
+  position: relative;
   width: 100%;
   aspect-ratio: 2 / 1;
   max-width: 1524px;
   max-height: 762px;
   margin: 0 auto;
-  background: radial-gradient(circle at 10% 0, #fef3c7, transparent 55%),
+  background-color: #000;
+  background-image: radial-gradient(circle at 10% 0, #fef3c7, transparent 55%),
     radial-gradient(circle at 90% 100%, #a855f7, transparent 60%),
     linear-gradient(120deg, #1d4ed8, #7c3aed);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   overflow: hidden;
+  border-radius: 12px 12px 0 0;
 }
 
 .ch-card-body {
@@ -190,7 +198,7 @@
 
 .ch-card-title {
   font-family: var(--font-heading);
-  font-size: 1rem;
+  font-size: var(--fluid-card-title);
   font-weight: 700;
   color: #1a1a1a;
   margin: 0.75rem 0 6px;
@@ -198,13 +206,13 @@
 }
 
 .ch-card-date {
-  font-size: 0.85rem;
+  font-size: var(--fluid-card-meta);
   color: #6b7280;
   margin: 0 0 6px;
 }
 
 .ch-card-text {
-  font-size: 0.875rem;
+  font-size: var(--fluid-card-body);
   color: #4b5563;
   line-height: 1.45;
   margin: 0 0 8px;
@@ -264,7 +272,7 @@
   border-radius: 8px;
   padding: 12px 20px;
   min-height: 44px;
-  font-size: 0.95rem;
+  font-size: var(--fluid-button);
   font-weight: 600;
   cursor: pointer;
 
@@ -423,6 +431,15 @@
     padding: 2rem 1rem 2rem;
   }
 
+  /* Match `PujaList.css` `.pl-upcoming .pl-card` / `.pl-card-banner` radii */
+  .ch-offerings .ch-card {
+    border-radius: 10px;
+  }
+
+  .ch-offerings .ch-card-banner {
+    border-radius: 10px 10px 0 0;
+  }
+
   .ch-offerings-header {
     text-align: left;
     margin-bottom: 1.75rem;
@@ -460,10 +477,6 @@
   .ch-card {
     max-width: 100%;
     margin: 0;
-  }
-
-  .ch-card-banner {
-    aspect-ratio: 2 / 1;
   }
 
   .ch-card-body {
@@ -506,6 +519,16 @@
   }
 }
 
+@media (max-width: 576px) {
+  .ch-offerings .ch-card {
+    border-radius: 8px;
+  }
+
+  .ch-offerings .ch-card-banner {
+    border-radius: 8px 8px 0 0;
+  }
+}
+
 @media (max-width: 520px) {
   .ch-card-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -515,10 +538,6 @@
 
   .ch-card-grid--single {
     grid-template-columns: 1fr;
-  }
-
-  .ch-card-banner {
-    aspect-ratio: 2 / 1;
   }
 
   .ch-card-body {

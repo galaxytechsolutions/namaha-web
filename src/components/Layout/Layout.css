@@ -326,6 +326,11 @@
     padding: 8px 0;
 }
 
+.profile-menu:empty {
+    display: none;
+    padding: 0;
+}
+
 .profile-item {
     display: flex;
     align-items: center;
@@ -440,8 +445,10 @@
   .profile-dropdown {
     width: 280px;
     right: -20px;
-    height: 300px;
-    overflow: auto;
+    height: auto;
+    max-height: min(70vh, 420px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 
   .nav-right {
@@ -462,6 +469,21 @@
     height: 22px;
     display: block;
     flex-shrink: 0;
+  }
+
+  /* Hide bookings shortcut in mobile profile menu */
+  .profile-item-my-bookings {
+    display: none;
+  }
+
+  .profile-menu {
+    padding: 4px 0;
+  }
+
+  .profile-item,
+  .logout-item {
+    padding: 12px 16px;
+    border-radius: 0;
   }
 }
 @media (max-width: 480px) {

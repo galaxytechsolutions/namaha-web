@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
+import { PUJA_LIST_GRID_COLUMNS } from '../../data/pujaList';
 import './Chadhava.css';
 import Footer from '../Footer/Footer';
 
@@ -33,15 +34,7 @@ function Chadhava() {
   const [expandedCards, setExpandedCards] = useState({});
   const offeringsRef = useRef(null);
 
-  // Match PujaList/SpecialPuja banner sizing (2:1, capped height, cover crop).
-  const CARD_BANNER_STYLE_BASE = {
-    aspectRatio: '2 / 1',
-    maxHeight: '762px',
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
-    backgroundRepeat: 'no-repeat',
-    backgroundColor: '#1a1a1a',
-  };
+  /* Banner sizing lives in `Chadhava.css` — mirrors `PujaList.css` `.pl-card-banner` */
 
   const formatEventDate = (value) => {
     if (!value) return 'Date will be announced';
@@ -136,7 +129,10 @@ function Chadhava() {
         </div>
 
         {loading ? (
-          <div className="ch-card-grid">
+          <div
+            className="ch-card-grid"
+            style={{ '--ch-grid-cols': String(PUJA_LIST_GRID_COLUMNS) }}
+          >
             {[1, 2, 3].map((n) => (
               <article key={n} className="ch-card">
                 <div className="ch-card-banner" />
@@ -153,7 +149,10 @@ function Chadhava() {
         ) : cards.length === 0 ? (
           <p className="ch-offerings-subtitle">No chadhava offerings available currently.</p>
         ) : (
-          <div className={`ch-card-grid${cards.length === 1 ? ' ch-card-grid--single' : ''}`}>
+          <div
+            className={`ch-card-grid${cards.length === 1 ? ' ch-card-grid--single' : ''}`}
+            style={{ '--ch-grid-cols': String(PUJA_LIST_GRID_COLUMNS) }}
+          >
             {cards.map((card) => (
               <article key={card.id} className="ch-card">
                 <div
@@ -161,10 +160,10 @@ function Chadhava() {
                   style={
                     card.bannerImage
                       ? {
-                          ...CARD_BANNER_STYLE_BASE,
                           backgroundImage: `url(${card.bannerImage})`,
+                          backgroundColor: '#000',
                         }
-                      : CARD_BANNER_STYLE_BASE
+                      : undefined
                   }
                 />
                 <div className="ch-card-body">

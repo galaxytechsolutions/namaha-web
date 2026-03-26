@@ -144,17 +144,7 @@ function MyBookings() {
 
       {/* Bookings List */}
       {bookings.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-icon">🕉️</div>
-          <h3>No bookings found</h3>
-          <p>You haven't made any bookings yet</p>
-          <button 
-            className="book-now-btn"
-            onClick={() => window.location.href = "/puja"}
-          >
-            Book a Puja
-          </button>
-        </div>
+        <p>No bookings found</p>
       ) : (
         <div className="bookings-grid">
           {bookings.map((booking) => {
