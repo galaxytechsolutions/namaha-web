@@ -28,7 +28,7 @@ jobs:
 
       - name: Build & Run Docker on Server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST_TEST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
           cd /var/lib/projects/namaha-web
           sudo docker system prune -af
           sudo docker build -t namaha-web .
