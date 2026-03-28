@@ -182,6 +182,11 @@
     .nav-links li.nav-item-mobile-hide {
       display: none;
     }
+
+    /* Chadhava stays in desktop/tablet bar + bottom nav; omit from hamburger list */
+    .nav-links li.nav-hide-hamburger {
+      display: none;
+    }
   
     .nav-links li {
       padding: 0.75rem 0;

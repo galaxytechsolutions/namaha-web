@@ -255,7 +255,7 @@ function Layout({ children }) {
                                 Puja
                             </NavLink>
                         </li>
-                        <li>
+                        <li className="nav-hide-hamburger">
                             <NavLink
                                 to="/chadhava"
                                 className={location.pathname === '/chadhava' ? 'active' : ''}
