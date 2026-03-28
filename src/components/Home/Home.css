@@ -605,7 +605,8 @@
     min-height: 0;
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+    /* Let tall hero art breathe; band still clips at .hero-modern if needed */
+    overflow: visible;
   }
 
   /* Centered cluster: avoids edge-pinned text + art on 4K / ultra-wide */
@@ -630,20 +631,33 @@
   }
 
   .home-hero-viewport .hero-modern-images {
+    align-self: stretch;
     min-height: 0;
+    height: 100%;
+    max-height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: visible;
   }
 
-  /* Artwork: scales with width; max-height tracks hero band (not raw 78vh) */
+  /*
+   * Tall illustrations (lamp + thali): no square box — size from available row height
+   * so object-fit: contain can show the full asset without top/bottom clip.
+   */
   .home-hero-viewport .hero-modern-image-card {
     box-sizing: border-box;
-    width: min(100%, clamp(500px, min(50vw, 58vmin), 1100px));
-    max-width: 100%;
-    max-height: min(100%, min(46vh, 50vmin, 720px));
-    aspect-ratio: 1 / 1;
-    height: auto;
+    flex: 0 1 auto;
+    width: auto;
+    max-width: min(100%, clamp(420px, min(48vw, 52vmin), 1000px));
+    height: 100%;
+    max-height: 100%;
+    aspect-ratio: unset;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 18px;
   }
 
   .home-hero-viewport .hero-modern-block h1,
@@ -668,8 +682,11 @@
   }
 
   .home-hero-viewport .hero-modern-image {
-    width: 100%;
-    height: 100%;
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     object-position: center;
   }
