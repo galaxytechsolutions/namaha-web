@@ -36,6 +36,25 @@ const PujaIcon = () => (
     </svg>
 );
 
+const ChadhavaIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+            d="M4 14h16v1a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-1Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M8 14V9a4 4 0 0 1 8 0v5"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+        />
+    </svg>
+);
+
 const BookingsIcon = () => (
     <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
         <rect
@@ -192,6 +211,7 @@ function Layout({ children }) {
     const mobileNavItems = [
         { path: '/', label: 'Home', icon: 'home' },
         { path: '/puja', label: 'Puja', icon: 'puja' },
+        { path: '/chadhava', label: 'Chadhava', icon: 'chadhava' },
         { path: '/my-bookings', label: 'Bookings', icon: 'bookings', requiresAuth: true },
     ];
 
@@ -393,6 +413,7 @@ function Layout({ children }) {
                             <span className="mobile-bottom-nav-icon" aria-hidden="true">
                                 {item.icon === 'home' && <HomeIcon />}
                                 {item.icon === 'puja' && <PujaIcon />}
+                                {item.icon === 'chadhava' && <ChadhavaIcon />}
                                 {item.icon === 'bookings' && <BookingsIcon />}
                             </span>
                             <span className="mobile-bottom-nav-label">{item.label}</span>

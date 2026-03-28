@@ -30,8 +30,10 @@
   --font-subheading: 'Namian', 'Poppins', sans-serif;
   --font-body: 'Namian', 'Poppins', sans-serif;
 
-  /* Readable on phone → 4K: type tracks viewport without tiny text on ultra-wide */
+  /* Readable on phone → 4K: type tracks viewport; caps rise on large screens */
   --fluid-hero-title: clamp(1.5rem, 1.15rem + 1.35vw, 3rem);
+  /* Hero / landing subcopy (slightly larger than body) */
+  --fluid-hero-lead: clamp(1rem, 0.9rem + 0.38vw, 1.3125rem);
   --fluid-page-title: clamp(1.5rem, 1.2rem + 1.1vw, 2.75rem);
   --fluid-section-title: clamp(1.25rem, 1.05rem + 0.75vw, 2rem);
   --fluid-lead: clamp(0.9375rem, 0.85rem + 0.35vw, 1.1875rem);
@@ -39,12 +41,60 @@
   --fluid-card-body: clamp(0.875rem, 0.8rem + 0.32vw, 1.0625rem);
   --fluid-card-meta: clamp(0.8125rem, 0.74rem + 0.28vw, 1rem);
   --fluid-button: clamp(0.875rem, 0.8rem + 0.25vw, 1.0625rem);
+  /* Primary CTAs in hero banners (scales on 4K without affecting every UI button) */
+  --fluid-hero-cta: clamp(0.9375rem, 0.82rem + 0.32vw, 1.125rem);
   --fluid-body: clamp(0.9375rem, 0.88rem + 0.22vw, 1.0625rem);
   --fluid-small: clamp(0.8125rem, 0.78rem + 0.16vw, 0.9375rem);
 
   /* One horizontal rhythm for list + special sections + header */
   --content-max: min(100%, 112rem);
   --content-pad-x: clamp(1rem, 3vw + 0.25rem, 4rem);
+  /* Home hero: keep copy + art as one centered cluster on ultra-wide (not edge-pinned) */
+  --hero-cluster-max: min(100%, 90rem);
+  /*
+   * Desktop home hero band height — same idea as PujaList `.pl-hero`
+   * (see `pujaList.js` / PujaList.css: `height: clamp(260px, 28vh, 420px)`).
+   * Uses vmin so ultra-wide and 4K don’t force a full-viewport column of empty space.
+   */
+  --home-hero-band-height: clamp(420px, min(50vh, 54vmin), 780px);
+}
+
+@media (min-width: 1440px) {
+  :root {
+    --fluid-hero-title: clamp(1.6rem, 1rem + 1.65vw, 3.5rem);
+    --fluid-hero-lead: clamp(1.03rem, 0.88rem + 0.42vw, 1.35rem);
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --fluid-hero-title: clamp(1.85rem, 0.85rem + 2.1vw, 4.25rem);
+    --fluid-hero-lead: clamp(1.08rem, 0.85rem + 0.55vw, 1.5rem);
+    --fluid-hero-cta: clamp(1rem, 0.85rem + 0.38vw, 1.3125rem);
+    --hero-cluster-max: min(100%, 96rem);
+    --home-hero-band-height: clamp(460px, min(48vh, 52vmin), 840px);
+  }
+}
+
+@media (min-width: 2560px) {
+  :root {
+    /* vmin keeps type readable when width is extreme (4K / ultra-wide) */
+    --fluid-hero-title: clamp(2rem, 1rem + 2.4vmin, 5.25rem);
+    --fluid-hero-lead: clamp(1.12rem, 0.82rem + 0.65vmin, 1.75rem);
+    --fluid-hero-cta: clamp(1.05rem, 0.82rem + 0.48vmin, 1.45rem);
+    --hero-cluster-max: min(100%, 108rem);
+    --home-hero-band-height: clamp(480px, min(46vh, 50vmin), 880px);
+  }
+}
+
+@media (min-width: 3840px) {
+  :root {
+    --fluid-hero-title: clamp(2.25rem, 1.1rem + 2.75vmin, 6rem);
+    --fluid-hero-lead: clamp(1.2rem, 0.88rem + 0.75vmin, 2rem);
+    --fluid-hero-cta: clamp(1.1rem, 0.85rem + 0.55vmin, 1.65rem);
+    --hero-cluster-max: min(100%, 120rem);
+    --home-hero-band-height: clamp(500px, min(44vh, 48vmin), 920px);
+  }
 }
 
 /* Slight root scale on very large displays so rem-based UI stays legible vs. images */
