@@ -6,8 +6,9 @@
   box-sizing: border-box;
 }
 
+/* Flat top band like `.puja-list-page` / `.pl-upcoming` (PujaList — see pujaList data + PujaList.css) */
 .ch-hero {
-  background: linear-gradient(180deg, #feeada 0%, #ffffff 70%);
+  background: #fff;
   padding: 2rem var(--content-pad-x) 1rem;
 }
 
@@ -150,8 +151,8 @@
   margin: 0;
 }
 
-.ch-loading-state {
-  min-height: 180px;
+  .ch-loading-state {
+    min-height: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -323,7 +324,7 @@
 
 @media (max-width: 640px) {
   .ch-hero {
-    padding: 1.5rem 1rem 0.75rem;
+    padding: 0.75rem 1rem 0.45rem;
   }
 
   .ch-hero-title {
@@ -338,13 +339,13 @@
 /* Mobile First - Base Adjustments */
 @media (max-width: 768px) {
   .chadhava-page {
-    padding-top: 10px; /* Account for mobile header */
+    padding-top: 0;
   }
 
   /* Hero Section - Mobile */
   .ch-hero {
-    padding: 1.5rem 1rem 0.75rem;
-    background: linear-gradient(180deg, #feeada 0%, #fef3c7 50%, #ffffff 80%);
+    padding: 0.5rem var(--content-pad-x) 0.45rem;
+    background: #fff;
   }
 
   .ch-hero-inner {
@@ -397,7 +398,7 @@
 /* Small Mobile (iPhone SE) */
 @media (max-width: 480px) {
   .ch-hero {
-    padding: 1.25rem 0.75rem 0.5rem;
+    padding: 0.45rem 0.75rem 0.35rem;
   }
 
   .ch-hero-title {
@@ -419,8 +420,12 @@
 
 /* Offerings Section - Mobile */
 @media (max-width: 768px) {
+  .ch-loading-state {
+    min-height: 120px;
+  }
+
   .ch-offerings {
-    padding: 2rem 1rem 2rem;
+    padding: 0.65rem var(--content-pad-x) 1.75rem;
   }
 
   /* Match `PujaList.css` `.pl-upcoming .pl-card` / `.pl-card-banner` radii */
@@ -434,13 +439,14 @@
 
   .ch-offerings-header {
     text-align: left;
-    margin-bottom: 1.75rem;
+    margin-bottom: 0.75rem;
     padding: 0 0.25rem;
   }
 
   .ch-offerings-title {
     font-size: 1.1rem;
     line-height: 1.3;
+    margin: 0 0 0.25rem;
   }
 
   .ch-offerings-subtitle {
@@ -609,7 +615,7 @@
 /* Landscape Mobile Fix */
 @media (max-height: 500px) and (orientation: landscape) {
   .ch-hero {
-    padding: 1.5rem 1rem 2rem;
+    padding: 0.5rem 1rem 0.75rem;
   }
   
   .ch-hero-title {
