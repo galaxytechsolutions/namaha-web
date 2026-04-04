@@ -359,9 +359,9 @@
 }
 
 .pd-title {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
   font-size: clamp(1.2rem, 1.8vw + 0.95rem, 2.1rem);
-  font-weight: 700;
+  font-weight: var(--font-weight-display);
   color: #1f2937;
   margin: 0 0 0.1em;
   line-height: 1.25;

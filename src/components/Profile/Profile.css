@@ -22,7 +22,12 @@
   text-align: center;
 }
 
-.profile-title1 { font-family: var(--font-heading); margin: 0 0 0.5rem 0; font-size: 18px; font-weight: 700; }
+.profile-title1 {
+  font-family: var(--font-display);
+  margin: 0 0 0.5rem 0;
+  font-size: 18px;
+  font-weight: var(--font-weight-display);
+}
 .profile-subtitle1 { margin: 0; opacity: 0.95; font-size: 1rem; }
 
 .avatar-section {

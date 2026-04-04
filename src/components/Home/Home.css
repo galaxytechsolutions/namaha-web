@@ -62,6 +62,17 @@
   text-align: left;
 }
 
+.hero-modern-block h1 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-display);
+}
+
+.hero-modern-block h2 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-weight-namian-semibold);
+  font-size: var(--fluid-section-title);
+}
+
 .hero-modern-block p {
   margin: 0 0 0.75rem;
   color: #fff2d6;
@@ -296,6 +307,10 @@
     margin-bottom: 0.35rem;
   }
 
+  .hero-modern-block h2 {
+    font-size: clamp(1.05rem, 4.2vw, 1.35rem);
+  }
+
   .hero-modern-block p {
     font-size: clamp(0.85rem, 2.6vw, 0.98rem);
     line-height: 1.45;
@@ -436,13 +451,13 @@
 }
 
 .hero-content1 h1 {
-  font-family: var(--font-heading);
+  font-family: var(--font-display);
   font-size: clamp(1.25rem, 2vw + 0.85rem, 3.5rem);
   color: #FFD700;
-  font-weight: 800;
+  font-weight: var(--font-weight-display);
   line-height: 1.2;
   margin: 0;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
   text-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 2px 8px rgba(0,0,0,0.3);
 }
 
@@ -452,7 +467,7 @@
   font-size: clamp(0.9rem, 1.2vw + 0.65rem, 1.75rem);
   color: #e8ecf0;
   margin: 0;
-  font-weight: 500;
+  font-weight: var(--font-weight-namian-medium);
   font-style: normal;
   line-height: 1.5;
   letter-spacing: 0.01em;
