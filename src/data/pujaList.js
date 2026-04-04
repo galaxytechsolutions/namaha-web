@@ -50,6 +50,15 @@ const mapChadhavaOfferingsToAddOns = (offerings = []) =>
     })
     .filter(Boolean);
 
+/** Same date fields as `Chadhava.js` / `ChadhavaDetail.js` — used to hide merged puja add-ons when the event has ended. */
+const getChadhavaItemEventDateRaw = (item) => {
+  if (!item || typeof item !== "object") return 0;
+  const raw = item.eventdate || item.eventDate || item.dateText || item.dateRange;
+  if (!raw) return 0;
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+};
+
 const mergeMatchedChadhavaOfferings = async (puja) => {
   const pujaNameKey = normalizeCompareText(puja?.title || puja?.name);
   if (!pujaNameKey) return puja;
@@ -69,6 +78,7 @@ const mergeMatchedChadhavaOfferings = async (puja) => {
     let offerings = Array.isArray(matchedChadhava?.offerings)
       ? matchedChadhava.offerings
       : [];
+    let detailItem = null;
 
     // Fallback: if offerings are not present in list API response, fetch detail.
     if (!offerings.length) {
@@ -79,13 +89,22 @@ const mergeMatchedChadhavaOfferings = async (puja) => {
         matchedChadhava?.slug;
       if (detailId) {
         const detailRes = await axiosInstance.get(`/chadhava/${encodeURIComponent(detailId)}`);
-        const detailItem =
+        detailItem =
           detailRes?.data?.item ||
           detailRes?.data?.data?.item ||
           detailRes?.data?.data ||
           detailRes?.data;
-        offerings = Array.isArray(detailItem?.offerings) ? detailItem.offerings : [];
+        if (detailItem && typeof detailItem === "object") {
+          offerings = Array.isArray(detailItem?.offerings) ? detailItem.offerings : [];
+        }
       }
+    }
+
+    const eventSource =
+      detailItem && typeof detailItem === "object" ? detailItem : matchedChadhava;
+    const chadhavaEventRaw = getChadhavaItemEventDateRaw(eventSource);
+    if (chadhavaEventRaw > 0 && chadhavaEventRaw <= Date.now()) {
+      return puja;
     }
 
     const chadhavaAddOns = mapChadhavaOfferingsToAddOns(offerings);
