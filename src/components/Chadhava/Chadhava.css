@@ -201,6 +201,24 @@
 }
 
 /* Same geometry as `PujaList.css` `.pl-card-banner` (see `PujaList.js` card markup) */
+/* Mirrors `PujaList.css` `.pl-top-choice-tag.sold-out` on chadhava cards */
+.ch-card-sold-out-tag {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 4;
+  background: #dc2626;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.28);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
 .ch-card-banner {
   position: relative;
   width: 100%;
@@ -314,6 +332,17 @@
 
 .ch-card-cta:hover {
   background: #c2410c;
+}
+
+.ch-card-cta.ch-card-cta--disabled {
+  background: #9ca3af;
+  color: #f9fafb;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ch-card-cta.ch-card-cta--disabled:hover {
+  background: #9ca3af;
 }
 
 @media (max-width: 900px) {

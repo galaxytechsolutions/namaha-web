@@ -102,6 +102,34 @@
   outline: 2px solid rgba(212, 160, 23, 0.5);
 }
 
+.chd-sold-out-tag {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 5;
+  background: #dc2626;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 6px 18px rgba(220, 38, 38, 0.28);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.chd-booking-closed-banner {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: 1px solid #fecaca;
+}
+
 .chd-hero-inner {
   position: relative;
   width: 100%;
@@ -323,6 +351,11 @@
   color: #c2410c;
 }
 
+.chd-offering-add:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
 /* FAQs */
 
 .chd-faqs {
@@ -487,6 +520,12 @@
 .chd-qty-btn:hover {
   background: #ffedd5;
   transform: scale(1.05);
+}
+
+.chd-qty-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .chd-qty-minus {

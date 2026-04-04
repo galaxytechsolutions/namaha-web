@@ -16,21 +16,33 @@ const getItemsFromResponse = (data) => {
 const normalizeCard = (item = {}) => {
   const rawId = item.id || item._id || item.shortTitle || item.slug || item.title;
   const idOrShortTitle = item.id || item._id || item.shortTitle || item.slug;
+  const rawDate = item.eventdate || item.eventDate || item.dateText || item.dateRange;
+  const ev = rawDate ? new Date(rawDate) : null;
+  const eventDateRaw =
+    ev && !Number.isNaN(ev.getTime()) ? ev.getTime() : 0;
   return {
     id: String(rawId || Math.random()),
     idOrShortTitle,
     title: item.title || 'Untitled Chadhava',
-    eventdate: item.eventdate || item.eventDate || item.dateText || 'Date will be announced',
+    eventdate: rawDate || 'Date will be announced',
+    eventDateRaw,
     description: item.description || 'Details will be updated soon.',
     bannerImage: item.bannerImage || item.image || item.thumbnail || '',
     buttonText: item.buttonText || item.ctaText || 'View Details',
   };
 };
 
-const getEventTimestamp = (value) => {
-  if (!value) return Number.POSITIVE_INFINITY;
-  const ts = new Date(value).getTime();
-  return Number.isNaN(ts) ? Number.POSITIVE_INFINITY : ts;
+/** Same ordering as `pujaList.js` `sortByAvailabilityThenDate` — upcoming first, then sold-out by recency. */
+const sortChadhavaByAvailabilityThenDate = (a, b) => {
+  const now = Date.now();
+  const dateA = Number(a?.eventDateRaw || 0);
+  const dateB = Number(b?.eventDateRaw || 0);
+  const isSoldOutA = dateA > 0 && dateA <= now;
+  const isSoldOutB = dateB > 0 && dateB <= now;
+  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
+  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
+  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+  return 0;
 };
 
 function Chadhava() {
@@ -69,9 +81,7 @@ function Chadhava() {
         const mapped = items
           .map(normalizeCard)
           .filter((card) => card.idOrShortTitle || card.id);
-        const sorted = [...mapped].sort(
-          (a, b) => getEventTimestamp(a.eventdate) - getEventTimestamp(b.eventdate)
-        );
+        const sorted = [...mapped].sort(sortChadhavaByAvailabilityThenDate);
         setCards(sorted);
       } catch (err) {
         if (!mounted) return;
@@ -126,7 +136,10 @@ function Chadhava() {
             className={`ch-card-grid${cards.length === 1 ? ' ch-card-grid--single' : ''}`}
             style={{ '--ch-grid-cols': String(PUJA_LIST_GRID_COLUMNS) }}
           >
-            {cards.map((card) => (
+            {cards.map((card) => {
+              const isPastEvent =
+                card.eventDateRaw > 0 ? card.eventDateRaw <= Date.now() : false;
+              return (
               <article key={card.id} className="ch-card">
                 <div
                   className="ch-card-banner"
@@ -138,7 +151,11 @@ function Chadhava() {
                         }
                       : undefined
                   }
-                />
+                >
+                  {isPastEvent ? (
+                    <span className="ch-card-sold-out-tag">SOLD OUT</span>
+                  ) : null}
+                </div>
                 <div className="ch-card-body">
                   <h3 className="ch-card-title">{card.title}</h3>
                   <p className="ch-card-date">{formatEventDate(card.eventdate)}</p>
@@ -159,12 +176,21 @@ function Chadhava() {
                       {expandedCards[card.id] ? 'Read less' : 'Read more'}
                     </button>
                   )}
-                  <Link to={`/chadhava/${encodeURIComponent(card.idOrShortTitle || card.id)}`} className="ch-card-cta">
-                    {card.buttonText}
-                  </Link>
+                  {isPastEvent ? (
+                    <div className="ch-card-cta ch-card-cta--disabled" aria-disabled="true">
+                      Booking closed
+                    </div>
+                  ) : (
+                    <Link
+                      to={`/chadhava/${encodeURIComponent(card.idOrShortTitle || card.id)}`}
+                      className="ch-card-cta"
+                    >
+                      {card.buttonText}
+                    </Link>
+                  )}
                 </div>
               </article>
-            ))}
+            )})}
           </div>
         )}
       </section>
