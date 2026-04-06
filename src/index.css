@@ -73,7 +73,7 @@
    * (see `pujaList.js` / PujaList.css: `height: clamp(260px, 28vh, 420px)`).
    * Uses vmin so ultra-wide and 4K don’t force a full-viewport column of empty space.
    */
-  --home-hero-band-height: clamp(420px, min(50vh, 54vmin), 780px);
+  --home-hero-band-height: clamp(460px, min(52vh, 56vmin), 820px);
 }
 
 @media (min-width: 1440px) {
@@ -89,7 +89,7 @@
     --fluid-hero-lead: clamp(1.08rem, 0.85rem + 0.55vw, 1.5rem);
     --fluid-hero-cta: clamp(1rem, 0.85rem + 0.38vw, 1.3125rem);
     --hero-cluster-max: min(100%, 96rem);
-    --home-hero-band-height: clamp(460px, min(48vh, 52vmin), 840px);
+    --home-hero-band-height: clamp(500px, min(50vh, 54vmin), 880px);
   }
 }
 
@@ -100,7 +100,7 @@
     --fluid-hero-lead: clamp(1.12rem, 0.82rem + 0.65vmin, 1.75rem);
     --fluid-hero-cta: clamp(1.05rem, 0.82rem + 0.48vmin, 1.45rem);
     --hero-cluster-max: min(100%, 108rem);
-    --home-hero-band-height: clamp(480px, min(46vh, 50vmin), 880px);
+    --home-hero-band-height: clamp(520px, min(48vh, 52vmin), 920px);
   }
 }
 
@@ -110,7 +110,7 @@
     --fluid-hero-lead: clamp(1.2rem, 0.88rem + 0.75vmin, 2rem);
     --fluid-hero-cta: clamp(1.1rem, 0.85rem + 0.55vmin, 1.65rem);
     --hero-cluster-max: min(100%, 120rem);
-    --home-hero-band-height: clamp(500px, min(44vh, 48vmin), 920px);
+    --home-hero-band-height: clamp(540px, min(46vh, 50vmin), 960px);
   }
 }
 

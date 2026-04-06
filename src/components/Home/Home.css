@@ -141,16 +141,15 @@
       /* Tint runs from bottom through text and into lower half of art; clears above ~mid-image */
       linear-gradient(
         to top,
-        rgba(64, 30, 10, 0.97) 0%,
-        rgba(76, 38, 12, 0.92) 5%,
-        rgba(86, 44, 16, 0.82) 12%,
-        rgba(94, 50, 20, 0.68) 22%,
-        rgba(102, 56, 24, 0.52) 34%,
-        rgba(114, 66, 32, 0.36) 46%,
-        rgba(135, 88, 50, 0.22) 58%,
-        rgba(168, 120, 78, 0.11) 68%,
-        rgba(200, 155, 110, 0.04) 74%,
-        transparent 80%
+        rgba(50, 24, 8, 0.98) 0%,
+        rgba(58, 28, 10, 0.94) 10%,
+        rgba(72, 38, 14, 0.84) 22%,
+        rgba(92, 54, 22, 0.66) 38%,
+        rgba(120, 80, 44, 0.38) 56%,
+        rgba(160, 120, 82, 0.18) 68%,
+        rgba(210, 178, 140, 0.08) 76%,
+        rgba(245, 235, 220, 0.03) 82%,
+        transparent 88%
       ),
       /* Softer highlight — overlay now covers more of the frame */
       radial-gradient(ellipse 95% 70% at 50% 12%, rgba(255, 210, 150, 0.22), transparent 50%),
@@ -650,13 +649,14 @@
     box-sizing: border-box;
   }
 
-  /* Fixed band height from `--home-hero-band-height` (see index.css); content stays centered inside */
+  /* Desktop: let hero cover ~70% of viewport (minus header) */
   .home-hero-viewport .hero-modern {
     flex: 0 0 auto;
     display: flex;
     flex-direction: column;
-    height: var(--home-hero-band-height, clamp(420px, min(50vh, 54vmin), 780px));
-    min-height: 0;
+    height: calc(70vh - var(--header-offset, 104px));
+    min-height: 560px;
+    max-height: 980px;
     overflow: hidden;
     padding: 0.5rem var(--content-pad-x) 0.35rem;
     box-sizing: border-box;
