@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./PujaList.css";
 import Footer from "../Footer/Footer";
 import { usePujaList } from "../../data/pujaList";
+
+const INITIAL_VISIBLE_CARDS = 4;
+const LOAD_MORE_STEP = 4;
 
 const normalizeBenefitTitles = (benefits) => {
   if (Array.isArray(benefits)) {
@@ -50,6 +53,37 @@ function PujaList() {
     return (a.rank ?? 9999) - (b.rank ?? 9999);
   });
 
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_CARDS);
+
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE_CARDS);
+  }, [sortedPujas.length]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop || 0;
+      const viewportHeight = window.innerHeight || 0;
+      const fullHeight = document.documentElement.scrollHeight || 0;
+      const firstCard = document.querySelector(".pl-card");
+      const cardHeight = firstCard?.getBoundingClientRect?.().height || 400;
+      const halfCardHeightThreshold = cardHeight / 2;
+      const nearBottom =
+        scrollTop + viewportHeight >= fullHeight - halfCardHeightThreshold;
+
+      if (!nearBottom) return;
+      setVisibleCount((prev) =>
+        Math.min(prev + LOAD_MORE_STEP, sortedPujas.length)
+      );
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [sortedPujas.length]);
+
+  const visiblePujas = sortedPujas.slice(0, visibleCount);
+
   /* ================= LOADING ================= */
   if (loading) {
     return (
@@ -74,7 +108,7 @@ function PujaList() {
         </h2>
 
         <div className="pl-cards">
-          {sortedPujas.map((puja) => {
+          {visiblePujas.map((puja) => {
             const isPastEvent =
               puja.eventDateRaw && puja.eventDateRaw > 0
                 ? puja.eventDateRaw <= Date.now()
@@ -136,7 +170,7 @@ function PujaList() {
                 </div>
               ) : (
                 <Link to={`/puja/${puja.id}`} className="pl-card-participate">
-                  Book Puja →
+                  Book Now <span className="btn-icon">🙏🏻</span>
                 </Link>
               )}
             </div>

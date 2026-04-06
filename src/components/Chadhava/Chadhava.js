@@ -5,6 +5,9 @@ import { PUJA_LIST_GRID_COLUMNS } from '../../data/pujaList';
 import './Chadhava.css';
 import Footer from '../Footer/Footer';
 
+const INITIAL_VISIBLE_CARDS = 4;
+const LOAD_MORE_STEP = 4;
+
 const getItemsFromResponse = (data) => {
   if (Array.isArray(data?.items)) return data.items;
   if (Array.isArray(data?.data?.items)) return data.data.items;
@@ -50,6 +53,7 @@ function Chadhava() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedCards, setExpandedCards] = useState({});
+  const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_CARDS);
   const offeringsRef = useRef(null);
 
   /* Banner sizing lives in `Chadhava.css` — mirrors `PujaList.css` `.pl-card-banner` */
@@ -98,6 +102,33 @@ function Chadhava() {
     };
   }, []);
 
+  useEffect(() => {
+    setVisibleCount(INITIAL_VISIBLE_CARDS);
+  }, [cards.length]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop =
+        window.pageYOffset || document.documentElement.scrollTop || 0;
+      const viewportHeight = window.innerHeight || 0;
+      const fullHeight = document.documentElement.scrollHeight || 0;
+      const firstCard = document.querySelector('.ch-card');
+      const cardHeight = firstCard?.getBoundingClientRect?.().height || 400;
+      const halfCardHeightThreshold = cardHeight / 2;
+      const nearBottom =
+        scrollTop + viewportHeight >= fullHeight - halfCardHeightThreshold;
+
+      if (!nearBottom) return;
+      setVisibleCount((prev) => Math.min(prev + LOAD_MORE_STEP, cards.length));
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [cards.length]);
+
+  const visibleCards = cards.slice(0, visibleCount);
+
   return (
     <main className="chadhava-page">
       {/* Hero */}
@@ -114,7 +145,9 @@ function Chadhava() {
       {/* Upcoming Chadhava offerings */}
       <section className="ch-offerings" ref={offeringsRef}>
         <div className="ch-offerings-header">
-          <h2 className="ch-offerings-title">Upcoming Chadhava Offerings on SHRI AAUM.</h2>
+          <h2 className="ch-offerings-title">
+            Upcoming Chadhava Offerings ({cards.length})
+          </h2>
           {/* <p className="ch-offerings-subtitle">
             Experience the divine with Shri aaum Chadhava SHRI AAUM. Offer Chadhava at renowned
             temples across India, receiving blessings and a video recording of the ceremony
@@ -133,10 +166,10 @@ function Chadhava() {
           <p className="ch-offerings-subtitle">No chadhava offerings available currently.</p>
         ) : (
           <div
-            className={`ch-card-grid${cards.length === 1 ? ' ch-card-grid--single' : ''}`}
+            className={`ch-card-grid${visibleCards.length === 1 ? ' ch-card-grid--single' : ''}`}
             style={{ '--ch-grid-cols': String(PUJA_LIST_GRID_COLUMNS) }}
           >
-            {cards.map((card) => {
+            {visibleCards.map((card) => {
               const isPastEvent =
                 card.eventDateRaw > 0 ? card.eventDateRaw <= Date.now() : false;
               return (
