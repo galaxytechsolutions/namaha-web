@@ -159,7 +159,7 @@ function SpecialPuja() {
                 </div>
               ) : (
                 <Link to={`/puja/${puja.id}`} className="pl-card-participate">
-                  Book Puja →
+                  Book Now <span className="btn-icon">🙏🏻</span>
                 </Link>
               )}
             </div>

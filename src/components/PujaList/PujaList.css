@@ -576,7 +576,7 @@
     margin: 0.75rem 0 6px;
     padding: 0 clamp(12px, 1.25vw, 22px);
     line-height: 1.35;
-    letter-spacing: 0.04em;
+    letter-spacing: normal;
     word-spacing: 0.06em;
     overflow-wrap: break-word;
     min-width: 0;
@@ -588,7 +588,7 @@
     margin: 0 0 8px;
     padding: 0 clamp(12px, 1.25vw, 22px);
     line-height: 1.45;
-    letter-spacing: 0.03em;
+    letter-spacing: normal;
     overflow-wrap: break-word;
     min-width: 0;
 }
@@ -606,7 +606,7 @@
     font-size: var(--fluid-card-body);
     color: #6b7280;
     line-height: 1.45;
-    letter-spacing: 0.03em;
+    letter-spacing: normal;
     margin: 0 0 6px;
     overflow-wrap: break-word;
 }
@@ -638,7 +638,7 @@
     color: #6b7280;
     margin: 0 0 6px;
     padding: 0 clamp(12px, 1.25vw, 22px);
-    letter-spacing: 0.03em;
+    letter-spacing: normal;
     overflow-wrap: break-word;
     min-width: 0;
 }
@@ -668,6 +668,13 @@
     justify-content: center;
     box-sizing: border-box;
     transition: background 0.2s ease, transform 0.15s ease;
+  }
+
+  .btn-icon {
+    display: inline-block;
+    margin-left: 8px;
+    filter: brightness(0) invert(1);
+    vertical-align: middle;
   }
 
   .pl-card-participate:hover {
