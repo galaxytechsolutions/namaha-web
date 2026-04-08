@@ -301,6 +301,11 @@ function BillingPage() {
 
   const [loading, setLoading] = useState(false);
   const [postPaymentLoading, setPostPaymentLoading] = useState(false);
+  const authToken = localStorage.getItem("token");
+  const isLoggedInDevotee = Boolean(authToken);
+  const bookingBasePath = isLoggedInDevotee
+    ? "/bookings/booking"
+    : "/bookings/guest/booking";
   const [pendingBookingId, setPendingBookingId] = useState(() => {
     try {
       return sessionStorage.getItem("pendingBookingId") || null;
@@ -370,7 +375,10 @@ function BillingPage() {
       };
       pendingSaveInFlightRef.current = true;
       const req = axiosInstance
-        .post("/bookings/guest/booking", payload)
+        .post(bookingBasePath, payload, {
+          withCredentials: true,
+          headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+        })
         .then((res) => {
           if (res.data?.success) {
             const id =
@@ -420,6 +428,8 @@ function BillingPage() {
     computedAddonsTotal,
     resolvedAddons,
     prasadam,
+    bookingBasePath,
+    authToken,
   ]);
 
   const handleChange = (e) => {
@@ -539,7 +549,10 @@ function BillingPage() {
       });
       console.log("🚀 Booking payload:", payload);
 
-      const res = await axiosInstance.post("/bookings/guest/booking", payload);
+      const res = await axiosInstance.post(bookingBasePath, payload, {
+        withCredentials: true,
+        headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
+      });
 
       console.log("✅ Booking response:", res.data);
 
@@ -578,6 +591,87 @@ function BillingPage() {
   };
 
   // ================= RAZORPAY =================
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+  const extractFinalOrderId = (data, fallbackOrderId) =>
+    data?.bookingId ||
+    data?.booking?._id ||
+    data?.orderId ||
+    data?.order_id ||
+    fallbackOrderId;
+
+  const handlePostPaymentSuccess = async ({ finalOrderId, payload }) => {
+    if (finalOrderId) {
+      const invoicePdfUrl = `https://api.shriaaum.com/api/invoice-pdf/${finalOrderId}`;
+      await sendInvoiceToBackend({
+        phone: form.phone,
+        name: form.name,
+        email: form.email || "",
+        amount: finalPayable,
+        orderId: finalOrderId,
+        pdfUrl: invoicePdfUrl,
+      });
+    }
+
+    trackMetaPixelEvent("Purchase", {
+      value: finalPayable,
+      currency: "INR",
+      contents: [
+        {
+          id: puja?._id || puja?.id || String(finalOrderId || ""),
+          quantity: 1,
+        },
+      ],
+      content_type: "product",
+    });
+
+    const invoice = {
+      orderId: finalOrderId,
+      invoiceNo: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}${String(new Date().getDate()).padStart(2, "0")}-${String(finalOrderId).replace(/[^a-zA-Z0-9]/g, "").slice(-4) || "001"}`,
+      invoiceDate: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" }),
+      devoteeDetails: payload.devoteeDetails,
+      participants: payload.participants,
+      pujaName: puja.title,
+      pujaDate: payload.date,
+      packageName: selectedPackage?.name,
+      packagePrice: selectedPackage?.price,
+      addons: resolvedAddons || [],
+      addonsTotal: computedAddonsTotal,
+      coupon: payload.coupon,
+      couponCode: payload.couponCode,
+      discountAmount: payload.discountAmount || discountAmount,
+      grandTotal: payload.grandTotal,
+    };
+    setInvoiceData(invoice);
+    setShowInvoiceModal(true);
+    setPendingBookingId(null);
+  };
+
+  const reconcileRazorpayWithRetry = async ({ orderId, token }) => {
+    const retryDelaysMs = [10000, 10000];
+    for (let attempt = 0; attempt <= retryDelaysMs.length; attempt++) {
+      try {
+        const reconcileRes = await axiosInstance.post(
+          `${bookingBasePath}/reconcile-razorpay`,
+          { razorpay_order_id: orderId },
+          {
+            withCredentials: true,
+            headers: token ? { Authorization: `Bearer ${token}` } : {},
+          }
+        );
+        return reconcileRes?.data;
+      } catch (reconcileErr) {
+        const status = reconcileErr?.response?.status;
+        if (status === 409 && attempt < retryDelaysMs.length) {
+          await wait(retryDelaysMs[attempt]);
+          continue;
+        }
+        throw reconcileErr;
+      }
+    }
+    return null;
+  };
+
   const loadRazorpay = (orderId, amount) => {
     if (!window.Razorpay) {
       showToast("Razorpay SDK not loaded. Please refresh and try again.");
@@ -619,8 +713,8 @@ function BillingPage() {
 
       theme: { color: "#f96b26" },
 
-      // POST /api/bookings/guest/booking/confirm-razorpay — call after user completes Razorpay.
-      // Full URL = baseURL + "/bookings/guest/booking/confirm-razorpay"
+      // POST /api/bookings/{booking|guest/booking}/confirm-razorpay — role-aware endpoint.
+      // Full URL = baseURL + `${bookingBasePath}/confirm-razorpay`
       handler: async function (response) {
         // ✅ STRICT guard — exit immediately if payment data is missing
         if (
@@ -636,7 +730,6 @@ function BillingPage() {
         }
         setPostPaymentLoading(true);
         console.log("✅ Razorpay payment success:", response);
-        const token = localStorage.getItem("token");
         const payload = {
           razorpay_order_id: orderId,
           razorpay_payment_id: response.razorpay_payment_id,
@@ -674,67 +767,47 @@ function BillingPage() {
         };
         try {
           const confirmRes = await axiosInstance.post(
-            "/bookings/guest/booking/confirm-razorpay",
+            `${bookingBasePath}/confirm-razorpay`,
             payload,
             {
               withCredentials: true,
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
+              headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
             }
           );
-
-          // After booking is confirmed, ask Interakt service to send invoice via WhatsApp.
-          // Frontend now builds the invoice PDF URL instead of using a Cloudinary URL.
-          const finalOrderId =
-            confirmRes?.data?.bookingId || confirmRes?.data?.orderId || orderId;
-          if (finalOrderId) {
-            const invoicePdfUrl = `https://api.shriaaum.com/api/invoice-pdf/${finalOrderId}`;
-
-            await sendInvoiceToBackend({
-              phone: form.phone,
-              name: form.name,
-              email: form.email || "",
-              amount: finalPayable,
-              orderId: finalOrderId,
-              pdfUrl: invoicePdfUrl,
-            });
-          }
-
-          // Meta Pixel: successful purchase
-          trackMetaPixelEvent("Purchase", {
-            value: finalPayable,
-            currency: "INR",
-            contents: [
-              {
-                id: puja?._id || puja?.id || String(finalOrderId || ""),
-                quantity: 1,
-              },
-            ],
-            content_type: "product",
-          });
-
-          const invoice = {
-            orderId: finalOrderId,
-            invoiceNo: `INV-${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}${String(new Date().getDate()).padStart(2, "0")}-${String(finalOrderId).replace(/[^a-zA-Z0-9]/g, "").slice(-4) || "001"}`,
-            invoiceDate: new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "long", year: "numeric" }),
-            devoteeDetails: payload.devoteeDetails,
-            participants: payload.participants,
-            pujaName: puja.title,
-            pujaDate: payload.date,
-            packageName: selectedPackage?.name,
-            packagePrice: selectedPackage?.price,
-            addons: resolvedAddons || [],
-            addonsTotal: computedAddonsTotal,
-            coupon: payload.coupon,
-            couponCode: payload.couponCode,
-            discountAmount: payload.discountAmount || discountAmount,
-            grandTotal: payload.grandTotal,
-          };
-          setInvoiceData(invoice);
-          setShowInvoiceModal(true);
-          setPendingBookingId(null);
+          const finalOrderId = extractFinalOrderId(confirmRes?.data, orderId);
+          await handlePostPaymentSuccess({ finalOrderId, payload });
         } catch (err) {
-          console.error("Confirm payment error:", err);
-          showToast(err.response?.data?.message || "Failed to confirm booking. Please contact support.");
+          const status = err?.response?.status;
+          if (status === 409) {
+            try {
+              const reconciledData = await reconcileRazorpayWithRetry({
+                orderId,
+                token: authToken,
+              });
+              const finalOrderId = extractFinalOrderId(reconciledData, orderId);
+              await handlePostPaymentSuccess({ finalOrderId, payload });
+              return;
+            } catch (reconcileErr) {
+              const reconcileStatus = reconcileErr?.response?.status;
+              if (reconcileStatus === 409) {
+                showToast("Payment is captured but booking is still syncing. Please check My Bookings in a few seconds.");
+              } else if (reconcileStatus === 404) {
+                showToast("Booking not found for this payment. Please contact support.");
+              } else {
+                showToast(
+                  reconcileErr?.response?.data?.message ||
+                    "Payment reconciliation failed. Please contact support."
+                );
+              }
+              console.error("Reconcile payment error:", reconcileErr);
+            }
+          } else {
+            console.error("Confirm payment error:", err);
+            showToast(
+              err?.response?.data?.message ||
+                "Failed to confirm booking. Please contact support."
+            );
+          }
         } finally {
           setPostPaymentLoading(false);
         }
