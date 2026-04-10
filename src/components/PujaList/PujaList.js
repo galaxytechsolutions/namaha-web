@@ -108,12 +108,7 @@ function PujaList() {
         </h2>
 
         <div className="pl-cards">
-          {visiblePujas.map((puja) => {
-            const isPastEvent =
-              puja.eventDateRaw && puja.eventDateRaw > 0
-                ? puja.eventDateRaw <= Date.now()
-                : false;
-            return (
+          {visiblePujas.map((puja) => (
             <div
               key={puja.id}
               className="pl-card"
@@ -137,10 +132,8 @@ function PujaList() {
                 {/* <span className={`pl-card-tag ${puja.tagColor}`}>
                   {puja.specialTag}
                 </span> */}
-                {isPastEvent ? (
-                  <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
-                ) : (
-                  puja.topChoice && <span className="pl-top-choice-tag">TOP CHOICE</span>
+                {puja.topChoice && (
+                  <span className="pl-top-choice-tag">TOP CHOICE</span>
                 )}
               </div>
 
@@ -164,17 +157,11 @@ function PujaList() {
               {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta pl-card-date">📅 {puja.date}</p>
 
-              {isPastEvent ? (
-                <div className="pl-card-participate pl-card-participate-disabled">
-                  Booking closed
-                </div>
-              ) : (
-                <Link to={`/puja/${puja.id}`} className="pl-card-participate">
-                  Book Now <span className="btn-icon">🙏🏻</span>
-                </Link>
-              )}
+              <Link to={`/puja/${puja.id}`} className="pl-card-participate">
+                Book Now <span className="btn-icon">🙏🏻</span>
+              </Link>
             </div>
-          )})}
+          ))}
         </div>
       </section>
 
