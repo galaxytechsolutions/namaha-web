@@ -301,6 +301,7 @@ function BillingPage() {
 
   const [loading, setLoading] = useState(false);
   const [postPaymentLoading, setPostPaymentLoading] = useState(false);
+  const PENDING_RAZORPAY_ORDER_KEY = "pendingRazorpayOrderId";
   const authToken = localStorage.getItem("token");
   const isLoggedInDevotee = Boolean(authToken);
   const bookingBasePath = isLoggedInDevotee
@@ -592,6 +593,27 @@ function BillingPage() {
 
   // ================= RAZORPAY =================
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  const PAYMENT_SUCCESS_PROCESSING_DELAY_MS = 2000;
+
+  const setPendingRazorpayOrderId = (orderId) => {
+    try {
+      if (orderId) sessionStorage.setItem(PENDING_RAZORPAY_ORDER_KEY, orderId);
+    } catch {}
+  };
+
+  const clearPendingRazorpayOrderId = () => {
+    try {
+      sessionStorage.removeItem(PENDING_RAZORPAY_ORDER_KEY);
+    } catch {}
+  };
+
+  const getPendingRazorpayOrderId = () => {
+    try {
+      return sessionStorage.getItem(PENDING_RAZORPAY_ORDER_KEY) || null;
+    } catch {
+      return null;
+    }
+  };
 
   const extractFinalOrderId = (data, fallbackOrderId) =>
     data?.bookingId ||
@@ -599,6 +621,46 @@ function BillingPage() {
     data?.orderId ||
     data?.order_id ||
     fallbackOrderId;
+
+  const buildPaymentPayload = (orderId, paymentResponse = null) => ({
+    razorpay_order_id: orderId,
+    ...(paymentResponse?.razorpay_payment_id
+      ? { razorpay_payment_id: paymentResponse.razorpay_payment_id }
+      : {}),
+    ...(paymentResponse?.razorpay_signature
+      ? { razorpay_signature: paymentResponse.razorpay_signature }
+      : {}),
+    status: "success",
+    ...(pendingBookingId && { bookingId: pendingBookingId }),
+    devoteeDetails: {
+      name: form.name?.trim() || participants[0]?.name?.trim() || "",
+      email: form.email || "",
+      phone: form.phone,
+      address: form.address || "",
+    },
+    participants: participants.map((p) => ({
+      name: p.name || "",
+      gotra: p.gotra || "",
+    })),
+    coupon: couponApplied && appliedCoupon ? appliedCoupon : (couponApplied && coupon ? coupon : null),
+    couponCode: couponApplied && (appliedCoupon?.code || coupon?.code) ? (appliedCoupon?.code || coupon?.code) : null,
+    isCouponApplied: couponApplied,
+    discountAmount: couponApplied ? discountAmount : 0,
+    poojaId: puja?._id || puja?.id,
+    date:
+      selectedPackage?.date ||
+      puja?.date ||
+      (puja?.eventDate
+        ? new Date(puja.eventDate).toLocaleDateString("en-IN")
+        : null),
+    grandTotal: finalPayable,
+    puja,
+    selectedPackage,
+    image: image || null,
+    addons: resolvedAddons,
+    addonsTotal: computedAddonsTotal,
+    prasadam,
+  });
 
   const handlePostPaymentSuccess = async ({ finalOrderId, payload }) => {
     if (finalOrderId) {
@@ -645,6 +707,7 @@ function BillingPage() {
     setInvoiceData(invoice);
     setShowInvoiceModal(true);
     setPendingBookingId(null);
+    clearPendingRazorpayOrderId();
   };
 
   const reconcileRazorpayWithRetry = async ({ orderId, token }) => {
@@ -672,6 +735,42 @@ function BillingPage() {
     return null;
   };
 
+  useEffect(() => {
+    if (!puja?.id && !puja?._id) return;
+    const pendingOrderId = getPendingRazorpayOrderId();
+    if (!pendingOrderId) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        setPostPaymentLoading(true);
+        const reconciledData = await reconcileRazorpayWithRetry({
+          orderId: pendingOrderId,
+          token: authToken,
+        });
+        if (cancelled) return;
+        const finalOrderId = extractFinalOrderId(reconciledData, pendingOrderId);
+        const payload = buildPaymentPayload(pendingOrderId);
+        await handlePostPaymentSuccess({ finalOrderId, payload });
+      } catch (reconcileErr) {
+        if (cancelled) return;
+        const reconcileStatus = reconcileErr?.response?.status;
+        if (reconcileStatus !== 409) {
+          clearPendingRazorpayOrderId();
+        }
+      } finally {
+        if (!cancelled) setPostPaymentLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // Session recovery: only re-check when puja identity is available. Adding form/payment
+    // helpers as deps would re-run reconcile on every keystroke and duplicate side effects.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional narrow deps for recovery
+  }, [puja?.id, puja?._id]);
+
   const loadRazorpay = (orderId, amount) => {
     if (!window.Razorpay) {
       showToast("Razorpay SDK not loaded. Please refresh and try again.");
@@ -690,6 +789,7 @@ function BillingPage() {
       showToast("Invalid order from server. Please try again.");
       return;
     }
+    setPendingRazorpayOrderId(orderId);
 
     // Meta Pixel: user is starting checkout
     trackMetaPixelEvent("InitiateCheckout", {
@@ -735,41 +835,10 @@ function BillingPage() {
         }
         setPostPaymentLoading(true);
         console.log("✅ Razorpay payment success:", response);
-        const payload = {
-          razorpay_order_id: orderId,
-          razorpay_payment_id: response.razorpay_payment_id,
-          razorpay_signature: response.razorpay_signature,
-          status: "success",
-          ...(pendingBookingId && { bookingId: pendingBookingId }),
-          devoteeDetails: {
-            name: form.name?.trim() || participants[0]?.name?.trim() || "",
-            email: form.email || "",
-            phone: form.phone,
-            address: form.address || "",
-          },
-          participants: participants.map((p) => ({
-            name: p.name || "",
-            gotra: p.gotra || "",
-          })),
-          coupon: couponApplied && appliedCoupon ? appliedCoupon : (couponApplied && coupon ? coupon : null),
-          couponCode: couponApplied && (appliedCoupon?.code || coupon?.code) ? (appliedCoupon?.code || coupon?.code) : null,
-          isCouponApplied: couponApplied,
-          discountAmount: couponApplied ? discountAmount : 0,
-          poojaId: puja?._id || puja?.id,
-          date:
-            selectedPackage?.date ||
-            puja?.date ||
-            (puja?.eventDate
-              ? new Date(puja.eventDate).toLocaleDateString("en-IN")
-              : null),
-          grandTotal: finalPayable,
-          puja,
-          selectedPackage,
-          image: image || null,
-          addons: resolvedAddons,
-          addonsTotal: computedAddonsTotal,
-          prasadam,
-        };
+        // Small post-success delay helps backend/payment provider state settle
+        // before first confirm call, while loader keeps user informed.
+        await wait(PAYMENT_SUCCESS_PROCESSING_DELAY_MS);
+        const payload = buildPaymentPayload(orderId, response);
         try {
           const confirmRes = await axiosInstance.post(
             `${bookingBasePath}/confirm-razorpay`,
@@ -1277,7 +1346,7 @@ function BillingPage() {
                 checked={prasadam}
                 onChange={(e) => setPrasadam(e.target.checked)}
               />
-              <span>Prasadam (complimentary)</span>
+              <span>Prasadam (Free)</span>
             </label>
           )}
 
