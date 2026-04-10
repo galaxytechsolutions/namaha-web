@@ -4,6 +4,20 @@ import { useState, useEffect } from "react";
 /** Grid column count for Puja list + Special Puja cards (see PujaList.css `.pl-cards`, SpecialPuja.css `.sp-cards`). */
 export const PUJA_LIST_GRID_COLUMNS = 4;
 
+/** Same as Chadhava list: `eventDateRaw > 0` and not after now → treat as past event. */
+export const computePujaIsPastEvent = (eventDateRaw) => {
+  const raw = Number(eventDateRaw) || 0;
+  return raw > 0 && raw <= Date.now();
+};
+
+const enrichPujaListItem = (puja) => {
+  if (!puja || typeof puja !== "object") return puja;
+  const isPastEvent = computePujaIsPastEvent(puja.eventDateRaw);
+  return { ...puja, isPastEvent, soldTag: isPastEvent };
+};
+
+const enrichPujaList = (list) => (Array.isArray(list) ? list : []).map(enrichPujaListItem);
+
 const sortByAvailabilityThenDate = (a, b) => {
   const now = Date.now();
   const dateA = Number(a?.eventDateRaw || 0);
@@ -211,8 +225,9 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => {
   section: apiPuja.section,
   // occasion: auspicious event/festival when puja is performed (e.g. Ram Navami, Diwali)
   occasion: apiPuja.occasion || apiPuja.eventOccasion || apiPuja.specialTag || null,
-  // SOLD OUT purely from event date — if event date/time has passed, mark as sold
-  soldTag: !!(eventPieces.eventDateRaw && eventPieces.eventDateRaw <= Date.now()),
+  // Aligns with Chadhava `isPastEvent` + list sold state from event date
+  isPastEvent: computePujaIsPastEvent(eventPieces.eventDateRaw),
+  soldTag: computePujaIsPastEvent(eventPieces.eventDateRaw),
   coupon: apiPuja.coupon
     ? {
         code: apiPuja.coupon.code,
@@ -346,7 +361,7 @@ export const fetchPujaList = async () => {
       poojasArray = response.data.poojas;
     } else {
       console.warn("⚠️ Invalid API format — using dummy data");
-      return PUJA_LIST;
+      return enrichPujaList(PUJA_LIST);
     }
 
     const mapped = poojasArray
@@ -355,20 +370,20 @@ export const fetchPujaList = async () => {
 
     if (!mapped.length) {
       console.warn("⚠️ API returned empty — using dummy data");
-      return PUJA_LIST;
+      return enrichPujaList(PUJA_LIST);
     }
 
     console.log("✅ Using API pujas:", mapped);
     return mapped;
   } catch (error) {
     console.error("❌ API failed — using dummy data");
-    return [...PUJA_LIST].sort(sortByAvailabilityThenDate);
+    return enrichPujaList([...PUJA_LIST].sort(sortByAvailabilityThenDate));
   }
 };
 
 // React hook: usePujaList provides pujas + loading + error for components
 export function usePujaList() {
-  const [pujas, setPujas] = useState(PUJA_LIST);
+  const [pujas, setPujas] = useState(() => enrichPujaList(PUJA_LIST));
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 

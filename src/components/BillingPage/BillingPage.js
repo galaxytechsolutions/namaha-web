@@ -716,6 +716,11 @@ function BillingPage() {
       // POST /api/bookings/{booking|guest/booking}/confirm-razorpay — role-aware endpoint.
       // Full URL = baseURL + `${bookingBasePath}/confirm-razorpay`
       handler: async function (response) {
+        // Payment finalization safety net:
+        // 1) Try confirm endpoint first.
+        // 2) If confirm is non-success OR throws (timeout/network/backend), fallback to reconcile.
+        // 3) Reconcile checks by razorpay_order_id and retries on 409 to handle capture delays.
+        // This avoids "payment succeeded but booking not finalized" during transient failures.
         // ✅ STRICT guard — exit immediately if payment data is missing
         if (
           !response?.razorpay_payment_id ||
@@ -774,39 +779,44 @@ function BillingPage() {
               headers: authToken ? { Authorization: `Bearer ${authToken}` } : {},
             }
           );
+
+          const confirmIsSuccessful =
+            confirmRes?.status === 200 && confirmRes?.data?.success !== false;
+
+          if (!confirmIsSuccessful) {
+            throw new Error(
+              confirmRes?.data?.message || "Confirm API returned non-success response."
+            );
+          }
+
           const finalOrderId = extractFinalOrderId(confirmRes?.data, orderId);
           await handlePostPaymentSuccess({ finalOrderId, payload });
         } catch (err) {
-          const status = err?.response?.status;
-          if (status === 409) {
-            try {
-              const reconciledData = await reconcileRazorpayWithRetry({
-                orderId,
-                token: authToken,
-              });
-              const finalOrderId = extractFinalOrderId(reconciledData, orderId);
-              await handlePostPaymentSuccess({ finalOrderId, payload });
-              return;
-            } catch (reconcileErr) {
-              const reconcileStatus = reconcileErr?.response?.status;
-              if (reconcileStatus === 409) {
-                showToast("Payment is captured but booking is still syncing. Please check My Bookings in a few seconds.");
-              } else if (reconcileStatus === 404) {
-                showToast("Booking not found for this payment. Please contact support.");
-              } else {
-                showToast(
-                  reconcileErr?.response?.data?.message ||
-                    "Payment reconciliation failed. Please contact support."
-                );
-              }
-              console.error("Reconcile payment error:", reconcileErr);
+          console.warn(
+            "Confirm payment failed/non-success; trying reconcile fallback:",
+            err
+          );
+          try {
+            const reconciledData = await reconcileRazorpayWithRetry({
+              orderId,
+              token: authToken,
+            });
+            const finalOrderId = extractFinalOrderId(reconciledData, orderId);
+            await handlePostPaymentSuccess({ finalOrderId, payload });
+            return;
+          } catch (reconcileErr) {
+            const reconcileStatus = reconcileErr?.response?.status;
+            if (reconcileStatus === 409) {
+              showToast("Payment is captured but booking is still syncing. Please check My Bookings in a few seconds.");
+            } else if (reconcileStatus === 404) {
+              showToast("Booking not found for this payment. Please contact support.");
+            } else {
+              showToast(
+                reconcileErr?.response?.data?.message ||
+                  "Payment reconciliation failed. Please contact support."
+              );
             }
-          } else {
-            console.error("Confirm payment error:", err);
-            showToast(
-              err?.response?.data?.message ||
-                "Failed to confirm booking. Please contact support."
-            );
+            console.error("Reconcile payment error:", reconcileErr);
           }
         } finally {
           setPostPaymentLoading(false);
