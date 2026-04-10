@@ -121,8 +121,6 @@ function PujaDetail() {
     minutes: 0,
     seconds: 0,
   });
-  const [isEventDatePassed, setIsEventDatePassed] = useState(false);
-
   const [activeTab, setActiveTab] = useState("packages");
   const [openFaq, setOpenFaq] = useState(null);
   const [isNavSticky, setIsNavSticky] = useState(false);
@@ -143,12 +141,6 @@ function PujaDetail() {
   const slides = puja?.bannerUrls?.map((img) => img.url) || [];
 
   const handleBookPujaClick = (pkg) => {
-    // Block booking strictly based on event date
-    if (isEventDatePassed) {
-      alert("Puja booking has closed. The event date has passed.");
-      return;
-    }
-
     const mainImage = puja?.bannerUrls?.[0]?.url || null;
     const pkgPrice = Number(pkg?.price) || 0;
 
@@ -261,7 +253,6 @@ function PujaDetail() {
           return isNaN(d.getTime()) ? 0 : d.setHours(23, 59, 59, 999);
         })();
     if (!eventTimeMs) {
-      setIsEventDatePassed(false);
       return;
     }
 
@@ -273,11 +264,9 @@ function PujaDetail() {
 
       if (diff <= 0) {
         setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-        setIsEventDatePassed(true);
         clearInterval(intervalId);
         return;
       }
-      setIsEventDatePassed(false);
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor(
@@ -355,9 +344,6 @@ function PujaDetail() {
                 ))}
               </div>
               {/* <span className="pd-badge">{puja.specialTag}</span> */}
-              {isEventDatePassed && (
-                <span className="pd-soldout-tag" aria-hidden="true">SOLD OUT</span>
-              )}
             </div>
 
           </div>
@@ -434,13 +420,6 @@ function PujaDetail() {
                 <span className="pd-countdown-label-sm">Secs</span>
               </div>
             </div>
-            {isEventDatePassed && (
-              <div className="pd-booking-closed" role="alert">
-                <span className="pd-booking-closed-icon">🔒</span>
-                <strong>Booking closed.</strong> The event date has passed. Payment is no longer available.
-              </div>
-            )}
-
             {/* <div className="pd-participants">
               <div className="pd-avatars">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -457,11 +436,10 @@ function PujaDetail() {
             </p> */}
             <button
               type="button"
-              className={`pd-cta ${isEventDatePassed ? "pd-cta--disabled" : ""}`}
-              onClick={() => !isEventDatePassed && scrollToSection("packages")}
-              disabled={isEventDatePassed}
+              className="pd-cta"
+              onClick={() => scrollToSection("packages")}
             >
-              {isEventDatePassed ? "Booking closed" : "Select puja package →"}
+              Select puja package →
             </button>
           </div>
         </div>
@@ -591,11 +569,10 @@ function PujaDetail() {
                     )}
                     <button
                       type="button"
-                      className={`pd-package-btn ${isEventDatePassed ? "pd-package-btn--disabled" : ""}`}
+                      className="pd-package-btn"
                       onClick={() => handleBookPujaClick(pkg)}
-                      disabled={isEventDatePassed}
                     >
-                      {isEventDatePassed ? "BOOKING CLOSED" : "BOOK PUJA"}
+                      BOOK PUJA
                     </button>
                   </div>
                 </div>

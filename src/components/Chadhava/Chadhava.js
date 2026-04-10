@@ -35,16 +35,16 @@ const normalizeCard = (item = {}) => {
   };
 };
 
-/** Same ordering as `pujaList.js` `sortByAvailabilityThenDate` — upcoming first, then sold-out by recency. */
+/** Same ordering as Puja list: upcoming events first, then past events by recency (all remain bookable in UI). */
 const sortChadhavaByAvailabilityThenDate = (a, b) => {
   const now = Date.now();
   const dateA = Number(a?.eventDateRaw || 0);
   const dateB = Number(b?.eventDateRaw || 0);
-  const isSoldOutA = dateA > 0 && dateA <= now;
-  const isSoldOutB = dateB > 0 && dateB <= now;
-  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
-  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
-  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+  const isPastA = dateA > 0 && dateA <= now;
+  const isPastB = dateB > 0 && dateB <= now;
+  if (isPastA !== isPastB) return isPastA ? 1 : -1;
+  if (!isPastA && !isPastB && dateA !== dateB) return dateA - dateB;
+  if (isPastA && isPastB && dateA !== dateB) return dateB - dateA;
   return 0;
 };
 
@@ -169,10 +169,7 @@ function Chadhava() {
             className={`ch-card-grid${visibleCards.length === 1 ? ' ch-card-grid--single' : ''}`}
             style={{ '--ch-grid-cols': String(PUJA_LIST_GRID_COLUMNS) }}
           >
-            {visibleCards.map((card) => {
-              const isPastEvent =
-                card.eventDateRaw > 0 ? card.eventDateRaw <= Date.now() : false;
-              return (
+            {visibleCards.map((card) => (
               <article key={card.id} className="ch-card">
                 <div
                   className="ch-card-banner"
@@ -184,11 +181,7 @@ function Chadhava() {
                         }
                       : undefined
                   }
-                >
-                  {isPastEvent ? (
-                    <span className="ch-card-sold-out-tag">SOLD OUT</span>
-                  ) : null}
-                </div>
+                />
                 <div className="ch-card-body">
                   <h3 className="ch-card-title">{card.title}</h3>
                   <p className="ch-card-date">{formatEventDate(card.eventdate)}</p>
@@ -209,21 +202,15 @@ function Chadhava() {
                       {expandedCards[card.id] ? 'Read less' : 'Read more'}
                     </button>
                   )}
-                  {isPastEvent ? (
-                    <div className="ch-card-cta ch-card-cta--disabled" aria-disabled="true">
-                      Booking closed
-                    </div>
-                  ) : (
-                    <Link
-                      to={`/chadhava/${encodeURIComponent(card.idOrShortTitle || card.id)}`}
-                      className="ch-card-cta"
-                    >
-                      {card.buttonText}
-                    </Link>
-                  )}
+                  <Link
+                    to={`/chadhava/${encodeURIComponent(card.idOrShortTitle || card.id)}`}
+                    className="ch-card-cta"
+                  >
+                    {card.buttonText}
+                  </Link>
                 </div>
               </article>
-            )})}
+            ))}
           </div>
         )}
       </section>
