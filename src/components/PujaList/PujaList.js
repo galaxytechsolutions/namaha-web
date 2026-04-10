@@ -2,10 +2,15 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./PujaList.css";
 import Footer from "../Footer/Footer";
-import { usePujaList } from "../../data/pujaList";
+import { usePujaList, computePujaIsPastEvent } from "../../data/pujaList";
 
 const INITIAL_VISIBLE_CARDS = 4;
 const LOAD_MORE_STEP = 4;
+
+const isPujaPastEvent = (puja) =>
+  typeof puja?.isPastEvent === "boolean"
+    ? puja.isPastEvent
+    : computePujaIsPastEvent(puja?.eventDateRaw);
 
 const normalizeBenefitTitles = (benefits) => {
   if (Array.isArray(benefits)) {
@@ -35,20 +40,19 @@ function PujaList() {
 
   // Upcoming first, then sold-out; keep date-wise order within each group.
   const sortedPujas = [...pujaList].sort((a, b) => {
-    const now = Date.now();
     const dateA = Number(a.eventDateRaw || 0);
     const dateB = Number(b.eventDateRaw || 0);
-    const isSoldOutA = dateA > 0 && dateA <= now;
-    const isSoldOutB = dateB > 0 && dateB <= now;
+    const pastA = isPujaPastEvent(a);
+    const pastB = isPujaPastEvent(b);
 
     // Upcoming items first (bookable pujas on top).
-    if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
+    if (pastA !== pastB) return pastA ? 1 : -1;
 
     // Upcoming group: nearest date first.
-    if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
+    if (!pastA && !pastB && dateA !== dateB) return dateA - dateB;
 
-    // Sold-out group: most recently ended first.
-    if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+    // Past group: most recently ended first.
+    if (pastA && pastB && dateA !== dateB) return dateB - dateA;
 
     return (a.rank ?? 9999) - (b.rank ?? 9999);
   });
@@ -108,7 +112,9 @@ function PujaList() {
         </h2>
 
         <div className="pl-cards">
-          {visiblePujas.map((puja) => (
+          {visiblePujas.map((puja) => {
+            const isPastEvent = isPujaPastEvent(puja);
+            return (
             <div
               key={puja.id}
               className="pl-card"
@@ -132,8 +138,12 @@ function PujaList() {
                 {/* <span className={`pl-card-tag ${puja.tagColor}`}>
                   {puja.specialTag}
                 </span> */}
-                {puja.topChoice && (
-                  <span className="pl-top-choice-tag">TOP CHOICE</span>
+                {isPastEvent ? (
+                  <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
+                ) : (
+                  puja.topChoice && (
+                    <span className="pl-top-choice-tag">TOP CHOICE</span>
+                  )
                 )}
               </div>
 
@@ -157,11 +167,17 @@ function PujaList() {
               {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta pl-card-date">📅 {puja.date}</p>
 
-              <Link to={`/puja/${puja.id}`} className="pl-card-participate">
-                Book Now <span className="btn-icon">🙏🏻</span>
-              </Link>
+              {isPastEvent ? (
+                <div className="pl-card-participate pl-card-participate-disabled">
+                  Booking closed
+                </div>
+              ) : (
+                <Link to={`/puja/${puja.id}`} className="pl-card-participate">
+                  Book Now <span className="btn-icon">🙏🏻</span>
+                </Link>
+              )}
             </div>
-          ))}
+          )})}
         </div>
       </section>
 
