@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getPujaById } from "../../data/pujaList";
+import { getPujaById, isPujaUserSoldOut } from "../../data/pujaList";
 import "./PujaDetail.css";
 import Footer from "../Footer/Footer";
 
@@ -140,7 +140,16 @@ function PujaDetail() {
 
   const slides = puja?.bannerUrls?.map((img) => img.url) || [];
 
+  const isBookingBlocked = useMemo(
+    () => (puja ? isPujaUserSoldOut(puja) : false),
+    [puja]
+  );
+
   const handleBookPujaClick = (pkg) => {
+    if (isPujaUserSoldOut(puja)) {
+      alert("Puja booking is closed for this listing.");
+      return;
+    }
     const mainImage = puja?.bannerUrls?.[0]?.url || null;
     const pkgPrice = Number(pkg?.price) || 0;
 
@@ -344,6 +353,9 @@ function PujaDetail() {
                 ))}
               </div>
               {/* <span className="pd-badge">{puja.specialTag}</span> */}
+              {isBookingBlocked ? (
+                <span className="pd-soldout-tag" aria-hidden="true">SOLD OUT</span>
+              ) : null}
             </div>
 
           </div>
@@ -420,6 +432,12 @@ function PujaDetail() {
                 <span className="pd-countdown-label-sm">Secs</span>
               </div>
             </div>
+            {isBookingBlocked ? (
+              <div className="pd-booking-closed" role="alert">
+                <span className="pd-booking-closed-icon">🔒</span>
+                <strong>Booking closed.</strong> This puja is not available for booking.
+              </div>
+            ) : null}
             {/* <div className="pd-participants">
               <div className="pd-avatars">
                 {[1, 2, 3, 4, 5].map((i) => (
@@ -436,10 +454,11 @@ function PujaDetail() {
             </p> */}
             <button
               type="button"
-              className="pd-cta"
-              onClick={() => scrollToSection("packages")}
+              className={`pd-cta ${isBookingBlocked ? "pd-cta--disabled" : ""}`}
+              disabled={isBookingBlocked}
+              onClick={() => !isBookingBlocked && scrollToSection("packages")}
             >
-              Select puja package →
+              {isBookingBlocked ? "Booking closed" : "Select puja package →"}
             </button>
           </div>
         </div>
@@ -569,10 +588,11 @@ function PujaDetail() {
                     )}
                     <button
                       type="button"
-                      className="pd-package-btn"
+                      className={`pd-package-btn ${isBookingBlocked ? "pd-package-btn--disabled" : ""}`}
+                      disabled={isBookingBlocked}
                       onClick={() => handleBookPujaClick(pkg)}
                     >
-                      BOOK PUJA
+                      {isBookingBlocked ? "BOOKING CLOSED" : "BOOK PUJA"}
                     </button>
                   </div>
                 </div>

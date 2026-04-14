@@ -10,29 +10,60 @@ export const computePujaIsPastEvent = (eventDateRaw) => {
   return raw > 0 && raw <= Date.now();
 };
 
+/** Admin/API tri-state: true = sold, false = force bookable, null|undefined = use event date only. */
+export const normalizeApiSoldTag = (value) => {
+  if (value === true || value === 1) return true;
+  if (value === false || value === 0) return false;
+  const s = String(value ?? "").trim().toLowerCase();
+  if (s === "true" || s === "1") return true;
+  if (s === "false" || s === "0") return false;
+  if (s === "none" || s === "") return null;
+  return null;
+};
+
+function computeUserSoldOutFromPolicyAndDate(policy, eventDateRaw) {
+  if (policy === false) return false;
+  if (policy === true) return true;
+  return computePujaIsPastEvent(eventDateRaw);
+}
+
+/**
+ * User-site: booking/list "sold" state. Trusts `soldTagPolicy` when set by mapper;
+ * otherwise normalizes legacy `soldTag` string/bool. Never POST this from booking UI.
+ */
+export function isPujaUserSoldOut(puja) {
+  if (!puja || typeof puja !== "object") return false;
+  const policy = Object.prototype.hasOwnProperty.call(puja, "soldTagPolicy")
+    ? puja.soldTagPolicy
+    : normalizeApiSoldTag(puja.soldTag);
+  return computeUserSoldOutFromPolicyAndDate(policy, puja.eventDateRaw);
+}
+
 const enrichPujaListItem = (puja) => {
   if (!puja || typeof puja !== "object") return puja;
-  const isPastEvent = computePujaIsPastEvent(puja.eventDateRaw);
-  return { ...puja, isPastEvent, soldTag: isPastEvent };
+  const policy = Object.prototype.hasOwnProperty.call(puja, "soldTagPolicy")
+    ? puja.soldTagPolicy
+    : normalizeApiSoldTag(puja.soldTag);
+  const isPastEvent = computeUserSoldOutFromPolicyAndDate(policy, puja.eventDateRaw);
+  return { ...puja, soldTagPolicy: policy, isPastEvent, soldTag: isPastEvent };
 };
 
 const enrichPujaList = (list) => (Array.isArray(list) ? list : []).map(enrichPujaListItem);
 
 const sortByAvailabilityThenDate = (a, b) => {
-  const now = Date.now();
   const dateA = Number(a?.eventDateRaw || 0);
   const dateB = Number(b?.eventDateRaw || 0);
-  const isSoldOutA = dateA > 0 && dateA <= now;
-  const isSoldOutB = dateB > 0 && dateB <= now;
+  const soldOutA = isPujaUserSoldOut(a);
+  const soldOutB = isPujaUserSoldOut(b);
 
-  // Upcoming (not sold out) first so bookable pujas are visible first.
-  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
+  // Bookable first (not sold / not past per policy+date).
+  if (soldOutA !== soldOutB) return soldOutA ? 1 : -1;
 
-  // Upcoming group: nearest event first.
-  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
+  // Bookable group: nearest event first.
+  if (!soldOutA && !soldOutB && dateA !== dateB) return dateA - dateB;
 
-  // Sold-out group: most recently ended first.
-  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+  // Sold/past group: most recently ended first.
+  if (soldOutA && soldOutB && dateA !== dateB) return dateB - dateA;
 
   return (a.rank ?? 9999) - (b.rank ?? 9999);
 };
@@ -166,6 +197,12 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => {
     return { eventDate: formatted, eventDateRaw: d.getTime(), date: formatted };
   })();
 
+  const soldTagPolicy = normalizeApiSoldTag(apiPuja.soldTag);
+  const isPastEvent = computeUserSoldOutFromPolicyAndDate(
+    soldTagPolicy,
+    eventPieces.eventDateRaw
+  );
+
   return {
   id: apiPuja._id,
   rank: apiPuja.rank ?? 9999,
@@ -225,9 +262,10 @@ const mapApiPujaToPUJA_LIST = (apiPuja) => {
   section: apiPuja.section,
   // occasion: auspicious event/festival when puja is performed (e.g. Ram Navami, Diwali)
   occasion: apiPuja.occasion || apiPuja.eventOccasion || apiPuja.specialTag || null,
-  // Aligns with Chadhava `isPastEvent` + list sold state from event date
-  isPastEvent: computePujaIsPastEvent(eventPieces.eventDateRaw),
-  soldTag: computePujaIsPastEvent(eventPieces.eventDateRaw),
+  // Admin soldTag (true/false/none) OR event date when policy is none
+  soldTagPolicy,
+  isPastEvent,
+  soldTag: isPastEvent,
   coupon: apiPuja.coupon
     ? {
         code: apiPuja.coupon.code,

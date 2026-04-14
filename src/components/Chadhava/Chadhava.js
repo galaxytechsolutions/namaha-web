@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
-import { PUJA_LIST_GRID_COLUMNS } from '../../data/pujaList';
+import {
+  PUJA_LIST_GRID_COLUMNS,
+  normalizeApiSoldTag,
+  isPujaUserSoldOut,
+} from '../../data/pujaList';
 import './Chadhava.css';
 import Footer from '../Footer/Footer';
 
@@ -23,28 +27,33 @@ const normalizeCard = (item = {}) => {
   const ev = rawDate ? new Date(rawDate) : null;
   const eventDateRaw =
     ev && !Number.isNaN(ev.getTime()) ? ev.getTime() : 0;
-  return {
+  const soldTagPolicy = normalizeApiSoldTag(item.soldTag ?? item.soldTagPolicy);
+  const card = {
     id: String(rawId || Math.random()),
     idOrShortTitle,
     title: item.title || 'Untitled Chadhava',
     eventdate: rawDate || 'Date will be announced',
     eventDateRaw,
+    soldTagPolicy,
     description: item.description || 'Details will be updated soon.',
     bannerImage: item.bannerImage || item.image || item.thumbnail || '',
     buttonText: item.buttonText || item.ctaText || 'View Details',
   };
+  return {
+    ...card,
+    isPastEvent: isPujaUserSoldOut(card),
+  };
 };
 
-/** Same ordering as `pujaList.js` `sortByAvailabilityThenDate` — upcoming first, then sold-out by recency. */
+/** Same rules as `pujaList.js`: admin `soldTag` + event date; bookable-first sort. */
 const sortChadhavaByAvailabilityThenDate = (a, b) => {
-  const now = Date.now();
   const dateA = Number(a?.eventDateRaw || 0);
   const dateB = Number(b?.eventDateRaw || 0);
-  const isSoldOutA = dateA > 0 && dateA <= now;
-  const isSoldOutB = dateB > 0 && dateB <= now;
-  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
-  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
-  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+  const soldA = isPujaUserSoldOut(a);
+  const soldB = isPujaUserSoldOut(b);
+  if (soldA !== soldB) return soldA ? 1 : -1;
+  if (!soldA && !soldB && dateA !== dateB) return dateA - dateB;
+  if (soldA && soldB && dateA !== dateB) return dateB - dateA;
   return 0;
 };
 
@@ -171,7 +180,9 @@ function Chadhava() {
           >
             {visibleCards.map((card) => {
               const isPastEvent =
-                card.eventDateRaw > 0 ? card.eventDateRaw <= Date.now() : false;
+                typeof card.isPastEvent === 'boolean'
+                  ? card.isPastEvent
+                  : isPujaUserSoldOut(card);
               return (
               <article key={card.id} className="ch-card">
                 <div

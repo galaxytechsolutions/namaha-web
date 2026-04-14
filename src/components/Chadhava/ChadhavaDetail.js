@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
+import { normalizeApiSoldTag, isPujaUserSoldOut } from '../../data/pujaList';
 import './ChadhavaDetail.css';
 import Footer from '../Footer/Footer';
 
@@ -64,16 +65,19 @@ function ChadhavaDetail() {
     return String(value);
   };
 
-  const eventDateRaw = useMemo(() => {
-    if (!detail) return 0;
+  /** Same as `Chadhava.js` / `pujaList.js`: admin `soldTag` + event date. */
+  const { isBookingBlocked } = useMemo(() => {
+    if (!detail) return { isBookingBlocked: false };
     const raw = detail.eventdate || detail.eventDate || detail.dateRange;
-    if (!raw) return 0;
-    const d = new Date(raw);
-    return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+    let eventDateRaw = 0;
+    if (raw) {
+      const d = new Date(raw);
+      eventDateRaw = Number.isNaN(d.getTime()) ? 0 : d.getTime();
+    }
+    const soldTagPolicy = normalizeApiSoldTag(detail.soldTag ?? detail.soldTagPolicy);
+    const ctx = { eventDateRaw, soldTagPolicy };
+    return { isBookingBlocked: isPujaUserSoldOut(ctx) };
   }, [detail]);
-
-  /** Same rule as `Chadhava.js` list: past when eventDateRaw > 0 and not after now. */
-  const isEventSoldOut = eventDateRaw > 0 && eventDateRaw <= Date.now();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -118,11 +122,11 @@ function ChadhavaDetail() {
   }, [id]);
 
   useEffect(() => {
-    if (isEventSoldOut) setCart({});
-  }, [isEventSoldOut]);
+    if (isBookingBlocked) setCart({});
+  }, [isBookingBlocked]);
 
   const updateCart = (offeringId, change) => {
-    if (isEventSoldOut) return;
+    if (isBookingBlocked) return;
     setCart(prev => {
       const currentCount = prev[offeringId] || 0;
       const newCount = Math.max(0, currentCount + change);
@@ -148,7 +152,7 @@ function ChadhavaDetail() {
     }, 0);
 
   const handleBuyNow = () => {
-    if (isEventSoldOut) return;
+    if (isBookingBlocked) return;
     const selectedOfferings = Object.entries(cart)
       .filter(([_, qty]) => qty > 0)
       .map(([offeringId, qty]) => {
@@ -241,7 +245,7 @@ function ChadhavaDetail() {
                     ) : (
                       <div className="chd-hero-image chd-hero-image-fallback" />
                     )}
-                    {isEventSoldOut ? (
+                    {isBookingBlocked ? (
                       <span className="chd-sold-out-tag">SOLD OUT</span>
                     ) : null}
                   </div>
@@ -264,9 +268,9 @@ function ChadhavaDetail() {
           {/* Offerings list */}
           <section className="chd-offerings">
             <h2 className="chd-section-title">Choose an offering</h2>
-            {isEventSoldOut ? (
+            {isBookingBlocked ? (
               <p className="chd-booking-closed-banner" role="status">
-                This event date has passed — booking is closed.
+                <strong>Booking closed.</strong> This chadhava is not available for booking.
               </p>
             ) : null}
             <div className="chd-offering-list">
@@ -294,7 +298,7 @@ function ChadhavaDetail() {
                             <button 
                               type="button"
                               className="chd-qty-btn chd-qty-minus"
-                              disabled={isEventSoldOut}
+                              disabled={isBookingBlocked}
                               onClick={() => updateCart(offeringId, -1)}
                             >
                               -
@@ -303,7 +307,7 @@ function ChadhavaDetail() {
                             <button 
                               type="button"
                               className="chd-qty-btn chd-qty-plus"
-                              disabled={isEventSoldOut}
+                              disabled={isBookingBlocked}
                               onClick={() => updateCart(offeringId, 1)}
                             >
                               +
@@ -313,7 +317,7 @@ function ChadhavaDetail() {
                           <button 
                             type="button" 
                             className="chd-offering-add"
-                            disabled={isEventSoldOut}
+                            disabled={isBookingBlocked}
                             onClick={() => updateCart(offeringId, 1)}
                           >
                             + Add
@@ -360,7 +364,7 @@ function ChadhavaDetail() {
       </main>
 
       {/* Fixed Cart Button */}
-      {!isEventSoldOut && getTotalItems() > 0 && (
+      {!isBookingBlocked && getTotalItems() > 0 && (
         <div className="chd-cart-button">
           <div className="chd-cart-info">
             <span className="chd-cart-items">{getTotalItems()} items</span>
