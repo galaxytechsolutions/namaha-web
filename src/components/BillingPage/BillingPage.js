@@ -13,18 +13,6 @@ function BillingPage() {
     window.scrollTo({ top: 0, behavior: "auto" });
   }, []);
 
-  // Helper: safely send Meta Pixel standard events
-  const trackMetaPixelEvent = (eventName, params = {}) => {
-    if (typeof window !== "undefined" && window.fbq) {
-      try {
-        window.fbq("track", eventName, params);
-      } catch (e) {
-        // Avoid breaking checkout if pixel fails
-        console.warn("Meta Pixel track error", eventName, e);
-      }
-    }
-  };
-
   // ✅ Destructure values passed from PujaDetail navigate state (no pandit/slot/location)
   const {
     puja,
@@ -52,6 +40,39 @@ function BillingPage() {
 
     // remove ₹ , commas, spaces
     return Number(String(value).replace(/[₹,\s]/g, ""));
+  };
+
+  /**
+   * Meta Pixel expects `value` as a finite number in major currency units (INR), not a formatted string.
+   * Missing/NaN values trigger "InitiateCheckout price missing or incorrect format" in Events Manager.
+   */
+  const normalizeMetaPixelValue = (value) => {
+    if (value == null || value === "") return null;
+    const n =
+      typeof value === "number" && Number.isFinite(value)
+        ? value
+        : parseAmount(value);
+    if (!Number.isFinite(n) || n < 0) return null;
+    return Math.round(n * 100) / 100;
+  };
+
+  const trackMetaPixelEvent = (eventName, params = {}) => {
+    if (typeof window !== "undefined" && window.fbq) {
+      try {
+        const payload = { ...params };
+        if (payload.value != null) {
+          const v = normalizeMetaPixelValue(payload.value);
+          if (v != null) payload.value = v;
+          else delete payload.value;
+        }
+        if (!payload.currency || typeof payload.currency !== "string") {
+          payload.currency = "INR";
+        }
+        window.fbq("track", eventName, payload);
+      } catch (e) {
+        console.warn("Meta Pixel track error", eventName, e);
+      }
+    }
   };
 
   const packagePrice = parseAmount(selectedPackage?.price);
@@ -675,17 +696,25 @@ function BillingPage() {
       });
     }
 
-    trackMetaPixelEvent("Purchase", {
-      value: finalPayable,
-      currency: "INR",
-      contents: [
-        {
-          id: puja?._id || puja?.id || String(finalOrderId || ""),
-          quantity: 1,
-        },
-      ],
-      content_type: "product",
-    });
+    const purchaseValue = normalizeMetaPixelValue(finalPayable);
+    const purchaseContentId = String(
+      puja?._id || puja?.id || finalOrderId || "purchase"
+    );
+    if (purchaseValue != null) {
+      trackMetaPixelEvent("Purchase", {
+        value: purchaseValue,
+        currency: "INR",
+        content_type: "product",
+        content_ids: [purchaseContentId],
+        contents: [
+          {
+            id: purchaseContentId,
+            quantity: 1,
+            item_price: purchaseValue,
+          },
+        ],
+      });
+    }
 
     const invoice = {
       orderId: finalOrderId,
@@ -791,11 +820,25 @@ function BillingPage() {
     }
     setPendingRazorpayOrderId(orderId);
 
-    // Meta Pixel: user is starting checkout
-    trackMetaPixelEvent("InitiateCheckout", {
-      value: amount,
-      currency: "INR",
-    });
+    // Meta Pixel: InitiateCheckout requires numeric `value` + `currency` (and recommended catalog fields).
+    const checkoutValue = normalizeMetaPixelValue(amount);
+    const contentId = String(puja?._id || puja?.id || orderId || "checkout");
+    if (checkoutValue != null) {
+      trackMetaPixelEvent("InitiateCheckout", {
+        value: checkoutValue,
+        currency: "INR",
+        content_type: "product",
+        content_ids: [contentId],
+        num_items: 1,
+        contents: [
+          {
+            id: contentId,
+            quantity: 1,
+            item_price: checkoutValue,
+          },
+        ],
+      });
+    }
 
     const options = {
       key: process.env.REACT_APP_RAZORPAY_KEY_ID,

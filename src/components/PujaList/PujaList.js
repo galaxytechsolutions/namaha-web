@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "./PujaList.css";
 import Footer from "../Footer/Footer";
-import { usePujaList, computePujaIsPastEvent } from "../../data/pujaList";
+import { usePujaList, isPujaUserSoldOut } from "../../data/pujaList";
 
 const INITIAL_VISIBLE_CARDS = 4;
 const LOAD_MORE_STEP = 4;
@@ -10,7 +10,7 @@ const LOAD_MORE_STEP = 4;
 const isPujaPastEvent = (puja) =>
   typeof puja?.isPastEvent === "boolean"
     ? puja.isPastEvent
-    : computePujaIsPastEvent(puja?.eventDateRaw);
+    : isPujaUserSoldOut(puja);
 
 const normalizeBenefitTitles = (benefits) => {
   if (Array.isArray(benefits)) {

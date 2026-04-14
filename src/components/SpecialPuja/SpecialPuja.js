@@ -5,7 +5,14 @@ import "../PujaList/PujaList.css";
 import {
   fetchPujaList,
   PUJA_LIST_GRID_COLUMNS,
+  isPujaUserSoldOut,
 } from "../../data/pujaList";
+
+/** Same as PujaList: trust API-mapped `isPastEvent` when boolean; else policy + date via `isPujaUserSoldOut`. */
+const isPujaPastEvent = (puja) =>
+  typeof puja?.isPastEvent === "boolean"
+    ? puja.isPastEvent
+    : isPujaUserSoldOut(puja);
 
 const SP_IMAGE_MAP = {
   1: "sp-banner-1",
@@ -14,20 +21,14 @@ const SP_IMAGE_MAP = {
 };
 
 const sortByAvailabilityThenDate = (a, b) => {
-  const now = Date.now();
   const dateA = Number(a?.eventDateRaw || 0);
   const dateB = Number(b?.eventDateRaw || 0);
-  const isSoldOutA = dateA > 0 && dateA <= now;
-  const isSoldOutB = dateB > 0 && dateB <= now;
+  const soldA = isPujaPastEvent(a);
+  const soldB = isPujaPastEvent(b);
 
-  // Upcoming (not sold out) first.
-  if (isSoldOutA !== isSoldOutB) return isSoldOutA ? 1 : -1;
-
-  // Upcoming group: nearest event first.
-  if (!isSoldOutA && !isSoldOutB && dateA !== dateB) return dateA - dateB;
-
-  // Sold-out group: most recently ended first.
-  if (isSoldOutA && isSoldOutB && dateA !== dateB) return dateB - dateA;
+  if (soldA !== soldB) return soldA ? 1 : -1;
+  if (!soldA && !soldB && dateA !== dateB) return dateA - dateB;
+  if (soldA && soldB && dateA !== dateB) return dateB - dateA;
 
   return (a.rank ?? 9999) - (b.rank ?? 9999);
 };
@@ -35,12 +36,6 @@ const sortByAvailabilityThenDate = (a, b) => {
 function SpecialPuja() {
   const [pujas, setPujas] = useState([]); // ✅ NEW: useState
   const [loading, setLoading] = useState(true);
-
-  const isEventDatePassed = (p) => {
-    const eventTimeMs = p?.eventDateRaw;
-    if (!eventTimeMs) return false;
-    return eventTimeMs <= Date.now();
-  };
 
   const getBenefitTitle = (benefit) => {
     if (!benefit) return null;
@@ -124,7 +119,7 @@ function SpecialPuja() {
                 {/* <span className={`pl-card-tag ${puja.tagColor}`}>
                   {puja.specialTag}
                 </span> */}
-                {isEventDatePassed(puja) ? (
+                {isPujaPastEvent(puja) ? (
                   <span className="pl-top-choice-tag sold-out">SOLD OUT</span>
                 ) : (
                   puja.topChoice && (
@@ -153,7 +148,7 @@ function SpecialPuja() {
               <p className="pl-card-meta">🏛 {puja.templeName}</p>
               {/* occasion: auspicious date/event when puja is performed */}
               <p className="pl-card-meta pl-card-date">📅 {puja.date}</p>
-              {isEventDatePassed(puja) ? (
+              {isPujaPastEvent(puja) ? (
                 <div className="pl-card-participate pl-card-participate-disabled">
                   Booking closed
                 </div>
