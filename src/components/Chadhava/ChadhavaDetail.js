@@ -259,7 +259,7 @@ function ChadhavaDetail() {
                 <p className="chd-date">{formatEventDate(detail.eventdate || detail.eventDate || detail.dateRange)}</p>
                 <p className="chd-devotees">
                   Till now <strong>{detail.devoteesCount || 'many'} Devotees</strong> have participated in
-                  Chadhava conducted by Shri aaum Chadhava SHRI AAUM.
+                  Chadhava.
                 </p>
               </div>
             </div>
