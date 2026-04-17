@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../lib/instance';
 import { normalizeApiSoldTag, isPujaUserSoldOut } from '../../data/pujaList';
@@ -43,6 +43,13 @@ const FAQS = [
   },
 ];
 
+const SECTION_TABS = [
+  { id: 'packages', label: 'Packages' },
+  { id: 'benefits', label: 'Benefits' },
+  { id: 'temple', label: 'Temple Details' },
+  { id: 'faqs', label: 'FAQs' },
+];
+
 function ChadhavaDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -51,6 +58,15 @@ function ChadhavaDetail() {
   const [loading, setLoading] = useState(true);
   const [detail, setDetail] = useState(null);
   const [offerings, setOfferings] = useState([]);
+  const [activeTab, setActiveTab] = useState('packages');
+  const [isNavSticky, setIsNavSticky] = useState(false);
+  const aboutTextRef = useRef(null);
+  const sectionRefs = useRef({});
+  const sectionNavRef = useRef(null);
+  const stickyThresholdRef = useRef(null);
+  const collapsedLines = 4;
+  const [aboutVisibleLines, setAboutVisibleLines] = useState(collapsedLines);
+  const [aboutHasOverflow, setAboutHasOverflow] = useState(false);
 
   const formatEventDate = (value) => {
     if (!value) return 'Date will be announced';
@@ -78,6 +94,23 @@ function ChadhavaDetail() {
     const ctx = { eventDateRaw, soldTagPolicy };
     return { isBookingBlocked: isPujaUserSoldOut(ctx) };
   }, [detail]);
+
+  const normalizedBenefits = useMemo(() => {
+    const raw = detail?.benefits;
+    if (!Array.isArray(raw)) return [];
+    return raw
+      .map((item) => {
+        if (!item || typeof item !== 'object') return null;
+        const title = String(item.title || '').trim();
+        const subtitle = String(item.subtitle || '').trim();
+        if (!title && !subtitle) return null;
+        return { title, subtitle };
+      })
+      .filter(Boolean);
+  }, [detail]);
+
+  const templeName = detail?.templeName || 'Shri Aaum Temple';
+  const templeDescription = detail?.templeDescription || '';
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' });
@@ -122,8 +155,68 @@ function ChadhavaDetail() {
   }, [id]);
 
   useEffect(() => {
+    setAboutVisibleLines(collapsedLines);
+  }, [detail]);
+
+  useEffect(() => {
+    if (!aboutTextRef.current) {
+      setAboutHasOverflow(false);
+      return;
+    }
+    const el = aboutTextRef.current;
+    setAboutHasOverflow(el.scrollHeight - el.clientHeight > 2);
+  }, [detail, aboutVisibleLines]);
+
+  useEffect(() => {
     if (isBookingBlocked) setCart({});
   }, [isBookingBlocked]);
+
+  const scrollToSection = (sectionId) => {
+    setActiveTab(sectionId);
+    const nav = sectionNavRef.current;
+    if (nav) {
+      const navTop = nav.getBoundingClientRect().top + window.scrollY;
+      stickyThresholdRef.current = navTop - 82;
+    }
+    sectionRefs.current[sectionId]?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start',
+    });
+    setIsNavSticky(true);
+  };
+
+  useEffect(() => {
+    const onScroll = () => {
+      const nav = sectionNavRef.current;
+      if (!nav) return;
+      if (!isNavSticky) {
+        const rect = nav.getBoundingClientRect();
+        const navTop = rect.top + window.scrollY;
+        const threshold = navTop - 82;
+        if (window.scrollY >= threshold) {
+          stickyThresholdRef.current = threshold;
+          setIsNavSticky(true);
+        }
+      } else if (
+        stickyThresholdRef.current != null &&
+        window.scrollY < stickyThresholdRef.current
+      ) {
+        setIsNavSticky(false);
+      }
+
+      const sectionOrder = SECTION_TABS.map((t) => t.id);
+      let current = activeTab;
+      for (const idKey of sectionOrder) {
+        const el = sectionRefs.current[idKey];
+        if (!el) continue;
+        const top = el.getBoundingClientRect().top;
+        if (top <= 160) current = idKey;
+      }
+      if (current !== activeTab) setActiveTab(current);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [activeTab, isNavSticky]);
 
   const updateCart = (offeringId, change) => {
     if (isBookingBlocked) return;
@@ -194,6 +287,7 @@ function ChadhavaDetail() {
       addonsTotal: 0,
       grandTotal: total,
       mode: 'chadhava',
+      prasadam: false, // user selects on BillingPage (same as puja flow)
     };
 
     console.log('Chadhava -> Billing fields being passed:', billingState);
@@ -252,11 +346,54 @@ function ChadhavaDetail() {
                 </div>
               </div>
               <div className="chd-hero-text">
-                <h1 className="chd-title">{detail.title}</h1>
-                <p className="chd-subtitle">
-                  🕉 {detail.description || detail.subtitle || 'Offer this sacred chadhava for divine blessings.'}
-                </p>
-                <p className="chd-date">{formatEventDate(detail.eventdate || detail.eventDate || detail.dateRange)}</p>
+                <div className="chd-details-header">
+                  <h1 className="chd-title">{detail.title}</h1>
+                  <p className="chd-subtitle">
+                    {detail.subtitle || 'Offer this sacred chadhava for divine blessings.'}
+                  </p>
+                  <p className="chd-meta">
+                    <span className="chd-meta-icon">🏛</span>
+                    {templeName}
+                  </p>
+                  <p className="chd-meta">
+                    <span className="chd-meta-icon">📅</span>
+                    {formatEventDate(detail.eventdate || detail.eventDate || detail.dateRange)}
+                  </p>
+                </div>
+                {detail?.description ? (
+                  <div className="chd-details-about">
+                    <p
+                      className="chd-details-about-text"
+                      style={{
+                        WebkitLineClamp: aboutVisibleLines,
+                        lineClamp: aboutVisibleLines,
+                      }}
+                      ref={aboutTextRef}
+                    >
+                      {detail.description}
+                    </p>
+                    <div className="chd-details-about-actions">
+                      {aboutVisibleLines <= collapsedLines && aboutHasOverflow ? (
+                        <button
+                          type="button"
+                          className="chd-read-more-btn"
+                          onClick={() => setAboutVisibleLines(999)}
+                        >
+                          Read more
+                        </button>
+                      ) : null}
+                      {aboutVisibleLines > collapsedLines ? (
+                        <button
+                          type="button"
+                          className="chd-read-more-btn chd-read-less"
+                          onClick={() => setAboutVisibleLines(collapsedLines)}
+                        >
+                          Read less
+                        </button>
+                      ) : null}
+                    </div>
+                  </div>
+                ) : null}
                 <p className="chd-devotees">
                   Till now <strong>{detail.devoteesCount || 'many'} Devotees</strong> have participated in
                   Chadhava.
@@ -265,8 +402,33 @@ function ChadhavaDetail() {
             </div>
           </section>
 
+          <nav
+            ref={sectionNavRef}
+            className={`chd-section-nav ${isNavSticky ? 'chd-section-nav--fixed' : ''}`}
+          >
+            <div className="chd-section-nav-inner">
+              {SECTION_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`chd-section-tab ${activeTab === tab.id ? 'active' : ''}`}
+                  onClick={() => scrollToSection(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </nav>
+          {isNavSticky ? <div className="chd-section-nav-spacer" aria-hidden="true" /> : null}
+
           {/* Offerings list */}
-          <section className="chd-offerings">
+          <section
+            className="chd-offerings chd-section"
+            id="packages"
+            ref={(el) => {
+              sectionRefs.current.packages = el;
+            }}
+          >
             <h2 className="chd-section-title">Choose an offering</h2>
             {isBookingBlocked ? (
               <p className="chd-booking-closed-banner" role="status">
@@ -334,8 +496,60 @@ function ChadhavaDetail() {
             )}
           </section>
 
+          <section
+            className="chd-temple-benefits chd-section"
+            id="benefits"
+            ref={(el) => {
+              sectionRefs.current.benefits = el;
+            }}
+          >
+            <h2 className="chd-section-title">Benefits</h2>
+            {normalizedBenefits.length > 0 ? (
+              <ul className="chd-benefits-grid">
+                {normalizedBenefits.map((benefit, idx) => (
+                  <li key={`${benefit.title}-${idx}`} className="chd-benefit-item">
+                    <div className="chd-benefit-icon">✓</div>
+                    <p className="chd-benefit-title">{benefit.title}</p>
+                    {benefit.subtitle ? (
+                      <p className="chd-benefit-subtitle">{benefit.subtitle}</p>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="chd-empty-block">Benefits will be announced soon.</p>
+            )}
+          </section>
+
+          <section
+            className="chd-temple-benefits chd-section"
+            id="temple"
+            ref={(el) => {
+              sectionRefs.current.temple = el;
+            }}
+          >
+            <h2 className="chd-section-title">Temple Details</h2>
+            {templeDescription ? (
+              <div className="chd-temple-block">
+                <h3 className="chd-temple-name">{templeName}</h3>
+                <div
+                  className="chd-temple-text"
+                  dangerouslySetInnerHTML={{ __html: templeDescription }}
+                />
+              </div>
+            ) : (
+              <p className="chd-empty-block">Temple details will be updated soon.</p>
+            )}
+          </section>
+
           {/* FAQs */}
-          <section className="chd-faqs">
+          <section
+            className="chd-faqs chd-section"
+            id="faqs"
+            ref={(el) => {
+              sectionRefs.current.faqs = el;
+            }}
+          >
             <h2 className="chd-section-title">Frequently asked Questions</h2>
             <ul className="chd-faq-list">
               {FAQS.map((faq, index) => (

@@ -432,6 +432,17 @@ function PujaDetail() {
                 <span className="pd-countdown-label-sm">Secs</span>
               </div>
             </div>
+            <div className="pd-rating-row" aria-label="Rating: 5 out of 5 stars">
+              <span className="pd-rating-row-label">Rating:</span>
+              <span className="pd-rating-row-stars" aria-hidden="true">
+                {[1, 2, 3, 4, 5].map((i) => (
+                  <span key={i} className="pd-rating-star">
+                    ★
+                  </span>
+                ))}
+              </span>
+              <span className="pd-rating-row-suffix">5 stars</span>
+            </div>
             {isBookingBlocked ? (
               <div className="pd-booking-closed" role="alert">
                 <span className="pd-booking-closed-icon">🔒</span>

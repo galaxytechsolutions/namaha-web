@@ -179,11 +179,6 @@ function BillingPage() {
   }, []);
 
   useEffect(() => {
-    // Chadhava flow: no prasadam option in billing
-    if (isChadhavaFlow && prasadam) setPrasadam(false);
-  }, [isChadhavaFlow, prasadam]);
-
-  useEffect(() => {
     return () => {
       if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
     };
@@ -1381,17 +1376,15 @@ function BillingPage() {
             </div>
           )}
 
-          {/* Prasadam option */}
-          {!isChadhavaFlow && (
-            <label className="billing-prasadam-option">
-              <input
-                type="checkbox"
-                checked={prasadam}
-                onChange={(e) => setPrasadam(e.target.checked)}
-              />
-              <span>Prasadam (Free)</span>
-            </label>
-          )}
+          {/* Prasadam option (puja + chadhava; same backend flag) */}
+          <label className="billing-prasadam-option">
+            <input
+              type="checkbox"
+              checked={prasadam}
+              onChange={(e) => setPrasadam(e.target.checked)}
+            />
+            <span>Prasadam (Free)</span>
+          </label>
 
           {/* ✅ GRAND TOTAL */}
           <div className="grand-total-row">
