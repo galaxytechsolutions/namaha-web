@@ -246,19 +246,19 @@ function Layout({ children }) {
                                 Home
                             </Link>
                         </li>
-                        <li className="nav-item-mobile-hide">
+                        <li>
                             <NavLink
                                 to="/puja"
-                                className={location.pathname === '/puja' ? 'active' : ''}
+                                className={isPathActive('/puja') ? 'active' : ''}
                                 onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
                             >
                                 Puja
                             </NavLink>
                         </li>
-                        <li className="nav-hide-hamburger">
+                        <li>
                             <NavLink
                                 to="/chadhava"
-                                className={location.pathname === '/chadhava' ? 'active' : ''}
+                                className={isPathActive('/chadhava') ? 'active' : ''}
                                 onClick={() => { window.scrollTo({ top: 0, behavior: 'instant' }); closeMenu(); }}
                             >
                                 Chadhava
