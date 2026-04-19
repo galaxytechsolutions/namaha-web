@@ -287,7 +287,6 @@ function ChadhavaDetail() {
       addonsTotal: 0,
       grandTotal: total,
       mode: 'chadhava',
-      prasadam: false, // user selects on BillingPage (same as puja flow)
     };
 
     console.log('Chadhava -> Billing fields being passed:', billingState);

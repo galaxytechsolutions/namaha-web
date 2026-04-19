@@ -184,6 +184,10 @@ function BillingPage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (isChadhavaFlow && prasadam) setPrasadam(false);
+  }, [isChadhavaFlow, prasadam]);
+
   const couponApplied = appliedCoupon != null;
   const finalPayable = couponApplied ? finalAmount : Math.max(subtotal, 0);
 
@@ -815,24 +819,20 @@ function BillingPage() {
     }
     setPendingRazorpayOrderId(orderId);
 
-    // Meta Pixel: InitiateCheckout requires numeric `value` + `currency` (and recommended catalog fields).
+    // Meta Pixel: InitiateCheckout — send only numeric `value` + ISO `currency` (Meta flags invalid ROAS if value is missing/wrong type).
+    // Avoid optional catalog fields here unless they match your catalog; mismatched `contents`/`item_price` often drives "invalid price" warnings.
     const checkoutValue = normalizeMetaPixelValue(amount);
-    const contentId = String(puja?._id || puja?.id || orderId || "checkout");
-    if (checkoutValue != null) {
-      trackMetaPixelEvent("InitiateCheckout", {
-        value: checkoutValue,
-        currency: "INR",
-        content_type: "product",
-        content_ids: [contentId],
-        num_items: 1,
-        contents: [
-          {
-            id: contentId,
-            quantity: 1,
-            item_price: checkoutValue,
-          },
-        ],
-      });
+    if (typeof window !== "undefined" && typeof window.fbq === "function" && checkoutValue != null) {
+      try {
+        window.fbq("track", "InitiateCheckout", {
+          value: checkoutValue,
+          currency: "INR",
+        });
+      } catch (e) {
+        console.warn("Meta Pixel InitiateCheckout error", e);
+      }
+    } else if (checkoutValue == null) {
+      console.warn("Meta Pixel InitiateCheckout skipped: invalid checkout amount", amount);
     }
 
     const options = {
@@ -1376,15 +1376,17 @@ function BillingPage() {
             </div>
           )}
 
-          {/* Prasadam option (puja + chadhava; same backend flag) */}
-          <label className="billing-prasadam-option">
-            <input
-              type="checkbox"
-              checked={prasadam}
-              onChange={(e) => setPrasadam(e.target.checked)}
-            />
-            <span>Prasadam (Free)</span>
-          </label>
+          {/* Prasadam: puja flow only (not shown for Chadhava) */}
+          {!isChadhavaFlow ? (
+            <label className="billing-prasadam-option">
+              <input
+                type="checkbox"
+                checked={prasadam}
+                onChange={(e) => setPrasadam(e.target.checked)}
+              />
+              <span>Prasadam (Free)</span>
+            </label>
+          ) : null}
 
           {/* ✅ GRAND TOTAL */}
           <div className="grand-total-row">
